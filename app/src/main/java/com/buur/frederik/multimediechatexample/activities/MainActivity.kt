@@ -1,7 +1,8 @@
-package com.buur.frederik.multimediechatexample
+package com.buur.frederik.multimediechatexample.activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.buur.frederik.multimediechatexample.R
 
 class MainActivity : AppCompatActivity() {
 
