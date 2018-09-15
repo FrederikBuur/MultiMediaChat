@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Primary colors-->
+    <color name="blueDark">#232dbc</color>
+    <color name="blueLight">#5c5af1</color>
+    <color name="textWhite">#dedede</color>
+
+
+    <color name="background_msg_sender">@color/blueDark</color>
+    <color name="background_msg_receiver">@color/blueLight</color>
+
+
+</resources>
