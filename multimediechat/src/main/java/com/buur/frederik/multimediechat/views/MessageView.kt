@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.view_text_message.view.*
 open class MessageView: SuperView {
 
     constructor(context: Context) : super(context) {
-        View.inflate(context, R.layout.view_message, this)
+        View.inflate(context, R.layout.view_message, this) // TODO fix leak?
     }
 
     constructor(context: Context, attrs: AttributeSet?)

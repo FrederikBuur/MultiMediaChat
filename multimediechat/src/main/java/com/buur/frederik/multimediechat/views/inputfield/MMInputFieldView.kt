@@ -8,9 +8,11 @@ import com.buur.frederik.multimediechat.R
 
 class MMInputFieldView: FrameLayout {
 
-    constructor(context: Context) : super(context) {
+    init {
         View.inflate(context, R.layout.view_mm_input_field, this)
     }
+
+    constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet?)
             : super(context, attrs)
