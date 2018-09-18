@@ -18,7 +18,7 @@ class VideoView: SuperView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    override fun setup(sender: String, source: String, time: Int?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setup(isSender: Boolean, source: String, time: Int?) {
+       //jjbg
     }
 }
