@@ -1,7 +1,10 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
+import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.buur.frederik.multimediechat.models.MMData
@@ -28,6 +31,8 @@ class ChatFragment: MMFragment() {
 
     private fun setup() {
 
+        setupMMLib()
+
         // dummy data
         messageList = SampleData.dummyData
 
@@ -36,9 +41,19 @@ class ChatFragment: MMFragment() {
                 adapter = ChatAdapter(it, messageList)
             }
         }
-
         chatRecyclerView.adapter = adapter
 
+        chatRecyclerView.setOnTouchListener { view, motionEvent ->
+            if (motionEvent.action == MotionEvent.ACTION_MOVE) {
+                mmInputField.hideContentViews()
+            }
+            false
+        }
+
+    }
+
+    private fun setupMMLib() {
+        this.mainActivity?.let { mmInputField.setup(it, viewContainer) }
     }
 
 }

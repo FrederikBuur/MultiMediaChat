@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.models.MMData
-import com.buur.frederik.multimediechat.views.*
+import com.buur.frederik.multimediechat.views.messageviews.*
 
 class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 

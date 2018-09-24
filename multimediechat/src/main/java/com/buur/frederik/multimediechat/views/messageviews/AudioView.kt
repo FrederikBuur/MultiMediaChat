@@ -1,14 +1,15 @@
-package com.buur.frederik.multimediechat.views
+package com.buur.frederik.multimediechat.views.messageviews
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.R
 
-abstract class SuperView: FrameLayout {
+class AudioView: SuperView {
 
-    constructor(context: Context) : super(context)
+    constructor(context: Context) : super(context) {
+        View.inflate(context, R.layout.view_audio, this)
+    }
 
     constructor(context: Context, attrs: AttributeSet?)
             : super(context, attrs)
@@ -16,6 +17,7 @@ abstract class SuperView: FrameLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    abstract fun setup(isSender: Boolean, source: String, time: Int? = null)
+    override fun setup(isSender: Boolean, source: String, time: Int?) {
+    }
 
 }

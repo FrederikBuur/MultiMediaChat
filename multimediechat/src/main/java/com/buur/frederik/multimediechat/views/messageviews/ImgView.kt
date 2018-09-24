@@ -1,15 +1,14 @@
-package com.buur.frederik.multimediechat.views
+package com.buur.frederik.multimediechat.views.messageviews
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import com.buur.frederik.multimediechat.R
-import kotlinx.android.synthetic.main.view_text_message.view.*
 
-class TextMessageView: MessageView {
+class ImgView: SuperView {
 
     constructor(context: Context) : super(context) {
-        View.inflate(context, R.layout.view_text_message, this)
+        View.inflate(context, R.layout.view_img, this)
     }
 
     constructor(context: Context, attrs: AttributeSet?)
@@ -19,9 +18,6 @@ class TextMessageView: MessageView {
             super(context, attrs, defStyleAttr)
 
     override fun setup(isSender: Boolean, source: String, time: Int?) {
-
-        textMsgContent.text = source
-        this.setParams(isSender)
 
     }
 

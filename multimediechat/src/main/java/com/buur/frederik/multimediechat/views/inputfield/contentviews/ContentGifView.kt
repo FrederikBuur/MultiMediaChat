@@ -1,4 +1,4 @@
-package com.buur.frederik.multimediechat.views
+package com.buur.frederik.multimediechat.views.inputfield.contentviews
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,11 +6,13 @@ import android.view.View
 import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.R
 
-class VideoView: SuperView {
+class ContentGifView : FrameLayout {
 
-    constructor(context: Context) : super(context) {
-        View.inflate(context, R.layout.view_video, this)
+    init {
+        View.inflate(context, R.layout.view_content_gif, this)
     }
+
+    constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet?)
             : super(context, attrs)
@@ -18,7 +20,4 @@ class VideoView: SuperView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    override fun setup(isSender: Boolean, source: String, time: Int?) {
-       //jjbg
-    }
 }

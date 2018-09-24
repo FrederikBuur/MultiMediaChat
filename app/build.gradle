@@ -6,7 +6,7 @@ ext {
     Glide = '4.7.1'                   // https://github.com/bumptech/glide/releases
     Firebase = '12.0.1'               // https://firebase.google.com/support/release-notes/android
     RetrofitVersion = '2.4.0'         // https://github.com/square/retrofit/releases
-    SupportVersion = '27.1.1'         // https://developer.android.com/topic/libraries/support-library/revisions.html
+    SupportVersion = '28.0.0-rc02'         // https://developer.android.com/topic/libraries/support-library/revisions.html
     OkhttpVersion = '3.10.0'          // https://github.com/square/okhttp/releases
     trelloRxlifecycle = '2.2.1'       // https://github.com/trello/RxLifecycle/releases
     rxBindings = '2.1.1'              // https://github.com/JakeWharton/RxBinding/releases
@@ -34,7 +34,10 @@ dependencies {
             'com.android.support:design:' + SupportVersion
 
     //Multi Media Chat library
-    implementation 'com.github.FrederikBuur:MultiMediaChat:7e999c5a6f'
+    //implementation 'com.github.FrederikBuur:MultiMediaChat:1651829f63'
+
+    implementation project(':multimediechat')
+
 
     // RxJava
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2' // https://github.com/ReactiveX/RxAndroid/releases

@@ -5,6 +5,7 @@
     <color name="blueDark">#232dbc</color>
     <color name="blueLight">#5c5af1</color>
     <color name="textWhite">#dedede</color>
+    <color name="greyLight">#d9d9d9</color>
 
 
     <color name="background_msg_sender">@color/blueDark</color>

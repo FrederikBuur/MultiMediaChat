@@ -9,6 +9,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 abstract class MMActivity: RxAppCompatActivity() {
 
+    val currentFragment: Fragment?
+        get() {
+            if (supportFragmentManager.backStackEntryCount == 0) return null
+
+            val name = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
+            val curr = supportFragmentManager.findFragmentByTag(name)
+            return curr
+        }
+
     fun navigateToFragment(fragment: Fragment, argument: Bundle? = null, shouldAddToBackStack: Boolean? = true) {
 
         fragment.arguments = argument
@@ -21,7 +30,7 @@ abstract class MMActivity: RxAppCompatActivity() {
             }
         }
 
-        fragmentContainer?.let { supFragMan.replace(fragmentContainer, fragment) }
+        fragmentContainer?.let { supFragMan.replace(fragmentContainer, fragment, fragment.javaClass.toString()) }
 
         if (shouldAddToBackStack == true) {
             supFragMan.addToBackStack(fragment.tag)
@@ -30,7 +39,7 @@ abstract class MMActivity: RxAppCompatActivity() {
         hideKeyboard()
     }
 
-    private fun hideKeyboard() {
+    fun hideKeyboard() {
 
         this.currentFocus?.let {
             val imm = this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
