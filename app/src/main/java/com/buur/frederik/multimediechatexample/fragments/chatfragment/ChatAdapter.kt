@@ -30,7 +30,7 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
         val mmData = getMMData(position)
 
         when(itemView) {
-            is SuperView -> itemView.setup(true, mmData.source)
+            is SuperView -> itemView.setup(position % 2 == 0, mmData.source)
             else -> {}
         }
 

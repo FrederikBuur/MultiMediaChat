@@ -21,7 +21,7 @@ class TextMessageView: SuperView {
     override fun setup(isSender: Boolean, source: String, time: Int?) {
 
         textMsgContent.text = source
-        this.setParams(isSender, this)
+        this.setParams(isSender, textMsgContainer)
 
     }
 

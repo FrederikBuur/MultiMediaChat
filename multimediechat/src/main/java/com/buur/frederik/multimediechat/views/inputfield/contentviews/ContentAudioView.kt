@@ -60,7 +60,6 @@ class ContentAudioView: ContentSuperView {
         scaleY.interpolator = FastOutSlowInInterpolator()
         scaleY.duration = 200
 
-
         scaleY.start()
 
     }

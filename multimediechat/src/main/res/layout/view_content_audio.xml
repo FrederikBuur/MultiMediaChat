@@ -46,8 +46,8 @@
 
     <FrameLayout
         android:id="@+id/recordBtn"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/margin_96"
+        android:layout_height="@dimen/margin_96"
         android:clickable="true"
         android:focusable="true"
         android:background="@drawable/shape_circle_btn"
@@ -61,7 +61,7 @@
             android:layout_height="match_parent"
             android:src="@android:drawable/ic_btn_speak_now"
             android:tint="@color/textWhite"
-            android:layout_margin="22dp"
+            android:layout_margin="@dimen/margin_24"
             android:contentDescription="record image"/>
 
     </FrameLayout>

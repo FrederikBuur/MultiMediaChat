@@ -21,8 +21,10 @@ abstract class SuperView: FrameLayout {
 
     abstract fun setup(isSender: Boolean, source: String, time: Int? = null)
 
-    fun setParams(isSender: Boolean, view: View) {
-        val params = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    fun setParams(isSender: Boolean, view: FrameLayout) {
+        val params = view.layoutParams as FrameLayout.LayoutParams
+
+        this.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
 
         if (isSender) {
             params.gravity = Gravity.END
@@ -31,9 +33,6 @@ abstract class SuperView: FrameLayout {
             params.gravity = Gravity.START
             view.background = ContextCompat.getDrawable(context, R.drawable.shape_msg_receiver)
         }
-
-        params.setMargins(4, 4, 4, 4)
-        view.setPadding(2, 0, 2, 0)
 
         view.layoutParams = params
     }
