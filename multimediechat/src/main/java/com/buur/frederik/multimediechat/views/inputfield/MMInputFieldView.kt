@@ -4,18 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
-import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import com.buur.frederik.multimediechat.R
+import com.buur.frederik.multimediechat.enums.MMDataType
+import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.views.inputfield.contentviews.ContentAudioView
 import com.buur.frederik.multimediechat.views.inputfield.contentviews.ContentSuperView
 import kotlinx.android.synthetic.main.view_mm_input_field.view.*
 import kotlinx.android.synthetic.main.view_options.view.*
-import javax.security.auth.callback.Callback
 
 class MMInputFieldView: FrameLayout, View.OnClickListener {
 
@@ -23,13 +21,13 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
 
     private var keyboardHeight: Int = defaultKeyboardHeight
     private var windowMaxSize: Int? = null
-
     private var activeContentView: ContentSuperView? = null
+    private var isKeyboardOpen = false
+    private var isOptionsViewSelected: Boolean? = null
 
     private var activity: AppCompatActivity? = null
     private var rootLayout: View? = null
-    private var isKeyboardOpen = false
-    private var isOptionsViewSelected: Boolean? = null
+    private var delegate: ISendDelegate? = null
 
     init {
         View.inflate(context, R.layout.view_mm_input_field, this)
@@ -43,30 +41,17 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    fun setup(activity: AppCompatActivity, rootLayout: View) {
+    fun setup(activity: AppCompatActivity, rootLayout: View, deligate: ISendDelegate) {
         this.activity = activity
         this.rootLayout = rootLayout
+        this.delegate = deligate
 
         rootLayout.post {
             windowMaxSize = rootLayout.height
             windowResizeListener()
         }
 
-//        inputEditText.setOnTouchListener { view, motionEvent ->
-//            val action = motionEvent.action
-//            Log.d("touchaa", "action: $action")
-//            if (action == MotionEvent.ACTION_UP) {
-//                inputEditTextOnClick(activity)
-//                inputEditText.requestFocus()
-//                true // dont do anything
-//            } else if (action == MotionEvent.ACTION_DOWN ||
-//                    action == MotionEvent.ACTION_MOVE){
-//                true // not handled
-//            } else {
-//                false
-//            }
-//        }
-
+        sendButton.setOnClickListener(this)
         optionsViewGif.setOnClickListener(this)
         optionsViewGallery.setOnClickListener(this)
         optionsViewAudio.setOnClickListener(this)
@@ -76,6 +61,9 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
     override fun onClick(v: View?) {
 
                 when (v) {
+                    sendButton -> {
+                        sendTextMessage()
+                    }
                     optionsViewAudio -> {
                         optionViewAudioOnClick(activity)
                     }
@@ -88,6 +76,16 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
 
     }
 
+    private fun sendTextMessage() {
+        val textMessage = inputEditText.text.toString().trim()
+
+        if (textMessage.isEmpty()) return
+
+        val mmData = MMData(textMessage, MMDataType.Text.ordinal)
+        delegate?.sendMMData(mmData)
+        inputEditText.text.clear()
+    }
+
     private fun inputEditTextOnClick(activity: AppCompatActivity?) {
         isOptionsViewSelected = false
 
@@ -97,7 +95,6 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
 
         activeContentView = null
         hideKeyboard(activity, false)
-        //inputMediaContentView.visibility = View.GONE
     }
 
     private fun optionViewAudioOnClick(activity: AppCompatActivity?) {
