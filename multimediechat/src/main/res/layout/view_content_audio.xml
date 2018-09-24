@@ -59,7 +59,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@android:drawable/ic_btn_speak_now"
+            android:src="@drawable/ic_mic"
             android:tint="@color/textWhite"
             android:layout_margin="@dimen/margin_24"
             android:contentDescription="record image"/>

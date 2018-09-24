@@ -1,19 +1,18 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.buur.frederik.multimediechat.models.MMData
-import com.buur.frederik.multimediechat.views.inputfield.ISendDelegate
+import com.buur.frederik.multimediechat.views.inputfield.ISendMessage
 import com.buur.frederik.multimediechatexample.R
+import com.jakewharton.rxbinding2.view.layoutChangeEvents
 import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import kotlinx.android.synthetic.main.fragment_chat.*
 
-class ChatFragment: MMFragment(), ISendDelegate {
+class ChatFragment: MMFragment(), ISendMessage {
 
     private var adapter: ChatAdapter? = null
     private var messageList: ArrayList<MMData>? = null
@@ -31,24 +30,30 @@ class ChatFragment: MMFragment(), ISendDelegate {
 
     private fun setup() {
 
+        // dummy data
+        messageList = SampleData.populateDummyData()
+
+        setupRecyclerView()
         setupMMLib()
 
-        // dummy data
-        messageList = SampleData.dummyData
 
+        scrollToBottomPost()
+
+    }
+
+    private fun setupRecyclerView() {
         // setup adapter
         if (adapter == null) {
             context?.let {adapter = ChatAdapter(it, messageList)}
         }
         chatRecyclerView.adapter = adapter
 
-        // recyclerview scroll listener
-        chatRecyclerView.setOnTouchListener { view, motionEvent ->
-            if (motionEvent.action == MotionEvent.ACTION_MOVE) {
-                mmInputField.hideContentViews()
-            }
-            false
-        }
+        chatRecyclerView?.layoutChangeEvents()
+                ?.compose(bindToLifecycle())
+                ?.doOnNext {
+                    //scroll to bottom when keyboard opens if bottom element is showing
+                }
+                ?.subscribe({}, {})
 
     }
 
@@ -58,8 +63,24 @@ class ChatFragment: MMFragment(), ISendDelegate {
 
     override fun sendMMData(mmData: MMData) {
 
-        Log.d(tag, "I got this from lib and will send it the way i want: $mmData")
+        sendToDummyBackend(mmData)
 
+        // not necessary when using dummy backend
+        //messageList?.add(mmData)
+
+        adapter?.notifyDataSetChanged()
+        scrollToBottomPost()
+
+    }
+
+    private fun sendToDummyBackend(mmData: MMData) {
+        SampleData.dummyData?.add(mmData)
+    }
+
+    private fun scrollToBottomPost() {
+        chatRecyclerView.post {
+            chatRecyclerView.scrollToPosition(messageList?.size?.minus(1) ?: 0)
+        }
     }
 
 }

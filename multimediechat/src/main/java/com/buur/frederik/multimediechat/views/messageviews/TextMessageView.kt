@@ -1,6 +1,7 @@
 package com.buur.frederik.multimediechat.views.messageviews
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import com.buur.frederik.multimediechat.R
@@ -21,6 +22,10 @@ class TextMessageView: SuperView {
     override fun setup(isSender: Boolean, source: String, time: Int?) {
 
         textMsgContent.text = source
+
+        val color = if (isSender) R.color.textWhite else R.color.textDark
+        textMsgContent.setTextColor(ContextCompat.getColor(context, color))
+
         this.setParams(isSender, textMsgContainer)
 
     }

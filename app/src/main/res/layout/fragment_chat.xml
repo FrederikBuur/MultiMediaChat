@@ -21,6 +21,10 @@
         android:id="@+id/chatRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/greyWhite"
+        android:scrollbarThumbVertical="@drawable/shape_recycler_view_thumb"
+        android:scrollbarSize="@dimen/margin_4"
+        android:scrollbarFadeDuration="250"
         android:scrollbars="vertical"
         android:layout_weight="1"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager">

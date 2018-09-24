@@ -46,6 +46,8 @@ dependencies {
     implementation 'com.github.davidmoten:rxjava2-extras:0.1.22' // https://github.com/davidmoten/rxjava2-extras/releases
     implementation 'com.trello.rxlifecycle2:rxlifecycle:' + trelloRxlifecycle,
             'com.trello.rxlifecycle2:rxlifecycle-components:' + trelloRxlifecycle
+    implementation 'com.jakewharton.rxbinding2:rxbinding:' + rxBindings,
+            'com.jakewharton.rxbinding2:rxbinding-kotlin:' + rxBindings
 
     // Leak Canary
     implementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'

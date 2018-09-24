@@ -25,7 +25,14 @@ android {
 }
 
 ext {
-    SupportVersion = '28.0.0-rc02'
+    Glide = '4.7.1'                   // https://github.com/bumptech/glide/releases
+    Firebase = '12.0.1'               // https://firebase.google.com/support/release-notes/android
+    RetrofitVersion = '2.4.0'         // https://github.com/square/retrofit/releases
+    SupportVersion = '28.0.0-rc02'         // https://developer.android.com/topic/libraries/support-library/revisions.html
+    OkhttpVersion = '3.10.0'          // https://github.com/square/okhttp/releases
+    trelloRxlifecycle = '2.2.1'       // https://github.com/trello/RxLifecycle/releases
+    rxBindings = '2.1.1'              // https://github.com/JakeWharton/RxBinding/releases
+    gson = '2.8.3'                    // https://github.com/google/gson/releases
 }
 
 dependencies {
@@ -48,6 +55,15 @@ dependencies {
             'com.android.support:support-dynamic-animation:' + SupportVersion,
             'com.android.support:design:' + SupportVersion
 
+    // RxJava
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2' // https://github.com/ReactiveX/RxAndroid/releases
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.13' // https://github.com/ReactiveX/RxJava/releases
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0' // https://github.com/ReactiveX/RxKotlin/releases
+    implementation 'com.github.davidmoten:rxjava2-extras:0.1.22' // https://github.com/davidmoten/rxjava2-extras/releases
+    implementation 'com.trello.rxlifecycle2:rxlifecycle:' + trelloRxlifecycle,
+            'com.trello.rxlifecycle2:rxlifecycle-components:' + trelloRxlifecycle
+    implementation 'com.jakewharton.rxbinding2:rxbinding:' + rxBindings,
+            'com.jakewharton.rxbinding2:rxbinding-kotlin:' + rxBindings
 
 }
 

@@ -6,12 +6,14 @@ import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.views.inputfield.contentviews.ContentAudioView
 import com.buur.frederik.multimediechat.views.inputfield.contentviews.ContentSuperView
+import com.jakewharton.rxbinding2.view.layoutChangeEvents
 import kotlinx.android.synthetic.main.view_mm_input_field.view.*
 import kotlinx.android.synthetic.main.view_options.view.*
 
@@ -27,7 +29,7 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
 
     private var activity: AppCompatActivity? = null
     private var rootLayout: View? = null
-    private var delegate: ISendDelegate? = null
+    private var delegate: ISendMessage? = null
 
     init {
         View.inflate(context, R.layout.view_mm_input_field, this)
@@ -41,7 +43,7 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    fun setup(activity: AppCompatActivity, rootLayout: View, deligate: ISendDelegate) {
+    fun setup(activity: AppCompatActivity, rootLayout: View, deligate: ISendMessage) {
         this.activity = activity
         this.rootLayout = rootLayout
         this.delegate = deligate
@@ -53,7 +55,7 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
 
         sendButton.setOnClickListener(this)
         optionsViewGif.setOnClickListener(this)
-        optionsViewGallery.setOnClickListener(this)
+        optionsViewImage.setOnClickListener(this)
         optionsViewAudio.setOnClickListener(this)
         inputEditText.setOnClickListener(this)
     }
@@ -114,28 +116,36 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
     }
 
     private fun windowResizeListener() {
-        rootLayout?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
 
-            rootLayout?.post {
-                windowMaxSize?.let { size ->
-                    // is keyboard open or not
-                    isKeyboardOpen = size > view.height
-                    if (view.height > size) {
-                        windowMaxSize = view.height // what?
-                    }
-                    if (isKeyboardOpen) {
-                        keyboardHeight = windowMaxSize?.minus(view.height) ?: defaultKeyboardHeight
+//        val entry = activity?.supportFragmentManager?.getBackStackEntryAt(activity?.supportFragmentManager?.backStackEntryCount?.minus(1) ?: return)?.name
+//        val currentFrag = activity?.supportFragmentManager?.findFragmentByTag(entry) ?: return
+
+        rootLayout?.layoutChangeEvents()
+                ?.doOnNext {
+                    val view = it.view()
+                    rootLayout?.post {
+                        windowMaxSize?.let { size ->
+                            // is keyboard open or not
+                            isKeyboardOpen = size > view.height
+                            if (view.height > size) {
+                                windowMaxSize = view.height // what?
+                            }
+                            if (isKeyboardOpen) {
+                                keyboardHeight = windowMaxSize?.minus(view.height) ?: defaultKeyboardHeight
+                            }
+                        }
                     }
                 }
-            }
-
-
-        }
+                ?.subscribe({}, {})
     }
 
     fun hideContentViews() {
         hideKeyboard(activity, true)
 
+    }
+
+    fun getEditText(): EditText {
+        return inputEditText
     }
 
     private fun hideKeyboard(activity: AppCompatActivity?, shouldHide: Boolean) {

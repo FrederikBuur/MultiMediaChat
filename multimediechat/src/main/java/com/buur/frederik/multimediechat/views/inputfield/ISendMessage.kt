@@ -2,7 +2,7 @@ package com.buur.frederik.multimediechat.views.inputfield
 
 import com.buur.frederik.multimediechat.models.MMData
 
-interface ISendDelegate {
+interface ISendMessage {
 
     fun sendMMData(mmData: MMData)
 
