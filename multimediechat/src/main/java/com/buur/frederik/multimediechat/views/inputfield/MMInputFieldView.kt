@@ -2,6 +2,8 @@ package com.buur.frederik.multimediechat.views.inputfield
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
 import android.view.View
@@ -11,11 +13,17 @@ import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.models.MMData
+import com.buur.frederik.multimediechat.views.MMView
 import com.buur.frederik.multimediechat.views.inputfield.contentviews.ContentAudioView
 import com.buur.frederik.multimediechat.views.inputfield.contentviews.ContentSuperView
-import com.jakewharton.rxbinding2.view.layoutChangeEvents
 import kotlinx.android.synthetic.main.view_mm_input_field.view.*
 import kotlinx.android.synthetic.main.view_options.view.*
+import com.buur.frederik.multimediechat.helpers.ImageHelper
+import com.nguyenhoanglam.imagepicker.model.Config
+import com.nguyenhoanglam.imagepicker.model.Image
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+
 
 class MMInputFieldView: FrameLayout, View.OnClickListener {
 
@@ -28,8 +36,9 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
     private var isOptionsViewSelected: Boolean? = null
 
     private var activity: AppCompatActivity? = null
-    private var rootLayout: View? = null
+    private var mmView: View? = null
     private var delegate: ISendMessage? = null
+    private var fragment: Fragment? = null
 
     init {
         View.inflate(context, R.layout.view_mm_input_field, this)
@@ -43,28 +52,34 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    fun setup(activity: AppCompatActivity, rootLayout: View, deligate: ISendMessage) {
+    fun setup(activity: AppCompatActivity, mmView: MMView, delegate: ISendMessage, fragment: Fragment) {
         this.activity = activity
-        this.rootLayout = rootLayout
-        this.delegate = deligate
+        this.mmView = mmView
+        this.delegate = delegate
+        this.fragment = fragment
 
-        rootLayout.post {
-            windowMaxSize = rootLayout.height
+        inputOptionsView.setup(mmView, fragment)
+
+        mmView.post {
+            windowMaxSize = mmView.height
             windowResizeListener()
         }
 
-        sendButton.setOnClickListener(this)
+        optionsViewCamera.setOnClickListener(this)
         optionsViewGif.setOnClickListener(this)
-        optionsViewImage.setOnClickListener(this)
         optionsViewAudio.setOnClickListener(this)
+
+        sendButton.setOnClickListener(this)
         inputEditText.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
-
                 when (v) {
                     sendButton -> {
                         sendTextMessage()
+                    }
+                    optionsViewCamera -> {
+                        inputOptionsView.openImagePicker()
                     }
                     optionsViewAudio -> {
                         optionViewAudioOnClick(activity)
@@ -75,17 +90,47 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
                     else -> {
                     }
                 }
-
     }
 
+
+    // takes data, converts into MMData, calls send
+    fun convertToMMData(data: Any?, type: MMDataType) {
+
+        when(type) {
+
+            MMDataType.Text -> {
+                val message = (data as? String) ?: "Something went wrong"
+                sendMMDataToCaller(MMData(message, type.ordinal))
+            }
+
+            MMDataType.Image -> {
+                val image = (data as Intent).getParcelableArrayListExtra<Image>(Config.EXTRA_IMAGES).first().path
+                ImageHelper.convertUriStringToBitmapString(image, context)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            sendMMDataToCaller(MMData(it, type.ordinal))
+                        }, {})
+            }
+            MMDataType.Video -> {} //TODO()
+            MMDataType.Audio -> {} //TODO()
+            MMDataType.Gif -> {} //TODO()
+        }
+    }
+
+    // returns MMData to caller
+    private fun sendMMDataToCaller(mmData: MMData) {
+        delegate?.sendMMData(mmData)
+    }
+
+    // takes text from edit text and sends to mmData converter
     private fun sendTextMessage() {
         val textMessage = inputEditText.text.toString().trim()
 
         if (textMessage.isEmpty()) return
 
-        val mmData = MMData(textMessage, MMDataType.Text.ordinal)
-        delegate?.sendMMData(mmData)
         inputEditText.text.clear()
+        convertToMMData(textMessage, MMDataType.Text)
     }
 
     private fun inputEditTextOnClick(activity: AppCompatActivity?) {
@@ -98,6 +143,8 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
         activeContentView = null
         hideKeyboard(activity, false)
     }
+
+
 
     private fun optionViewAudioOnClick(activity: AppCompatActivity?) {
         if (activeContentView is ContentAudioView) return
@@ -120,23 +167,23 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
 //        val entry = activity?.supportFragmentManager?.getBackStackEntryAt(activity?.supportFragmentManager?.backStackEntryCount?.minus(1) ?: return)?.name
 //        val currentFrag = activity?.supportFragmentManager?.findFragmentByTag(entry) ?: return
 
-        rootLayout?.layoutChangeEvents()
-                ?.doOnNext {
-                    val view = it.view()
-                    rootLayout?.post {
-                        windowMaxSize?.let { size ->
-                            // is keyboard open or not
-                            isKeyboardOpen = size > view.height
-                            if (view.height > size) {
-                                windowMaxSize = view.height // what?
-                            }
-                            if (isKeyboardOpen) {
-                                keyboardHeight = windowMaxSize?.minus(view.height) ?: defaultKeyboardHeight
-                            }
-                        }
-                    }
-                }
-                ?.subscribe({}, {})
+//        mmView?.layoutChangeEvents()
+//                ?.doOnNext {
+//                    val view = it.view()
+//                    mmView?.post {
+//                        windowMaxSize?.let { size ->
+//                            // is keyboard open or not
+//                            isKeyboardOpen = size > view.height
+//                            if (view.height > size) {
+//                                windowMaxSize = view.height // what?
+//                            }
+//                            if (isKeyboardOpen) {
+//                                keyboardHeight = windowMaxSize?.minus(view.height) ?: defaultKeyboardHeight
+//                            }
+//                        }
+//                    }
+//                }
+//                ?.subscribe({}, {})
     }
 
     fun hideContentViews() {
@@ -160,4 +207,11 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
         }
 
     }
+
+    companion object {
+
+        const val GALLERY_REQUEST_CODE = Config.RC_PICK_IMAGES
+
+    }
+
 }

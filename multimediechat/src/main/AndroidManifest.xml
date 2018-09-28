@@ -1,2 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.buur.frederik.multimediechat" />
+    package="com.buur.frederik.multimediechat">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application>
+        <activity android:name="com.tangxiaolv.telegramgallery.GalleryActivity" />
+    </application>
+
+
+</manifest>

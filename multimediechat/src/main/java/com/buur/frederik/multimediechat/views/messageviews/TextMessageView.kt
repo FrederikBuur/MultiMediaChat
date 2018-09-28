@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import com.buur.frederik.multimediechat.R
+import com.buur.frederik.multimediechat.models.MMData
 import kotlinx.android.synthetic.main.view_text_message.view.*
 
 class TextMessageView: SuperView {
@@ -19,9 +20,9 @@ class TextMessageView: SuperView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    override fun setup(isSender: Boolean, source: String, time: Int?) {
+    override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
 
-        textMsgContent.text = source
+        textMsgContent.text = (mmData.source as? String) ?: "Error"
 
         val color = if (isSender) R.color.textWhite else R.color.textDark
         textMsgContent.setTextColor(ContextCompat.getColor(context, color))

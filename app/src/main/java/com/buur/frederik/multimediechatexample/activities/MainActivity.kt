@@ -13,7 +13,7 @@ class MainActivity : MMActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //if (isLoggedin) {
+        //if (isLoggedIn) {
             this.navigateToFragment(ChatFragment(), shouldAddToBackStack = false)
         //} else {
         //    this.navigateToFragment(LoginFragment(), shouldAddToBackStack = false)

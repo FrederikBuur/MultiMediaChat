@@ -11,7 +11,10 @@
     <dimen name="margin_96">96dp</dimen>
 
     <!--text message view-->
-    <dimen name="text_message_width_max">250dp</dimen>
+    <dimen name="view_message_width_max">250dp</dimen>
+    <dimen name="view_message_height_max">350dp</dimen>
+    <dimen name="view_message_margin">@dimen/margin_8</dimen>
+    <dimen name="view_message_corner_radius">@dimen/margin_12</dimen>
 
     <!--multi media input field-->
     <dimen name="input_filed_send_button_size">@dimen/margin_52</dimen>

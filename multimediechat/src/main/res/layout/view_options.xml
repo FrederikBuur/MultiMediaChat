@@ -18,21 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:src="@drawable/ic_photo_camera"/>
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/optionsViewImage"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_image"/>
+            android:src="@drawable/ic_photo_camera_filled"/>
     </FrameLayout>
 
     <FrameLayout

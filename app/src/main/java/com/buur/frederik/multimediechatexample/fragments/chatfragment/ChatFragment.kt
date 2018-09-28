@@ -1,5 +1,6 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,10 +8,13 @@ import android.view.ViewGroup
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.views.inputfield.ISendMessage
 import com.buur.frederik.multimediechatexample.R
-import com.jakewharton.rxbinding2.view.layoutChangeEvents
 import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import kotlinx.android.synthetic.main.fragment_chat.*
+import android.app.Activity
+import com.buur.frederik.multimediechat.enums.MMDataType
+import com.buur.frederik.multimediechat.views.inputfield.MMInputFieldView
+
 
 class ChatFragment: MMFragment(), ISendMessage {
 
@@ -48,17 +52,17 @@ class ChatFragment: MMFragment(), ISendMessage {
         }
         chatRecyclerView.adapter = adapter
 
-        chatRecyclerView?.layoutChangeEvents()
-                ?.compose(bindToLifecycle())
-                ?.doOnNext {
-                    //scroll to bottom when keyboard opens if bottom element is showing
-                }
-                ?.subscribe({}, {})
+//        chatRecyclerView?.layoutChangeEvents()
+//                ?.compose(bindToLifecycle())
+//                ?.doOnNext {
+//                    //scroll to bottom when keyboard opens if bottom element is showing
+//                }
+//                ?.subscribe({}, {})
 
     }
 
     private fun setupMMLib() {
-        this.mainActivity?.let { mmInputField.setup(it, viewContainer, this) }
+        this.mainActivity?.let { mmInputField.setup(it, mmView, this, this) }
     }
 
     override fun sendMMData(mmData: MMData) {
@@ -71,6 +75,16 @@ class ChatFragment: MMFragment(), ISendMessage {
         adapter?.notifyDataSetChanged()
         scrollToBottomPost()
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == MMInputFieldView.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            mmInputField.convertToMMData(data, MMDataType.Image)
+            // do your logic here...
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun sendToDummyBackend(mmData: MMData) {

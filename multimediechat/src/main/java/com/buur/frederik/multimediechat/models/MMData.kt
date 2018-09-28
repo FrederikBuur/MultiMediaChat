@@ -1,7 +1,7 @@
 package com.buur.frederik.multimediechat.models
 
 class MMData(
-    val source: String,
+    var source: Any,
     val type: Int
 ) {
 }

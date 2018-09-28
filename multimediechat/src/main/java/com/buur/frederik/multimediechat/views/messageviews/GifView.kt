@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import com.buur.frederik.multimediechat.R
+import com.buur.frederik.multimediechat.models.MMData
 
 class GifView: SuperView {
 
@@ -17,7 +18,7 @@ class GifView: SuperView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    override fun setup(isSender: Boolean, source: String, time: Int?) {
+    override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
 
     }
 

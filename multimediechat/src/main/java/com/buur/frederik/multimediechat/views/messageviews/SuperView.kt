@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.R
+import com.buur.frederik.multimediechat.models.MMData
 
 abstract class SuperView: FrameLayout {
 
@@ -19,7 +20,7 @@ abstract class SuperView: FrameLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    abstract fun setup(isSender: Boolean, source: String, time: Int? = null)
+    abstract fun setup(isSender: Boolean, mmData: MMData, time: Int? = null)
 
     fun setParams(isSender: Boolean, view: FrameLayout) {
         val params = view.layoutParams as FrameLayout.LayoutParams
@@ -33,6 +34,9 @@ abstract class SuperView: FrameLayout {
             params.gravity = Gravity.START
             view.background = ContextCompat.getDrawable(context, R.drawable.shape_msg_receiver)
         }
+
+        val margin = resources.getDimension(R.dimen.view_message_margin).toInt()
+        params.setMargins(margin, margin, margin, margin)
 
         view.layoutParams = params
     }

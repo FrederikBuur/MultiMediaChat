@@ -3,6 +3,7 @@ package com.buur.frederik.multimediechatexample.fragments.chatfragment
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import android.widget.TextView
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.views.messageviews.*
@@ -18,7 +19,9 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
             MMDataType.Image.ordinal -> ImgView(context)
             MMDataType.Gif.ordinal -> GifView(context)
             MMDataType.Text.ordinal -> TextMessageView(context)
-            else -> TextMessageView(context)
+            else -> {
+                TextMessageView(context)
+            }
 
         })
 
@@ -28,12 +31,26 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
 
         val itemView = holder.itemView
         val mmData = getMMData(position)
+        val isSender = position % 2 == 0
 
         when(itemView) {
-            is SuperView -> itemView.setup(position % 2 == 0, mmData.source)
-            else -> {}
+            is ImgView -> {
+                itemView.setup(isSender, mmData)
+            }
+            is TextMessageView -> {
+                itemView.setup(isSender, mmData)
+            }
+            else -> {
+            }
         }
 
+    }
+
+    override fun getItemViewType(position: Int): Int {
+
+        val item = getMMData(position)
+
+        return item.type
     }
 
     override fun getItemCount(): Int {

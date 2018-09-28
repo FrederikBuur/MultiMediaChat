@@ -2,6 +2,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
     <solid android:color="@color/background_msg_sender"/>
-    <corners android:radius="@dimen/margin_24"/>
+    <corners android:radius="@dimen/view_message_corner_radius"/>
 
 </shape>
