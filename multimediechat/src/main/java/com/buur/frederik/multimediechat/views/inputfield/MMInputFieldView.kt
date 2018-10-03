@@ -3,124 +3,273 @@ package com.buur.frederik.multimediechat.views.inputfield
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.support.v4.app.Fragment
+import android.graphics.drawable.Drawable
+import android.media.MediaPlayer
+import android.media.MediaRecorder
+import android.os.Bundle
+import android.os.Environment
+import android.os.SystemClock
+import android.support.v4.app.FragmentManager
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.AttributeSet
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.FrameLayout
+import android.view.ViewGroup
+import android.widget.Toast
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
+import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.views.MMView
-import com.buur.frederik.multimediechat.views.inputfield.contentviews.ContentAudioView
-import com.buur.frederik.multimediechat.views.inputfield.contentviews.ContentSuperView
-import kotlinx.android.synthetic.main.view_mm_input_field.view.*
-import kotlinx.android.synthetic.main.view_options.view.*
 import com.buur.frederik.multimediechat.helpers.ImageHelper
+import com.buur.frederik.multimediechat.helpers.PermissionRequester
+import com.jakewharton.rxbinding2.view.touches
+import com.jakewharton.rxbinding2.widget.textChanges
 import com.nguyenhoanglam.imagepicker.model.Config
 import com.nguyenhoanglam.imagepicker.model.Image
+import com.trello.rxlifecycle2.components.support.RxFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.view_mm_input_field.*
+import kotlinx.android.synthetic.main.view_options.*
+import java.io.IOException
+import java.lang.Exception
+import java.lang.IllegalStateException
+import java.lang.RuntimeException
 
 
-class MMInputFieldView: FrameLayout, View.OnClickListener {
+class MMInputFieldView: RxFragment(), View.OnClickListener {
 
-    private val defaultKeyboardHeight = 873
+    private var isAudioButtonActivated: Boolean? = null
+    private var discardRecording: Boolean? = null
 
-    private var keyboardHeight: Int = defaultKeyboardHeight
-    private var windowMaxSize: Int? = null
-    private var activeContentView: ContentSuperView? = null
-    private var isKeyboardOpen = false
-    private var isOptionsViewSelected: Boolean? = null
+    private var mediaPlayer: MediaPlayer? = null
+    private var mediaRecorder: MediaRecorder? = null
+    private var outputAudioFile: String? = null
 
-    private var activity: AppCompatActivity? = null
+    private var callerContext: Context? = null
     private var mmView: View? = null
     private var delegate: ISendMessage? = null
-    private var fragment: Fragment? = null
 
-    init {
-        View.inflate(context, R.layout.view_mm_input_field, this)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.view_mm_input_field, container, true)
     }
 
-    constructor(context: Context) : super(context)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupListeners()
+    }
 
-    constructor(context: Context, attrs: AttributeSet?)
-            : super(context, attrs)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
-            super(context, attrs, defStyleAttr)
+        if (requestCode == MMInputFieldView.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
 
-    fun setup(activity: AppCompatActivity, mmView: MMView, delegate: ISendMessage, fragment: Fragment) {
-        this.activity = activity
+            val image = data.getParcelableArrayListExtra<Image>(Config.EXTRA_IMAGES).first().path
+            val disp = ImageHelper.convertUriStringToBitmapString(image, context)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        convertToMMDataAndSend(image, MMDataType.Image)
+                    }, {})
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        mediaRecorder?.release()
+        mediaRecorder = null
+        mediaPlayer?.release()
+        mediaPlayer = null
+
+    }
+
+    fun setup(callerContext: Context?, mmView: MMView, delegate: ISendMessage) {
+        this.callerContext = callerContext
         this.mmView = mmView
         this.delegate = delegate
-        this.fragment = fragment
 
-        inputOptionsView.setup(mmView, fragment)
+        inputOptionsView.setup(mmView, this)
 
-        mmView.post {
-            windowMaxSize = mmView.height
-            windowResizeListener()
+        context?.let {
+            if (!PermissionRequester.devicePermissionIsGranted(it)) {
+                PermissionRequester.requestPermissions((callerContext as? AppCompatActivity))
+            }
         }
-
-        optionsViewCamera.setOnClickListener(this)
-        optionsViewGif.setOnClickListener(this)
-        optionsViewAudio.setOnClickListener(this)
-
-        sendButton.setOnClickListener(this)
-        inputEditText.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
                 when (v) {
-                    sendButton -> {
-                        sendTextMessage()
-                    }
                     optionsViewCamera -> {
                         inputOptionsView.openImagePicker()
                     }
-                    optionsViewAudio -> {
-                        optionViewAudioOnClick(activity)
-                    }
-                    inputEditText -> {
-                        inputEditTextOnClick(activity)
+                    optionsViewFile -> {
                     }
                     else -> {
                     }
                 }
     }
 
+    private fun setupListeners() {
 
-    // takes data, converts into MMData, calls send
-    fun convertToMMData(data: Any?, type: MMDataType) {
+        optionsViewCamera.setOnClickListener(this)
+        optionsViewGif.setOnClickListener(this)
+        optionsViewFile.setOnClickListener(this)
 
-        when(type) {
+        val disposeable = inputEditText.textChanges()
+                .compose(bindToLifecycle())
+                .doOnNext { editText ->
+                    val newDrawable: Drawable? = if (editText.trim().isNotEmpty()) {
+                        // show send text
+                        sendButtonImgView.scaleY = -1f
+                        isAudioButtonActivated = false
+                        context?.let {ContextCompat.getDrawable(it, R.drawable.ic_round_send)}
+                    } else {
+                        // show mic
+                        sendButtonImgView.scaleY = 1f
+                        isAudioButtonActivated = true
+                        context?.let {ContextCompat.getDrawable(it, R.drawable.ic_mic)}
+                    }
+                    val currentDrawable = sendButtonImgView.drawable
+                    // check if necessary to set new drawable
+                    if (currentDrawable.constantState != newDrawable?.constantState) {
+                        sendButtonImgView.setImageDrawable(newDrawable)
+                    }
+                }
+                .subscribe({}, {})
 
-            MMDataType.Text -> {
-                val message = (data as? String) ?: "Something went wrong"
-                sendMMDataToCaller(MMData(message, type.ordinal))
-            }
+        val disposable1 = sendButton.touches()
+                .compose(bindToLifecycle())
+                .doOnNext { motionEvent ->
+                    when (motionEvent.action) {
+                        MotionEvent.ACTION_DOWN -> {
 
-            MMDataType.Image -> {
-                val image = (data as Intent).getParcelableArrayListExtra<Image>(Config.EXTRA_IMAGES).first().path
-                ImageHelper.convertUriStringToBitmapString(image, context)
-                        .subscribeOn(Schedulers.computation())
+                            if (inputEditText.text.toString().trim().isEmpty()) {
+                                discardRecording = false
+                                startRecording()
+                            }
+                        }
+                        MotionEvent.ACTION_UP -> {
+
+                            if (inputEditText.text.trim().isNotEmpty()) {
+                                sendTextMessage()
+                            } else {
+                                stopRecording()
+                                sendOrDiscardRecording(motionEvent)
+                            }
+                        }
+                        MotionEvent.ACTION_MOVE-> {
+                            // check is touch is outside of
+                            val isOutside = isTouchOutsideView(motionEvent.x, motionEvent.y, sendButtonImgView)
+                            discardRecording?.let { discard ->
+                                if (discard != isOutside) {
+                                    discardRecording = !discard
+                                }
+                            } ?: kotlin.run {
+                                discardRecording = isOutside
+                            }
+                        }
+                    }
+                }
+                .retry()
+                .subscribe({}, {
+                    it
+                })
+
+    }
+
+    private fun sendOrDiscardRecording(motionEvent: MotionEvent) {
+        if (discardRecording == false) {
+            val downTime = SystemClock.uptimeMillis() - motionEvent.downTime
+            if (downTime < 1000) {
+                showHoldToRecordToast()
+            } else {
+                // convert and send recording
+                val disp = AudioHelper.convert3gpToString(context, outputAudioFile)
+                        .compose(bindToLifecycle())
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
-                            sendMMDataToCaller(MMData(it, type.ordinal))
-                        }, {})
+                            convertToMMDataAndSend(it, MMDataType.Audio)
+                        }, {
+                            it
+                        })
             }
-            MMDataType.Video -> {} //TODO()
-            MMDataType.Audio -> {} //TODO()
-            MMDataType.Gif -> {} //TODO()
+
+        } else {
+            // discard recording
+            discardRecording = false
         }
     }
 
-    // returns MMData to caller
-    private fun sendMMDataToCaller(mmData: MMData) {
-        delegate?.sendMMData(mmData)
+    private fun startRecording() {
+
+        val audioName = "/MultiMediaAudio_${System.currentTimeMillis()}.3gp"
+        outputAudioFile = Environment.getExternalStorageDirectory().absolutePath + audioName
+
+        mediaRecorder = MediaRecorder()
+        mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mediaRecorder?.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB)
+        mediaRecorder?.setOutputFile(outputAudioFile)
+
+        try {
+            mediaRecorder?.prepare()
+            mediaRecorder?.start()
+        } catch (ise: IllegalStateException) {
+            Log.d("Error", ise.message)
+        } catch (ioe: IOException) {
+            Log.d("Error", ioe.message)
+        }
+
+    }
+
+    private fun stopRecording() {
+        try {
+            mediaRecorder?.stop()
+            mediaRecorder?.release()
+            mediaRecorder = null
+
+        } catch (re: RuntimeException) {
+            showHoldToRecordToast()
+            re.message
+        }
+    }
+
+    private fun showHoldToRecordToast() {
+        // show hold-to-record view
+        Toast.makeText(context, "Hold to record a message", Toast.LENGTH_SHORT).show()
+        discardRecording = true
+    }
+
+    private fun isTouchOutsideView(x: Float, y: Float, view: View): Boolean {
+        // checks if touch is outside of view bounds
+        return (x < 0 || y < 0 || x > view.measuredWidth || y > view.measuredHeight)
+    }
+
+
+    // takes data, converts into MMData, calls send
+    private fun convertToMMDataAndSend(data: String, type: MMDataType) {
+        when (type) {
+            MMDataType.Text -> {
+                val message = (data as? String) ?: "Something went wrong"
+                delegate?.sendMMData(MMData(message, type.ordinal))
+            }
+            MMDataType.Image -> {
+                delegate?.sendMMData(MMData(data, type.ordinal))
+            }
+            MMDataType.Audio -> {
+                delegate?.sendMMData(MMData(data, type.ordinal))
+            }
+            MMDataType.Video -> {
+            } //TODO()
+            MMDataType.Gif -> {
+            } //TODO()
+        }
     }
 
     // takes text from edit text and sends to mmData converter
@@ -130,87 +279,18 @@ class MMInputFieldView: FrameLayout, View.OnClickListener {
         if (textMessage.isEmpty()) return
 
         inputEditText.text.clear()
-        convertToMMData(textMessage, MMDataType.Text)
-    }
-
-    private fun inputEditTextOnClick(activity: AppCompatActivity?) {
-        isOptionsViewSelected = false
-
-        when(activeContentView) {
-            is ContentAudioView -> activeContentView?.closeAnimation()
-        }
-
-        activeContentView = null
-        hideKeyboard(activity, false)
-    }
-
-
-
-    private fun optionViewAudioOnClick(activity: AppCompatActivity?) {
-        if (activeContentView is ContentAudioView) return
-
-        isOptionsViewSelected = true
-        hideKeyboard(activity, true)
-
-        val audioView = ContentAudioView(context)
-        audioView.setup(keyboardHeight)
-        activeContentView = audioView
-
-        inputMediaContentView.removeAllViews()
-        inputMediaContentView.addView(audioView)
-
-        inputMediaContentView.visibility = View.VISIBLE
-    }
-
-    private fun windowResizeListener() {
-
-//        val entry = activity?.supportFragmentManager?.getBackStackEntryAt(activity?.supportFragmentManager?.backStackEntryCount?.minus(1) ?: return)?.name
-//        val currentFrag = activity?.supportFragmentManager?.findFragmentByTag(entry) ?: return
-
-//        mmView?.layoutChangeEvents()
-//                ?.doOnNext {
-//                    val view = it.view()
-//                    mmView?.post {
-//                        windowMaxSize?.let { size ->
-//                            // is keyboard open or not
-//                            isKeyboardOpen = size > view.height
-//                            if (view.height > size) {
-//                                windowMaxSize = view.height // what?
-//                            }
-//                            if (isKeyboardOpen) {
-//                                keyboardHeight = windowMaxSize?.minus(view.height) ?: defaultKeyboardHeight
-//                            }
-//                        }
-//                    }
-//                }
-//                ?.subscribe({}, {})
-    }
-
-    fun hideContentViews() {
-        hideKeyboard(activity, true)
-
-    }
-
-    fun getEditText(): EditText {
-        return inputEditText
-    }
-
-    private fun hideKeyboard(activity: AppCompatActivity?, shouldHide: Boolean) {
-
-        activity?.currentFocus?.let {
-            val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            if (shouldHide) {
-                imm.hideSoftInputFromWindow(it.windowToken, 0)
-            } else {
-                imm.showSoftInput(it, 0)
-            }
-        }
-
+        convertToMMDataAndSend(textMessage, MMDataType.Text)
     }
 
     companion object {
 
+        const val INPUT_TEXT_KEY = "inputText"
+
         const val GALLERY_REQUEST_CODE = Config.RC_PICK_IMAGES
+
+        fun getMMInputFieldInstance(childFragmentManager: FragmentManager, fragmentId: Int): MMInputFieldView? {
+            return childFragmentManager.findFragmentById(fragmentId) as? MMInputFieldView
+        }
 
     }
 

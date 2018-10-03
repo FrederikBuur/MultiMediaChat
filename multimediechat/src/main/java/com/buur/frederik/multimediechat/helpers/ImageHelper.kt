@@ -16,11 +16,11 @@ import java.io.File
 
 object ImageHelper {
 
-    fun convertUriStringToBitmapString(uri: String, context: Context): Observable<String>  {
+    fun convertUriStringToBitmapString(uri: String, context: Context?): Observable<String>  {
         return Observable.create { emitter ->
 
             val imageUri = Uri.fromFile(File(uri))
-            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+            val bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, imageUri)
 
             imageUri.path?.let { path ->
                 val rotatedBitmap = rotateBitmapIfNeeded(path, bitmap) // only for images?

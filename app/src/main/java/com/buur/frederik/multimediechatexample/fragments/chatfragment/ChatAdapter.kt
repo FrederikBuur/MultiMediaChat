@@ -40,6 +40,9 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
             is TextMessageView -> {
                 itemView.setup(isSender, mmData)
             }
+            is AudioView -> {
+                itemView.setup(isSender, mmData)
+            }
             else -> {
             }
         }

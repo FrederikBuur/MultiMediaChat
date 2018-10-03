@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.models.MMData
 
@@ -39,6 +40,11 @@ abstract class SuperView: FrameLayout {
         params.setMargins(margin, margin, margin, margin)
 
         view.layoutParams = params
+    }
+
+    fun setTextColor(isSender: Boolean, tv: TextView) {
+        val color = if (isSender) R.color.textWhite else R.color.textDark
+        tv.setTextColor(ContextCompat.getColor(context, color))
     }
 
 }

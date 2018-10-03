@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,6 +14,7 @@
 
     <com.buur.frederik.multimediechat.views.inputfield.OptionsView
         android:id="@+id/inputOptionsView"
+        tools:layout="@layout/view_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </com.buur.frederik.multimediechat.views.inputfield.OptionsView>
@@ -25,10 +27,11 @@
 
         <EditText
             android:id="@+id/inputEditText"
+            android:hint="Type a message..."
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Type a message..."
+            android:inputType="textAutoCorrect"
             android:background="@android:color/transparent"
             android:layout_gravity="center"
             android:maxLines="4"
@@ -44,14 +47,13 @@
             android:background="@drawable/shape_circle_btn">
 
             <ImageView
-                android:paddingStart="@dimen/margin_2"
-                android:paddingEnd="0dp"
+                android:id="@+id/sendButtonImgView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_round_send"
-                android:scaleY="-1"/>
+                android:src="@drawable/ic_mic"
+                android:scaleY="1"/>
 
         </FrameLayout>
 

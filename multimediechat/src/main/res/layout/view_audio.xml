@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<com.jcminarro.roundkornerlayout.RoundKornerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/audioMsgContainer"
+    android:layout_width="160dp"
+    android:layout_height="@dimen/margin_36"
+    android:clickable="true"
+    android:focusable="true"
+    app:corner_radius="@dimen/view_message_corner_radius">
 
-</LinearLayout>
+    <FrameLayout
+        android:id="@+id/audioCurrentTimeIndicator"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@color/textDark"
+        android:alpha="0.2"
+        android:layout_gravity="start|bottom"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="@dimen/margin_8"
+        android:layout_gravity="center">
+
+        <TextView
+            android:text="0:00"
+            android:id="@+id/audioTimeIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageView
+            android:id="@+id/audioActionImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_media_play"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+</com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
