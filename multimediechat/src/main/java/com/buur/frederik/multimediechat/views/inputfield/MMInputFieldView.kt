@@ -79,16 +79,6 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onStop() {
-        super.onStop()
-
-        mediaRecorder?.release()
-        mediaRecorder = null
-        mediaPlayer?.release()
-        mediaPlayer = null
-
-    }
-
     fun setup(callerContext: Context?, mmView: MMView, delegate: ISendMessage) {
         this.callerContext = callerContext
         this.mmView = mmView
@@ -155,24 +145,18 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
                             }
                         }
                         MotionEvent.ACTION_UP -> {
-
                             if (inputEditText.text.trim().isNotEmpty()) {
                                 sendTextMessage()
                             } else {
+                                discardRecording = isTouchOutsideView(motionEvent, sendButtonImgView)
                                 stopRecording()
                                 sendOrDiscardRecording(motionEvent)
                             }
                         }
                         MotionEvent.ACTION_MOVE-> {
                             // check is touch is outside of
-                            val isOutside = isTouchOutsideView(motionEvent.x, motionEvent.y, sendButtonImgView)
-                            discardRecording?.let { discard ->
-                                if (discard != isOutside) {
-                                    discardRecording = !discard
-                                }
-                            } ?: kotlin.run {
-                                discardRecording = isOutside
-                            }
+                            val isOutside = isTouchOutsideView(motionEvent, sendButtonImgView)
+                            updateRecordNotification(true, !isOutside)
                         }
                     }
                 }
@@ -183,10 +167,25 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
 
     }
 
+    private fun updateRecordNotification(show: Boolean, showReleaseToSendText: Boolean? = null) {
+        if (show) {
+            recordMessageNotification.visibility = View.VISIBLE
+            if (showReleaseToSendText != true) {
+                // show release to discard
+                recordMessageTV.text = "release to discard"
+            } else {
+                // show release to send
+                recordMessageTV.text = "release to send"
+            }
+        } else {
+            recordMessageNotification.visibility = View.GONE
+        }
+    }
+
     private fun sendOrDiscardRecording(motionEvent: MotionEvent) {
         if (discardRecording == false) {
             val downTime = SystemClock.uptimeMillis() - motionEvent.downTime
-            if (downTime < 1000) {
+            if (downTime < 500) {
                 showHoldToRecordToast()
             } else {
 //                // convert and send recording
@@ -222,6 +221,7 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
         try {
             mediaRecorder?.prepare()
             mediaRecorder?.start()
+            updateRecordNotification(true)
         } catch (ise: IllegalStateException) {
             Log.d("Error", ise.message)
         } catch (ioe: IOException) {
@@ -240,6 +240,7 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
             showHoldToRecordToast()
             re.message
         }
+        updateRecordNotification(false)
     }
 
     private fun showHoldToRecordToast() {
@@ -248,9 +249,13 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
         discardRecording = true
     }
 
-    private fun isTouchOutsideView(x: Float, y: Float, view: View): Boolean {
+    private fun isTouchOutsideView(motionEvent: MotionEvent, view: View): Boolean {
         // checks if touch is outside of view bounds
-        return (x < 0 || y < 0 || x > view.measuredWidth || y > view.measuredHeight)
+        val threshold = 50
+        return (motionEvent.x < 0.plus(threshold) ||
+                motionEvent.y < 0.plus(threshold) ||
+                motionEvent.x > view.measuredWidth.plus(threshold) ||
+                motionEvent.y > view.measuredHeight.plus(threshold))
     }
 
 
@@ -277,11 +282,19 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
     // takes text from edit text and sends to mmData converter
     private fun sendTextMessage() {
         val textMessage = inputEditText.text.toString().trim()
-
         if (textMessage.isEmpty()) return
-
         inputEditText.text.clear()
         convertToMMDataAndSend(textMessage, MMDataType.Text)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        mediaRecorder?.release()
+        mediaRecorder = null
+        mediaPlayer?.release()
+        mediaPlayer = null
+
     }
 
     companion object {

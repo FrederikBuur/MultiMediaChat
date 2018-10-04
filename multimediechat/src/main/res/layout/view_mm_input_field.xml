@@ -2,22 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/greyLight"/>
+        android:background="@color/greyLight" />
 
     <com.buur.frederik.multimediechat.views.inputfield.OptionsView
         android:id="@+id/inputOptionsView"
-        tools:layout="@layout/view_options"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </com.buur.frederik.multimediechat.views.inputfield.OptionsView>
+        android:layout_height="wrap_content"
+        tools:layout="@layout/view_options" />
+
 
     <LinearLayout
         android:id="@+id/inputMainView"
@@ -25,35 +25,82 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/inputEditText"
-            android:hint="Type a message..."
-            android:layout_weight="1"
+
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textAutoCorrect"
-            android:background="@android:color/transparent"
-            android:layout_gravity="center"
-            android:maxLines="4"
-            android:padding="@dimen/margin_24"/>
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/inputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:hint="Type a message..."
+                android:inputType="textAutoCorrect"
+                android:maxLines="4"
+                android:padding="@dimen/margin_24" />
+
+            <LinearLayout
+                android:id="@+id/recordMessageNotification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="@dimen/margin_12"
+                android:background="@drawable/shape_msg_sender"
+                android:elevation="@dimen/margin_8"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margin_12"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingEnd="@dimen/margin_12"
+                android:paddingBottom="@dimen/margin_4"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center"
+                    android:background="@color/colorAccent" />
+
+                <TextView
+                    android:id="@+id/recordTimeTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_4"
+                    android:layout_marginEnd="@dimen/margin_4"
+                    android:text="0:00"
+                    android:textColor="@color/textWhite" />
+
+                <TextView
+                    android:id="@+id/recordMessageTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="release to send"
+                    android:textColor="@color/textWhite" />
+
+            </LinearLayout>
+
+        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/sendButton"
             android:layout_width="@dimen/input_filed_send_button_size"
             android:layout_height="@dimen/input_filed_send_button_size"
+            android:layout_gravity="center"
             android:layout_margin="@dimen/margin_8"
+            android:background="@drawable/shape_circle_btn"
             android:clickable="true"
-            android:focusable="true"
-            android:background="@drawable/shape_circle_btn">
+            android:focusable="true">
 
             <ImageView
                 android:id="@+id/sendButtonImgView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="10dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_mic"
-                android:scaleY="1"/>
+                android:layout_margin="10dp"
+                android:scaleY="1"
+                android:src="@drawable/ic_mic" />
 
         </FrameLayout>
 

@@ -43,7 +43,7 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
         this.mmData = mmData
 
         audioCurrentTimeIndicator.alpha = if (isSender) {
-            0.9f
+            0.3f
         } else {
             0.1f
         }
@@ -132,14 +132,13 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
 
     private fun playAudio() {
 
-        (mmData?.source as? String)?.let {
-            setupMediaPlayer(it)
-        }
-
         if (mediaPlayer?.isPlaying != true) {
             length?.let {
                 mediaPlayer?.seekTo(it)
             } ?: kotlin.run {
+                (mmData?.source as? String)?.let {
+                    setupMediaPlayer(it)
+                }
                 setupDurationListener()
             }
             mediaPlayer?.start()
