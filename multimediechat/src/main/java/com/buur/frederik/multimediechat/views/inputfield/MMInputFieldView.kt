@@ -189,16 +189,17 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
             if (downTime < 1000) {
                 showHoldToRecordToast()
             } else {
-                // convert and send recording
-                val disp = AudioHelper.convert3gpToString(context, outputAudioFile)
-                        .compose(bindToLifecycle())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            convertToMMDataAndSend(it, MMDataType.Audio)
-                        }, {
-                            it
-                        })
+//                // convert and send recording
+//                val disp = AudioHelper.convert3gpToString(context, outputAudioFile)
+//                        .compose(bindToLifecycle())
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe({
+//                            convertToMMDataAndSend(it, MMDataType.Audio)
+//                        }, {
+//                            it
+//                        })
+                outputAudioFile?.let { convertToMMDataAndSend(it, MMDataType.Audio) }
             }
 
         } else {

@@ -2,6 +2,7 @@ package com.buur.frederik.multimediechat.views.messageviews
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Environment
 import android.util.AttributeSet
 import android.util.Log
@@ -20,7 +21,7 @@ import android.widget.FrameLayout
 import io.reactivex.disposables.Disposable
 
 
-class AudioView: SuperView, View.OnClickListener, MediaPlayer.OnCompletionListener {
+class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListener {
 
     private var mmData: MMData? = null
     private var mediaPlayer: MediaPlayer? = null
@@ -41,57 +42,83 @@ class AudioView: SuperView, View.OnClickListener, MediaPlayer.OnCompletionListen
     override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
         this.mmData = mmData
 
-        audioCurrentTimeIndicator.alpha = if (isSender) { 0.3f } else { 0.1f }
+        audioCurrentTimeIndicator.alpha = if (isSender) {
+            0.9f
+        } else {
+            0.1f
+        }
 
         setupAudio()
 
         this.setParams(isSender, audioMsgContainer)
-        this.setTextColor(isSender, audioTimeIndicator)
+//        this.setTextColor(isSender, audioTimeIndicator)
 
         audioMsgContainer.setOnClickListener(this)
     }
 
     private fun setupAudio() {
 
-        val stringByteArray = this.mmData?.source as? String
+//        val stringByteArray = this.mmData?.source as? String
 
-        val audioName = "/MultiMediaAudio_${System.currentTimeMillis()}.3gp"
-        val outputFile = Environment.getExternalStorageDirectory().absolutePath + audioName
+//        val audioName = "/MultiMediaAudio_${System.currentTimeMillis()}.3gp"
+//        val outputFile = Environment.getExternalStorageDirectory().absolutePath + audioName
 
-        val disp = AudioHelper.convertStringByteArrayTo3gp(outputFile, stringByteArray)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ _ ->
-                    try {
-                        mediaPlayer = MediaPlayer()
-                        mediaPlayer?.setDataSource(outputFile)
-                        mediaPlayer?.isLooping = false
-                        mediaPlayer?.setOnCompletionListener(this)
-                        mediaPlayer?.prepare()
-                        audioTimeIndicator.text = mediaPlayer?.duration?.toFloat()?.div(1000f).toString()
-
-                    } catch (e: Exception) {
-                        e.message
-                        Throwable(e.message)
-                    }
-                }, {
-                    it
-                })
+//        val disp = AudioHelper.convertStringByteArrayTo3gp(outputFile, stringByteArray)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe({ _ ->
+//                    try {
+//                        mediaPlayer = MediaPlayer()
+//                        mediaPlayer?.setDataSource(outputFile)
+//                        mediaPlayer?.isLooping = false
+//                        mediaPlayer?.setOnCompletionListener(this)
+//                        mediaPlayer?.prepare()
+//                        audioTimeIndicator.text = mediaPlayer?.duration?.toFloat()?.div(1000f).toString()
+//
+//                    } catch (e: Exception) {
+//                        e.message
+//                        Throwable(e.message)
+//                    }
+//                }, {
+//                    it
+//                })
     }
+
+    private fun setupMediaPlayer(audio: String) {
+
+//        val uri = Uri.parse(audio)
+        try {
+            mediaPlayer = MediaPlayer()
+
+//        if (uri) {
+//            mediaPlayer?.setDataSource(context, mmData?.source)
+//        } else if (url) {
+            mediaPlayer?.setDataSource(audio)
+//        }
+            mediaPlayer?.isLooping = false
+            mediaPlayer?.setOnCompletionListener(this)
+            mediaPlayer?.prepare()
+//            audioTimeIndicator.text = mediaPlayer?.duration?.toFloat()?.div(1000f).toString()
+        } catch (e: Exception) {
+            e.message
+        }
+    }
+
 
     private fun setupDurationListener() {
 
         val max = (mediaPlayer?.duration ?: 1).toFloat()
         durationDisposable = Observable.just(Log.d(this.toString(), "duration listener started"))
-                .repeatWhen{ completed -> completed.delay(65, TimeUnit.MILLISECONDS)}
+                .repeatWhen { completed -> completed.delay(65, TimeUnit.MILLISECONDS) }
                 .observeOn(AndroidSchedulers.mainThread())
+                .retry()
                 .subscribe({ _ ->
                     val current = mediaPlayer?.currentPosition?.toFloat()
                     val percentDecimal = current?.div(max)
-                    percentDecimal?.let{ currentTimeVisualization(it) }
+                    percentDecimal?.let { currentTimeVisualization(it) }
 
                 }, {
-                  val error = it.message
+                    val error = it.message
                     error
                 })
     }
@@ -104,6 +131,10 @@ class AudioView: SuperView, View.OnClickListener, MediaPlayer.OnCompletionListen
     }
 
     private fun playAudio() {
+
+        (mmData?.source as? String)?.let {
+            setupMediaPlayer(it)
+        }
 
         if (mediaPlayer?.isPlaying != true) {
             length?.let {
@@ -119,7 +150,7 @@ class AudioView: SuperView, View.OnClickListener, MediaPlayer.OnCompletionListen
                 length = mediaPlayer?.currentPosition
                 showPauseButton(false)
             } catch (e: Exception) {
-                Log.d("", "") //
+                e.message
             }
         }
     }
@@ -135,7 +166,7 @@ class AudioView: SuperView, View.OnClickListener, MediaPlayer.OnCompletionListen
                 .into(audioActionImg)
     }
 
-    override fun onCompletion(p0: MediaPlayer?) {
+    override fun onCompletion(mp: MediaPlayer?) {
         showPauseButton(false)
         currentTimeVisualization(0f)
         length = null
@@ -145,7 +176,7 @@ class AudioView: SuperView, View.OnClickListener, MediaPlayer.OnCompletionListen
     }
 
     override fun onClick(v: View?) {
-        when(v) {
+        when (v) {
             audioMsgContainer -> {
                 playAudio()
             }

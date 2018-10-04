@@ -23,15 +23,15 @@
         android:paddingEnd="@dimen/margin_8"
         android:layout_gravity="center">
 
-        <TextView
-            android:text="0:00"
-            android:id="@+id/audioTimeIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+        <!--<TextView-->
+            <!--android:text="0:00"-->
+            <!--android:id="@+id/audioTimeIndicator"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"/>-->
 
         <ImageView
             android:id="@+id/audioActionImg"
