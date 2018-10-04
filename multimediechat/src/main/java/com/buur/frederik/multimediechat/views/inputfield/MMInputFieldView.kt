@@ -68,12 +68,13 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
         if (requestCode == MMInputFieldView.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
 
             val image = data.getParcelableArrayListExtra<Image>(Config.EXTRA_IMAGES).first().path
-            val disp = ImageHelper.convertUriStringToBitmapString(image, context)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        convertToMMDataAndSend(image, MMDataType.Image)
-                    }, {})
+            convertToMMDataAndSend(image, MMDataType.Image)
+//            val disp = ImageHelper.convertUriStringToBitmapString(image, context)
+//                    .subscribeOn(Schedulers.computation())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe({
+//                        convertToMMDataAndSend(image, MMDataType.Image)
+//                    }, {})
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
