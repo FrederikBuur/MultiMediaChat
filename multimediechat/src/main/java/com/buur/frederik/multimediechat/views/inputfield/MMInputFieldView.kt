@@ -9,6 +9,7 @@ import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -25,6 +26,7 @@ import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.views.MMView
 import com.buur.frederik.multimediechat.helpers.ImageHelper
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
+import com.buur.frederik.multimediechat.views.gifpicker.GifPickerActivity
 import com.jakewharton.rxbinding2.view.touches
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.nguyenhoanglam.imagepicker.model.Config
@@ -65,8 +67,8 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        // if result form image picker
         if (requestCode == MMInputFieldView.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-
             val image = data.getParcelableArrayListExtra<Image>(Config.EXTRA_IMAGES).first().path
             convertToMMDataAndSend(image, MMDataType.Image)
 //            val disp = ImageHelper.convertUriStringToBitmapString(image, context)
@@ -75,6 +77,11 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
 //                    .subscribe({
 //                        convertToMMDataAndSend(image, MMDataType.Image)
 //                    }, {})
+        }
+        // if result from gif picker
+        else if (requestCode == MMInputFieldView.GIF_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            val gifUrl = data.getStringExtra(GifPickerActivity.GIF_KEY)
+            convertToMMDataAndSend(gifUrl, MMDataType.Image)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -99,6 +106,10 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
                         inputOptionsView.openImagePicker()
                     }
                     optionsViewFile -> {
+                    }
+                    optionsViewGif -> {
+                        inputOptionsView.openGifPicker(context, MMInputFieldView.GIF_REQUEST_CODE)
+
                     }
                     else -> {
                     }
@@ -274,8 +285,6 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
             }
             MMDataType.Video -> {
             } //TODO()
-            MMDataType.Gif -> {
-            } //TODO()
         }
     }
 
@@ -302,6 +311,7 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
         const val INPUT_TEXT_KEY = "inputText"
 
         const val GALLERY_REQUEST_CODE = Config.RC_PICK_IMAGES
+        const val GIF_REQUEST_CODE = 5492
 
         fun getMMInputFieldInstance(childFragmentManager: FragmentManager, fragmentId: Int): MMInputFieldView? {
             return childFragmentManager.findFragmentById(fragmentId) as? MMInputFieldView

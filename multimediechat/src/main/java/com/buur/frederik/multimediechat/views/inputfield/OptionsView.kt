@@ -1,12 +1,13 @@
 package com.buur.frederik.multimediechat.views.inputfield
 
 import android.content.Context
+import android.content.Intent
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.R
+import com.buur.frederik.multimediechat.views.gifpicker.GifPickerActivity
 import com.nguyenhoanglam.imagepicker.model.Image
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.ImagePicker
 
@@ -52,13 +53,18 @@ class OptionsView: FrameLayout {
                 .setImageTitle("Galleries")         //  Image title (works with FolderMode = false)
                 .setDoneTitle("Done")               //  Done button title
                 .setLimitMessage("You have reached selection limit")    // Selection limit message
-                .setMaxSize(10)                     //  Max images can be selected
+//                .setMaxSize(10)                     //  Max images can be selected
                 .setSavePath("ImagePicker")         //  Image capture folder name
-                .setSelectedImages(images)          //  Selected images
+//                .setSelectedImages(images)          //  Selected images
                 .setAlwaysShowDoneButton(true)      //  Set always show done button in multiple mode
                 .setKeepScreenOn(true)              //  Keep screen on when selecting images
                 .start()                           //  Start ImagePicker
 
+    }
+
+    fun openGifPicker(context: Context?, requestCode: Int) {
+        val i = Intent(context, GifPickerActivity::class.java)
+        fragment?.startActivityForResult(i, requestCode)
     }
 
 
