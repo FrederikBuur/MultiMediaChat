@@ -9,7 +9,6 @@ import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -21,21 +20,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
-import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.views.MMView
-import com.buur.frederik.multimediechat.helpers.ImageHelper
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.buur.frederik.multimediechat.views.gifpicker.GifPickerActivity
 import com.jakewharton.rxbinding2.view.touches
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.trello.rxlifecycle2.components.support.RxFragment
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import com.vincent.filepicker.Constant
+import com.vincent.filepicker.filter.entity.NormalFile
 import kotlinx.android.synthetic.main.view_mm_input_field.*
 import kotlinx.android.synthetic.main.view_options.*
 import java.io.IOException
-import java.lang.Exception
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
 
@@ -65,18 +61,6 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // if result form image picker
-//        if (requestCode == MMInputFieldView.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-//            val image = data.getParcelableArrayListExtra<Image>(Config.EXTRA_IMAGES).first().path
-//            convertToMMDataAndSend(image, MMDataType.Image)
-////            val disp = ImageHelper.convertUriStringToBitmapString(image, context)
-////                    .subscribeOn(Schedulers.computation())
-////                    .observeOn(AndroidSchedulers.mainThread())
-////                    .subscribe({
-////                        convertToMMDataAndSend(image, MMDataType.Image)
-////                    }, {})
-//        }
-        // if result from gif picker
         if (resultCode == Activity.RESULT_OK && data != null) {
 
             when (requestCode) {
@@ -97,6 +81,12 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
                     }
                 }
                 // doc request code
+                MMInputFieldView.DOCUMENT_REQUEST_CODE -> {
+                    val file = data.getParcelableArrayListExtra<NormalFile>(Constant.RESULT_PICK_FILE).firstOrNull()?.path
+                    file?.let {
+                        convertToMMDataAndSend(it, MMDataType.File)
+                    }
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -123,6 +113,7 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
                 inputOptionsView.openCamera()
             }
             optionsViewFile -> {
+                inputOptionsView.openDocumentPicker()
             }
             optionsViewGif -> {
                 inputOptionsView.openGifPicker(context, MMInputFieldView.GIF_REQUEST_CODE)
@@ -295,21 +286,7 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
 
     // takes data, converts into MMData, calls send
     private fun convertToMMDataAndSend(data: String, type: MMDataType) {
-        when (type) {
-            MMDataType.Text -> {
-                val message = (data as? String) ?: "Something went wrong"
-                delegate?.sendMMData(MMData(message, type.ordinal))
-            }
-            MMDataType.Image -> {
-                delegate?.sendMMData(MMData(data, type.ordinal))
-            }
-            MMDataType.Audio -> {
-                delegate?.sendMMData(MMData(data, type.ordinal))
-            }
-            MMDataType.Video -> {
-                delegate?.sendMMData(MMData(data, type.ordinal))
-            }
-        }
+        delegate?.sendMMData(MMData(data, type.ordinal))
     }
 
     // takes text from edit text and sends to mmData converter
@@ -339,7 +316,7 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
         const val GIF_REQUEST_CODE = 5492
         const val GALLERY_REQUEST_CODE = 4753
         const val CAMERA_REQUEST_CODE = 8925
-        const val DOKUMENT_REQUEST_CODE = 1532
+        const val DOCUMENT_REQUEST_CODE = Constant.REQUEST_CODE_PICK_FILE //6286
 
         fun getMMInputFieldInstance(childFragmentManager: FragmentManager, fragmentId: Int): MMInputFieldView? {
             return childFragmentManager.findFragmentById(fragmentId) as? MMInputFieldView

@@ -86,7 +86,11 @@ dependencies {
 
     // ImagePicker
 //    implementation 'com.github.nguyenhoanglam:ImagePicker:1.3.0'
-    implementation 'gun0912.ted:tedbottompicker:1.2.6'
+//    implementation 'gun0912.ted:tedbottompicker:1.2.6'
+
+    // DocumentPicker
+//    implementation 'com.droidninja:filepicker:2.1.5' //https://arunsharma.me/blog/integrate-android-file-picker-photopicker-document-picker-android/
+    implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8'
 
 }
 

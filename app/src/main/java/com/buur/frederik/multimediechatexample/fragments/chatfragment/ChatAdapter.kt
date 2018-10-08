@@ -18,6 +18,7 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
             MMDataType.Video.ordinal -> VideoView(context)
             MMDataType.Image.ordinal -> ImgView(context)
             MMDataType.Text.ordinal -> TextMessageView(context)
+            MMDataType.File.ordinal -> FileView(context)
             else -> {
                 TextMessageView(context)
             }
@@ -43,6 +44,9 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
                 itemView.setup(isSender, mmData)
             }
             is AudioView -> {
+                itemView.setup(isSender, mmData)
+            }
+            is FileView -> {
                 itemView.setup(isSender, mmData)
             }
             else -> {

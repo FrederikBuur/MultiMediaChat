@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.buur.frederik.multimediechatexample">
+    package="com.buur.frederik.multimediechatexample"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -12,6 +13,7 @@
         android:name=".controllers.MultiMediaApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        tools:replace="name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
