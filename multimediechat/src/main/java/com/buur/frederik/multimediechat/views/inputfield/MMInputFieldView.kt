@@ -29,8 +29,6 @@ import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.buur.frederik.multimediechat.views.gifpicker.GifPickerActivity
 import com.jakewharton.rxbinding2.view.touches
 import com.jakewharton.rxbinding2.widget.textChanges
-import com.nguyenhoanglam.imagepicker.model.Config
-import com.nguyenhoanglam.imagepicker.model.Image
 import com.trello.rxlifecycle2.components.support.RxFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -42,7 +40,7 @@ import java.lang.IllegalStateException
 import java.lang.RuntimeException
 
 
-class MMInputFieldView: RxFragment(), View.OnClickListener {
+class MMInputFieldView : RxFragment(), View.OnClickListener {
 
     private var isAudioButtonActivated: Boolean? = null
     private var discardRecording: Boolean? = null
@@ -68,20 +66,38 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
 
         // if result form image picker
-        if (requestCode == MMInputFieldView.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-            val image = data.getParcelableArrayListExtra<Image>(Config.EXTRA_IMAGES).first().path
-            convertToMMDataAndSend(image, MMDataType.Image)
-//            val disp = ImageHelper.convertUriStringToBitmapString(image, context)
-//                    .subscribeOn(Schedulers.computation())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe({
-//                        convertToMMDataAndSend(image, MMDataType.Image)
-//                    }, {})
-        }
+//        if (requestCode == MMInputFieldView.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+//            val image = data.getParcelableArrayListExtra<Image>(Config.EXTRA_IMAGES).first().path
+//            convertToMMDataAndSend(image, MMDataType.Image)
+////            val disp = ImageHelper.convertUriStringToBitmapString(image, context)
+////                    .subscribeOn(Schedulers.computation())
+////                    .observeOn(AndroidSchedulers.mainThread())
+////                    .subscribe({
+////                        convertToMMDataAndSend(image, MMDataType.Image)
+////                    }, {})
+//        }
         // if result from gif picker
-        else if (requestCode == MMInputFieldView.GIF_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-            val gifUrl = data.getStringExtra(GifPickerActivity.GIF_KEY)
-            convertToMMDataAndSend(gifUrl, MMDataType.Image)
+        if (resultCode == Activity.RESULT_OK && data != null) {
+
+            when (requestCode) {
+                // gif request code
+                MMInputFieldView.GIF_REQUEST_CODE -> {
+                    val gifUrl = data.getStringExtra(GifPickerActivity.GIF_KEY)
+                    convertToMMDataAndSend(gifUrl, MMDataType.Image)
+                }
+                // img or vid request code
+                MMInputFieldView.GALLERY_REQUEST_CODE, MMInputFieldView.CAMERA_REQUEST_CODE -> {
+                    val image = data.data?.toString()
+                    image?.let {
+                        if (it.contains("/video/")) {
+                            convertToMMDataAndSend(it, MMDataType.Video)
+                        } else {
+                            convertToMMDataAndSend(it, MMDataType.Image)
+                        }
+                    }
+                }
+                // doc request code
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -101,19 +117,23 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-                when (v) {
-                    optionsViewCamera -> {
-                        inputOptionsView.openImagePicker()
-                    }
-                    optionsViewFile -> {
-                    }
-                    optionsViewGif -> {
-                        inputOptionsView.openGifPicker(context, MMInputFieldView.GIF_REQUEST_CODE)
+        when (v) {
+            optionsViewCamera -> {
+//                        inputOptionsView.openImagePicker()
+                inputOptionsView.openCamera()
+            }
+            optionsViewFile -> {
+            }
+            optionsViewGif -> {
+                inputOptionsView.openGifPicker(context, MMInputFieldView.GIF_REQUEST_CODE)
 
-                    }
-                    else -> {
-                    }
-                }
+            }
+            optionsViewGallery -> {
+                inputOptionsView.openGalleryPicker()
+            }
+            else -> {
+            }
+        }
     }
 
     private fun setupListeners() {
@@ -121,6 +141,7 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
         optionsViewCamera.setOnClickListener(this)
         optionsViewGif.setOnClickListener(this)
         optionsViewFile.setOnClickListener(this)
+        optionsViewGallery.setOnClickListener(this)
 
         val disposeable = inputEditText.textChanges()
                 .compose(bindToLifecycle())
@@ -129,12 +150,12 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
                         // show send text
                         sendButtonImgView.scaleY = -1f
                         isAudioButtonActivated = false
-                        context?.let {ContextCompat.getDrawable(it, R.drawable.ic_round_send)}
+                        context?.let { ContextCompat.getDrawable(it, R.drawable.ic_round_send) }
                     } else {
                         // show mic
                         sendButtonImgView.scaleY = 1f
                         isAudioButtonActivated = true
-                        context?.let {ContextCompat.getDrawable(it, R.drawable.ic_mic)}
+                        context?.let { ContextCompat.getDrawable(it, R.drawable.ic_mic) }
                     }
                     val currentDrawable = sendButtonImgView.drawable
                     // check if necessary to set new drawable
@@ -164,10 +185,12 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
                                 sendOrDiscardRecording(motionEvent)
                             }
                         }
-                        MotionEvent.ACTION_MOVE-> {
-                            // check is touch is outside of
-                            val isOutside = isTouchOutsideView(motionEvent, sendButtonImgView)
-                            updateRecordNotification(true, !isOutside)
+                        MotionEvent.ACTION_MOVE -> {
+                            if (inputEditText.text.toString().trim().isEmpty()) {
+                                // check is touch is outside of
+                                val isOutside = isTouchOutsideView(motionEvent, sendButtonImgView)
+                                updateRecordNotification(true, !isOutside)
+                            }
                         }
                     }
                 }
@@ -284,12 +307,14 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
                 delegate?.sendMMData(MMData(data, type.ordinal))
             }
             MMDataType.Video -> {
-            } //TODO()
+                delegate?.sendMMData(MMData(data, type.ordinal))
+            }
         }
     }
 
     // takes text from edit text and sends to mmData converter
     private fun sendTextMessage() {
+        updateRecordNotification(false)
         val textMessage = inputEditText.text.toString().trim()
         if (textMessage.isEmpty()) return
         inputEditText.text.clear()
@@ -310,8 +335,11 @@ class MMInputFieldView: RxFragment(), View.OnClickListener {
 
         const val INPUT_TEXT_KEY = "inputText"
 
-        const val GALLERY_REQUEST_CODE = Config.RC_PICK_IMAGES
+        //        const val GALLERY_REQUEST_CODE = Config.RC_PICK_IMAGES
         const val GIF_REQUEST_CODE = 5492
+        const val GALLERY_REQUEST_CODE = 4753
+        const val CAMERA_REQUEST_CODE = 8925
+        const val DOKUMENT_REQUEST_CODE = 1532
 
         fun getMMInputFieldInstance(childFragmentManager: FragmentManager, fragmentId: Int): MMInputFieldView? {
             return childFragmentManager.findFragmentById(fragmentId) as? MMInputFieldView

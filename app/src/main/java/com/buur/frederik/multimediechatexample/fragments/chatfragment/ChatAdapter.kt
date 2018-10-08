@@ -36,6 +36,9 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
             is ImgView -> {
                 itemView.setup(isSender, mmData)
             }
+            is VideoView -> {
+                itemView.setup(isSender, mmData)
+            }
             is TextMessageView -> {
                 itemView.setup(isSender, mmData)
             }
