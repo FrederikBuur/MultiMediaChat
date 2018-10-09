@@ -109,7 +109,6 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v) {
             optionsViewCamera -> {
-//                        inputOptionsView.openImagePicker()
                 inputOptionsView.openCamera()
             }
             optionsViewFile -> {
