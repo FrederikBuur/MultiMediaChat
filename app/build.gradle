@@ -1,8 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 ext {
+    AAVersion = '4.4.0'
     Glide = '4.7.1'                   // https://github.com/bumptech/glide/releases
     Firebase = '12.0.1'               // https://firebase.google.com/support/release-notes/android
     RetrofitVersion = '2.4.0'         // https://github.com/square/retrofit/releases

@@ -7,7 +7,7 @@ import android.view.inputmethod.InputMethodManager
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
-abstract class MMActivity: RxAppCompatActivity() {
+abstract class MMActivity : RxAppCompatActivity() {
 
     val currentFragment: Fragment?
         get() {
@@ -18,9 +18,9 @@ abstract class MMActivity: RxAppCompatActivity() {
             return curr
         }
 
-    fun navigateToFragment(fragment: Fragment, argument: Bundle? = null, shouldAddToBackStack: Boolean? = true) {
+    fun navigateToFragment(fragment: Fragment, argument: Bundle? = null, shouldAddToBackStack: Boolean? = true, shouldAddToContainer: Boolean? = false) {
 
-        fragment.arguments = argument
+        //fragment.arguments = argument
         val supFragMan = supportFragmentManager.beginTransaction()
 
         val fragmentContainer = when (this) {
@@ -30,7 +30,11 @@ abstract class MMActivity: RxAppCompatActivity() {
             }
         }
 
-        fragmentContainer?.let { supFragMan.replace(fragmentContainer, fragment, fragment.javaClass.toString()) }
+        if (shouldAddToContainer == true) {
+            fragmentContainer?.let { supFragMan.add(fragmentContainer, fragment, fragment.javaClass.toString()) }
+        } else {
+            fragmentContainer?.let { supFragMan.replace(fragmentContainer, fragment, fragment.javaClass.toString()) }
+        }
 
         if (shouldAddToBackStack == true) {
             supFragMan.addToBackStack(fragment.tag)

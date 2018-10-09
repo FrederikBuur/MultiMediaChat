@@ -5,6 +5,21 @@
     <color name="colorPrimaryDark">#1a3e61</color>
     <color name="colorAccent">#f4262a</color>
 
+    <color name="textWhite">#dedede</color>
+    <color name="textDark">#313131</color>
+
+
+    <color name="white">#ffffff</color>
+    <color name="greyLight">#e6e6e6</color>
+    <color name="greyWhite">#f7f7f7</color>
+    <color name="grey">#a1a1a1</color>
+
+    <color name="icon_color">@color/grey</color>
+
+    <!--chat page-->
     <color name="color_recycler_view_thumb">#62f4262a</color>
+
+    <!--login page-->
+    <color name="login_background_color">#8f000000</color>
 
 </resources>

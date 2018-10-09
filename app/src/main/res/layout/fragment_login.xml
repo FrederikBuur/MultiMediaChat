@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/loginContainer"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/login_background_color"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:id="@+id/loginDialogContainer"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_corners_round"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_8"
+        android:layout_gravity="center">
+
+        <TextView
+            android:text="Login"
+            android:textStyle="bold"
+            android:textSize="@dimen/login_title_text_size"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/margin_12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:hint="Type your name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+
+        <Button
+            android:text="Ok"
+            android:id="@+id/loginPrimaryAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_12"
+            android:textColor="@color/textWhite"
+            android:background="@drawable/shape_round_corners_button_primary"/>
+
+    </LinearLayout>
+
+</FrameLayout>

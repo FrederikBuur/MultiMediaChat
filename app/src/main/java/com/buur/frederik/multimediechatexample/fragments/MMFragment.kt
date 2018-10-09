@@ -15,4 +15,8 @@ abstract class MMFragment: RxFragment() {
             }
         }
 
+    open fun handleOnBackPressed(): Boolean {
+        return false
+    }
+
 }
