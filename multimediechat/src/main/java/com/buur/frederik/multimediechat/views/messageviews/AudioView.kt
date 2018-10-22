@@ -40,6 +40,7 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
             super(context, attrs, defStyleAttr)
 
     override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
+        this.isSender = isSender
         this.mmData = mmData
 
         audioCurrentTimeIndicator.alpha = if (isSender) {
@@ -50,8 +51,7 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
 
         setupAudio()
 
-        this.setParams(isSender, audioMsgContainer)
-//        this.setTextColor(isSender, audioTimeIndicator)
+        this.setParams(audioMsgContainer)
 
         audioMsgContainer.setOnClickListener(this)
     }

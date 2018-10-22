@@ -24,12 +24,12 @@ class VideoView: SuperView {
             super(context, attrs, defStyleAttr)
 
     override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
-
-        this.setParams(isSender, vidMsgContainer)
+        this.isSender = isSender
+        this.setParams(vidMsgContainer)
 
         mc = MediaController(context)
         vidMsgContent.setMediaController(mc)
-        val uri = Uri.parse((mmData.source).toString())
+        val uri = Uri.parse((mmData.source))
         vidMsgContent.setVideoURI(uri)
 
         playVideo()

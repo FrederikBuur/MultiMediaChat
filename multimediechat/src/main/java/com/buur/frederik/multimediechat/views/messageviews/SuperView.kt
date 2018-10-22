@@ -13,6 +13,8 @@ import com.buur.frederik.multimediechat.models.MMData
 
 abstract class SuperView: FrameLayout {
 
+    internal var isSender: Boolean? = null
+
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet?)
@@ -23,12 +25,12 @@ abstract class SuperView: FrameLayout {
 
     abstract fun setup(isSender: Boolean, mmData: MMData, time: Int? = null)
 
-    fun setParams(isSender: Boolean, view: FrameLayout) {
+    fun setParams(view: FrameLayout) {
         val params = view.layoutParams as FrameLayout.LayoutParams
 
         this.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
 
-        if (isSender) {
+        if (this.isSender == true) {
             params.gravity = Gravity.END
             view.background = ContextCompat.getDrawable(context, R.drawable.shape_msg_sender)
         } else {
@@ -42,8 +44,8 @@ abstract class SuperView: FrameLayout {
         view.layoutParams = params
     }
 
-    fun setTextColor(isSender: Boolean, tv: TextView) {
-        val color = if (isSender) R.color.textWhite else R.color.textDark
+    fun setTextColor(tv: TextView) {
+        val color = if (this.isSender == true) R.color.textWhite else R.color.textDark
         tv.setTextColor(ContextCompat.getColor(context, color))
     }
 

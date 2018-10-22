@@ -37,6 +37,7 @@ class FileView : SuperView, View.OnClickListener {
             super(context, attrs, defStyleAttr)
 
     override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
+        this.isSender = isSender
         this.mmData = mmData
 
         val path = this.mmData?.source as? String
@@ -51,8 +52,8 @@ class FileView : SuperView, View.OnClickListener {
                     ContextCompat.getColor(context, R.color.colorPrimary)
                 })
 
-        this.setParams(isSender, fileContainer)
-        this.setTextColor(isSender, fileTitle)
+        this.setParams(fileContainer)
+        this.setTextColor(fileTitle)
 
         fileContainer.setOnClickListener(this)
 

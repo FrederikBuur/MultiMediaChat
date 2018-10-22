@@ -36,44 +36,12 @@ class ImgView: SuperView {
             super(context, attrs, defStyleAttr)
 
     override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
-
+        this.isSender = isSender
         val image = mmData.source
-
-//        when(image) {
-//            is Bitmap, is Uri -> {
-//                loadImage(image)
-//            }
-//            is String -> {
-//                convertToBitmap(mmData)
-//            }
-//            else -> {
-//                Log.e("ImageMessageView", "Unknown image type")
-//            }
-//        }
 
         ImageLoader.loadImage(context, image, imgMsgContent, imgMsgProgress)
 
-        this.setParams(isSender, imgMsgContainer)
+        this.setParams(imgMsgContainer)
 
     }
-
-//    private fun convertToBitmap(mmData: MMData) {
-//
-//        val disposeable = ImageHelper.convertBitmapStringToBitmap(mmData.source as? String)
-//                .subscribeOn(Schedulers.computation())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .doOnSubscribe {
-//                    loadImage(R.drawable.background_image_placeholder)
-//                }
-//                .subscribe({ bitmap ->
-//                    loadImage(bitmap)
-//                    mmData.source = bitmap
-//                }, { error ->
-//                    Log.d("", error.message)
-//                    loadImage(mmData.source)
-//                })
-//    }
-
-
-
 }
