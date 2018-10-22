@@ -12,12 +12,17 @@ import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
 import com.buur.frederik.multimediechatexample.models.User
+import com.squareup.haha.perflib.Main
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_chat.*
 
 class ChatFragment: MMFragment(), ISendMessage {
 
     private var adapter: ChatAdapter? = null
     private var messageList: ArrayList<MMData>? = null
+
+    private var chatController: ChatController? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_chat, container, false)
@@ -39,12 +44,31 @@ class ChatFragment: MMFragment(), ISendMessage {
 
     private fun setup() {
 
+        if (chatController == null) {
+            chatController = ChatController()
+        }
+        chatController?.establishServerConnection(context)
+
         setupRecyclerView()
         setupMMLib()
 
-
         scrollToBottomPost()
+        setupNewMessageListener()
 
+    }
+
+    private fun setupNewMessageListener() {
+        chatController?.newMessagesPublisher()
+                ?.compose(bindToLifecycle())
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe({ mmData ->
+                    messageList?.add(mmData)
+                    adapter?.notifyDataSetChanged()
+                    scrollToBottomPost()
+                }, {
+                    it
+                })
     }
 
     private fun setupRecyclerView() {
@@ -65,7 +89,6 @@ class ChatFragment: MMFragment(), ISendMessage {
     }
 
     private fun shouldShowLoginPage() {
-
         if (!User.isLoggedIn()) {
             mainActivity?.navigateToFragment(LoginFragment(), shouldAddToContainer = true)
         }
@@ -74,10 +97,7 @@ class ChatFragment: MMFragment(), ISendMessage {
     override fun sendMMData(mmData: MMData) {
 
         sendToDummyBackend(mmData)
-
-        // not necessary when using dummy backend
         messageList?.add(mmData)
-
         adapter?.notifyDataSetChanged()
         scrollToBottomPost()
 
@@ -89,7 +109,15 @@ class ChatFragment: MMFragment(), ISendMessage {
     }
 
     private fun sendToDummyBackend(mmData: MMData) {
-        //SampleData.dummyData?.add(mmData)
+        val disp = chatController?.sendMessageToServer(mmData)
+                ?.compose(bindToLifecycle())
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe({
+                    it
+                }, {
+                    it
+                })
     }
 
     private fun scrollToBottomPost() {

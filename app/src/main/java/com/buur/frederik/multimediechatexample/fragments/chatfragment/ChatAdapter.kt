@@ -16,7 +16,7 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
 
             MMDataType.Audio.ordinal -> AudioView(context)
             MMDataType.Video.ordinal -> VideoView(context)
-            MMDataType.Image.ordinal -> ImgView(context)
+            MMDataType.Image.ordinal, MMDataType.Gif.ordinal -> ImgView(context)
             MMDataType.Text.ordinal -> TextMessageView(context)
             MMDataType.File.ordinal -> FileView(context)
             else -> {

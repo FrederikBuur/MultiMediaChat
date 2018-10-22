@@ -54,9 +54,31 @@ dependencies {
     // Leak Canary
     implementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
 
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:' + RetrofitVersion,
+            'com.squareup.retrofit2:converter-gson:' + RetrofitVersion,
+            'com.squareup.retrofit2:adapter-rxjava2:' + RetrofitVersion
+
+    // Okhhtp
+    implementation 'com.squareup.okhttp3:logging-interceptor:' + OkhttpVersion
+
+    // SocketIO
+    implementation 'com.github.nkzawa:socket.io-client:0.3.0'
+    implementation ('io.socket:socket.io-client:0.8.3') {
+        exclude group: 'org.json', module: 'json'
+    }
+
+    // GSON
+    implementation 'com.google.code.gson:gson:2.8.5'
+
     // Glide
     implementation 'com.github.bumptech.glide:glide:' + Glide
     implementation 'com.github.bumptech.glide:okhttp3-integration:' + Glide
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828' // https://github.com/square/picasso/releases
+    implementation 'jp.wasabeef:picasso-transformations:2.2.1' // https://github.com/wasabeef/picasso-transformations/releases
+
 
 }
 

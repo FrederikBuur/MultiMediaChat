@@ -1,5 +1,5 @@
 package com.buur.frederik.multimediechat.enums
 
 enum class MMDataType {
-    Text, Image, Video, Audio, File
+    Text, Image, Video, Audio, File, Gif
 }

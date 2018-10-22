@@ -45,8 +45,11 @@ class OptionsView : FrameLayout {
     fun openCamera() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+
         val chooserIntent = Intent(Intent.ACTION_CHOOSER)
         val contentSelectionIntent = Intent(Intent.ACTION_GET_CONTENT)
+//        contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE)
+//        contentSelectionIntent.type = "*/*"
         val intentArray = arrayOf(takePictureIntent, takeVideoIntent)
         chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent)
         chooserIntent.putExtra(Intent.EXTRA_TITLE, "Choose an action")

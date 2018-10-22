@@ -3,12 +3,15 @@ package com.buur.frederik.multimediechat.views.inputfield
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.support.v4.app.FragmentManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -20,6 +23,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
+import com.buur.frederik.multimediechat.helpers.ImageHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.views.MMView
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
@@ -31,6 +35,7 @@ import com.vincent.filepicker.Constant
 import com.vincent.filepicker.filter.entity.NormalFile
 import kotlinx.android.synthetic.main.view_mm_input_field.*
 import kotlinx.android.synthetic.main.view_options.*
+import java.io.File
 import java.io.IOException
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
@@ -67,18 +72,23 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
                 // gif request code
                 MMInputFieldView.GIF_REQUEST_CODE -> {
                     val gifUrl = data.getStringExtra(GifPickerActivity.GIF_KEY)
-                    convertToMMDataAndSend(gifUrl, MMDataType.Image)
+                    convertToMMDataAndSend(gifUrl, MMDataType.Gif)
                 }
                 // img or vid request code
-                MMInputFieldView.GALLERY_REQUEST_CODE, MMInputFieldView.CAMERA_REQUEST_CODE -> {
-                    val image = data.data?.toString()
+                MMInputFieldView.GALLERY_REQUEST_CODE -> {
+                    val image = data.data
                     image?.let {
-                        if (it.contains("/video/")) {
-                            convertToMMDataAndSend(it, MMDataType.Video)
+                        if (it.toString().contains("/video/")) {
+                            convertToMMDataAndSend(it.toString(), MMDataType.Video)
                         } else {
-                            convertToMMDataAndSend(it, MMDataType.Image)
+                            val path = ImageHelper.getPathFromURI(image, context)
+                            convertToMMDataAndSend(path ?: "", MMDataType.Image)
                         }
                     }
+                }
+                MMInputFieldView.CAMERA_REQUEST_CODE -> {
+                    val image = data.extras?.get("data")
+                    image
                 }
                 // doc request code
                 MMInputFieldView.DOCUMENT_REQUEST_CODE -> {
@@ -212,16 +222,6 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
             if (downTime < 500) {
                 showHoldToRecordToast()
             } else {
-//                // convert and send recording
-//                val disp = AudioHelper.convert3gpToString(context, outputAudioFile)
-//                        .compose(bindToLifecycle())
-//                        .subscribeOn(Schedulers.io())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe({
-//                            convertToMMDataAndSend(it, MMDataType.Audio)
-//                        }, {
-//                            it
-//                        })
                 outputAudioFile?.let { convertToMMDataAndSend(it, MMDataType.Audio) }
             }
 

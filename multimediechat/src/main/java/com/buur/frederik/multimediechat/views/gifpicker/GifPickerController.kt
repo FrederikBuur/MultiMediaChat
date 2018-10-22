@@ -1,7 +1,7 @@
 package com.buur.frederik.multimediechat.views.gifpicker
 
 import android.util.Log
-import com.buur.frederik.multimediechat.api.ServiceGenerator
+import com.buur.frederik.multimediechat.api.MMServiceGenerator
 import com.buur.frederik.multimediechat.models.gif.GifMultipleGifResponse
 import io.reactivex.Observable
 
@@ -12,7 +12,7 @@ class GifPickerController {
 
     private fun getGifClient(): IGiphy {
         if (gifClient == null) {
-            gifClient = ServiceGenerator().createGiphyAPI()
+            gifClient = MMServiceGenerator().createGiphyAPI()
         }
         return gifClient!!
     }

@@ -7,11 +7,11 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ServiceGenerator {
+class MMServiceGenerator {
 
     companion object {
         const val API_KEY = "Z7vOeiwK7oOmm6gcD5vveB373l3cyhrG"
-        const val BASE_URL = "https://api.giphy.com"
+        const val GIPHY_BASE_URL = "https://api.giphy.com"
     }
 
     private var retrofit: Retrofit? = null
@@ -21,7 +21,7 @@ class ServiceGenerator {
         log.level = HttpLoggingInterceptor.Level.BODY
         if (retrofit == null) {
             retrofit = Retrofit.Builder()
-                    .baseUrl(BASE_URL)
+                    .baseUrl(GIPHY_BASE_URL)
                     .client(OkHttpClient.Builder().addInterceptor(log).build())
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
