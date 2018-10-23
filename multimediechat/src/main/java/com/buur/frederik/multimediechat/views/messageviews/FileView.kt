@@ -23,7 +23,6 @@ class FileView : SuperView, View.OnClickListener {
     private val mb = kb * kb
     private val format = DecimalFormat("#.##")
 
-    var mmData: MMData? = null
     var file: File? = null
 
     constructor(context: Context) : super(context) {

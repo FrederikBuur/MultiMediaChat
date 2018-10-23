@@ -1,17 +1,25 @@
 package com.buur.frederik.multimediechat.views.messageviews
 
 import android.content.Context
+import android.content.Intent
+import android.media.ThumbnailUtils
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.AttributeSet
 import android.view.View
 import android.widget.MediaController
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.models.MMData
+import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.view_video.view.*
 
-class VideoView: SuperView {
+class VideoView: SuperView, View.OnClickListener {
 
-    var mc: MediaController? = null
+    private var disp: Disposable? = null
 
     constructor(context: Context) : super(context) {
         View.inflate(context, R.layout.view_video, this)
@@ -25,22 +33,35 @@ class VideoView: SuperView {
 
     override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
         this.isSender = isSender
-        this.setParams(vidMsgContainer)
+        this.mmData = mmData
 
-        mc = MediaController(context)
-        vidMsgContent.setMediaController(mc)
         val uri = Uri.parse((mmData.source))
-        vidMsgContent.setVideoURI(uri)
+        disp = Observable.just(vidMsgContent.setVideoURI(uri))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({}, {})
 
-        playVideo()
 
+        this.setParams(vidMsgContainer)
+        vidMsgContainer.setOnClickListener(this)
     }
 
-    private fun playVideo() {
-        vidMsgContent.start()
+    override fun onClick(v: View?) {
+        if (v == vidMsgContainer) {
+            val intent = Intent(context, EnlargedImageView::class.java)
+            this.mmData?.let { data ->
+                intent.putExtra("source", data.source)
+                intent.putExtra("type", data.type)
+                context.startActivity(intent)
+            }
+        }
     }
 
-    private fun pauseVideo() {
-        vidMsgContent.pause()
+    override fun onDetachedFromWindow() {
+        if (disp?.isDisposed == false) {
+            disp?.dispose()
+        }
+        super.onDetachedFromWindow()
     }
+
 }

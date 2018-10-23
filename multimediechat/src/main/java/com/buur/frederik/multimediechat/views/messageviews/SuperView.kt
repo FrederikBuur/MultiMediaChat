@@ -14,6 +14,7 @@ import com.buur.frederik.multimediechat.models.MMData
 abstract class SuperView: FrameLayout {
 
     internal var isSender: Boolean? = null
+    internal var mmData: MMData? = null
 
     constructor(context: Context) : super(context)
 

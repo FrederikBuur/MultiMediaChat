@@ -23,7 +23,6 @@ import io.reactivex.disposables.Disposable
 
 class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListener {
 
-    private var mmData: MMData? = null
     private var mediaPlayer: MediaPlayer? = null
     private var length: Int? = null
 
@@ -186,6 +185,7 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
         if (durationDisposable?.isDisposed == false) {
             durationDisposable?.dispose()
         }
+        mediaPlayer?.release()
         super.onDetachedFromWindow()
     }
 

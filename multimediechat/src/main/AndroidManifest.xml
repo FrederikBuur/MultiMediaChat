@@ -1,14 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.buur.frederik.multimediechat">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
-        <activity android:name=".views.gifpicker.GifPickerActivity" />
-
         <provider
             android:name=".helpers.MMFileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -18,6 +18,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <activity android:name=".views.gifpicker.GifPickerActivity" />
+        <activity android:name=".views.messageviews.EnlargedImageView" android:theme="@style/noAnimNoActionTheme"/>
 
     </application>
 
