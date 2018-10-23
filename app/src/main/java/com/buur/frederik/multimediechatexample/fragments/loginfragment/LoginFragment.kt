@@ -8,7 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.buur.frederik.multimediechatexample.R
+import com.buur.frederik.multimediechatexample.controllers.SessionController
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
+import com.buur.frederik.multimediechatexample.models.User
+import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_login.*
 
 class LoginFragment: MMFragment(), View.OnClickListener {
@@ -19,12 +22,30 @@ class LoginFragment: MMFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setup()
+        setupViews()
     }
 
-    private fun setup() {
+    private fun setupViews() {
         animateLoginPage()
         loginPrimaryAction.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View?) {
+        if (v == loginPrimaryAction) {
+            loginClick()
+        }
+    }
+
+    private fun loginClick() {
+        val userName = loginNameEditText.text.toString()
+        if (userName.isNotEmpty()) {
+            Realm.getDefaultInstance().use { realm ->
+                User.createUser(realm, userName)
+                animateLoginPage(false)
+            }
+        } else {
+            loginTextInputLayout.error = "You need to enter your name"
+        }
     }
 
     private fun animateLoginPage(openAnimation: Boolean = true) {
@@ -49,12 +70,6 @@ class LoginFragment: MMFragment(), View.OnClickListener {
         })
         containerAlphaAnimation.start()
 
-    }
-
-    override fun onClick(v: View?) {
-        if (v == loginPrimaryAction) {
-            animateLoginPage(false)
-        }
     }
 
     override fun handleOnBackPressed(): Boolean {

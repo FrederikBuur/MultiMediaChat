@@ -3,6 +3,8 @@ package com.buur.frederik.multimediechatexample.controllers
 import android.app.Application
 import com.buur.frederik.multimediechatexample.BuildConfig
 import com.squareup.leakcanary.LeakCanary
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.socket.client.IO
 import io.socket.client.Socket
 import java.lang.RuntimeException
@@ -17,6 +19,7 @@ class MultiMediaApplication: Application() {
 
         setupLeakCanary()
         setupSocketIOConnection()
+        setupRealm()
 
     }
 
@@ -37,6 +40,12 @@ class MultiMediaApplication: Application() {
         } catch (e: URISyntaxException) {
             throw RuntimeException(e)
         }
+    }
+
+    private fun setupRealm() {
+        Realm.init(this)
+        val config = RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build()
+        Realm.setDefaultConfiguration(config)
     }
 
 }

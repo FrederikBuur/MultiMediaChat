@@ -12,12 +12,12 @@ import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
 import com.buur.frederik.multimediechatexample.models.User
-import com.squareup.haha.perflib.Main
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_chat.*
 
-class ChatFragment: MMFragment(), ISendMessage {
+class ChatFragment : MMFragment(), ISendMessage {
 
     private var adapter: ChatAdapter? = null
     private var messageList: ArrayList<MMData>? = null
@@ -39,10 +39,10 @@ class ChatFragment: MMFragment(), ISendMessage {
             shouldShowLoginPage()
         }
 
-        setup()
+        setupViews()
     }
 
-    private fun setup() {
+    private fun setupViews() {
 
         if (chatController == null) {
             chatController = ChatController()
@@ -74,7 +74,7 @@ class ChatFragment: MMFragment(), ISendMessage {
     private fun setupRecyclerView() {
         // setup adapter
         if (adapter == null) {
-            context?.let {adapter = ChatAdapter(it, messageList)}
+            context?.let { adapter = ChatAdapter(it, messageList) }
         }
         chatRecyclerView.adapter = adapter
 
@@ -82,15 +82,17 @@ class ChatFragment: MMFragment(), ISendMessage {
 
     private fun setupMMLib() {
 
-        mainActivity?. let {
+        mainActivity?.let {
             MMInputFieldView.getMMInputFieldInstance(childFragmentManager, R.id.mmInputField)?.setup(it, mmView, this)
         }
 
     }
 
     private fun shouldShowLoginPage() {
-        if (!User.isLoggedIn()) {
-            mainActivity?.navigateToFragment(LoginFragment(), shouldAddToContainer = true)
+        Realm.getDefaultInstance().use { realm ->
+            if (!User.isLoggedIn(realm)) {
+                mainActivity?.navigateToFragment(LoginFragment(), shouldAddToContainer = true)
+            }
         }
     }
 
