@@ -76,49 +76,58 @@ class ChatController {
                     this.publishSubjectDisposable = it
                 }
                 ?.doOnNext {
-                    Log.d(TAG, "New message type: ${it.type}, source: ${it.source}")
+                    Log.d(TAG, "New message id: ${it.id} type: ${it.type}, source: ${it.source}")
                 }
     }
 
-    fun sendMessageToServer(mmData: MMData): Observable<*> {
+    fun sendMessageToServer(mmData: MMData): Observable<Boolean> {
 
-        return if (socket?.connected() == true) {
-            when (mmData.type) {
-                MMDataType.Text.ordinal, MMDataType.Gif.ordinal -> {
-                    val gson = Gson().toJson(mmData)
-                    Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
-                }
-                MMDataType.Image.ordinal -> {
-                    ImageHelper.prepareImagePathToUpload(mmData)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .concatMap { body ->
-                                getUploadClient().postImage(body)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                            }
-                            .doOnNext { uploadResponse ->
-                                mmData.source = uploadResponse.url
-                                val gson = Gson().toJson(mmData)
-                                socket?.emit(TOPIC_NEW_MESSAGE, gson)
-                            }
-                }
-                MMDataType.File.ordinal -> {
-                    Observable.just("TODO")
-                }
-                MMDataType.Video.ordinal -> {
-                    Observable.just("TODO")
-                }
-                MMDataType.Audio.ordinal -> {
-                    Observable.just("TODO")
-                }
-                else -> {
-                    Observable.just(Log.e(tag, "trying to send unknown mmdata type")) // other type then expected
-                }
+        return Observable.create { emitter ->
+            if (socket?.connected() == true) {
+                when (mmData.type) {
+                    MMDataType.Text.ordinal, MMDataType.Gif.ordinal -> {
+                        val gson = Gson().toJson(mmData)
+                        Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
+                    }
+                    MMDataType.Image.ordinal -> {
+                        ImageHelper.prepareImagePathToUpload(mmData)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .concatMap { body ->
+                                    getUploadClient().postImage(body)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                }
+                                .doOnNext { uploadResponse ->
+                                    mmData.source = uploadResponse.url
+                                    val gson = Gson().toJson(mmData)
+                                    socket?.emit(TOPIC_NEW_MESSAGE, gson)
+                                    emitter.onNext(true)
+                                    emitter.onComplete()
+                                }
+                                .doOnError {
+                                    emitter.onError(Throwable())
+                                    emitter.onComplete()
+                                }
+                    }
+                    MMDataType.File.ordinal -> {
+                        Observable.just("TODO")
+                    }
+                    MMDataType.Video.ordinal -> {
+                        Observable.just("TODO")
+                    }
+                    MMDataType.Audio.ordinal -> {
+                        Observable.just("TODO")
+                    }
+                    else -> {
+                        Observable.just(Log.e(tag, "trying to send unknown mmdata type")) // other type then expected
+                    }
 
+                }
+            } else {
+                emitter.onError(Throwable("No connection to server"))
+                emitter.onComplete()
             }
-        } else {
-            Observable.just("Socket lost connection")
         }
     }
 

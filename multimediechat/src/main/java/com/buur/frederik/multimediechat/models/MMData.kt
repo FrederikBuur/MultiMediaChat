@@ -4,16 +4,18 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class MMData(
-    var source: String,
-    val type: Int
+        var id: Long,
+        var source: String,
+        val type: Int
 ) : Parcelable {
-
     constructor(parcel: Parcel) : this(
+            parcel.readLong(),
             parcel.readString(),
             parcel.readInt()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeLong(id)
         parcel.writeString(source)
         parcel.writeInt(type)
     }
@@ -23,7 +25,6 @@ class MMData(
     }
 
     companion object CREATOR : Parcelable.Creator<MMData> {
-
         override fun createFromParcel(parcel: Parcel): MMData {
             return MMData(parcel)
         }

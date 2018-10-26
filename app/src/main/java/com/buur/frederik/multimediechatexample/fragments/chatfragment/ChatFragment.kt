@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.inputfield.ISendMessage
 import com.buur.frederik.multimediechat.inputfield.MMInputFragment
@@ -116,7 +117,7 @@ class ChatFragment : MMFragment(), ISendMessage {
                 ?.subscribe({
                     it
                 }, {
-                    it
+                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                 })
     }
 

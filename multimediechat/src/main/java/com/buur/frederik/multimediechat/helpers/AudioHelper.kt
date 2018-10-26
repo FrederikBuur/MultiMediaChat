@@ -1,16 +1,13 @@
 package com.buur.frederik.multimediechat.helpers
 
-import android.content.Context
-import android.net.Uri
-import android.util.Base64
 import android.view.View
 import android.widget.FrameLayout
-import io.reactivex.Observable
-import kotlinx.android.synthetic.main.view_audio.view.*
-import java.io.*
-import java.lang.Exception
+import com.buur.frederik.multimediechat.models.MMData
 
 object AudioHelper {
+
+    var currentAudioFile: MMData? = null
+    var currentAudioTime: Float? = null
 
     fun currentTimeVisualization(percentDecimal: Float, audioTimeIndicator: FrameLayout, audioIndicatorContainer: View) {
         val params = audioTimeIndicator.layoutParams as FrameLayout.LayoutParams

@@ -68,7 +68,7 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
     private fun getMMData(position: Int): MMData {
         return list?.let {
             it[position]
-        } ?: MMData("No Data", MMDataType.Text.ordinal)
+        } ?: MMData(-1, "No Data", MMDataType.Text.ordinal)
     }
 
     inner class ChatViewHolder(container: SuperView) : RecyclerView.ViewHolder(container) {

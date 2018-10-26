@@ -1,7 +1,6 @@
 package com.buur.frederik.multimediechat.inputfield
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.media.MediaRecorder
@@ -16,10 +15,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
-import com.buur.frederik.multimediechat.extensions.formatToTimeString
 import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.helpers.ImageHelper
 import com.buur.frederik.multimediechat.models.MMData
@@ -30,7 +27,6 @@ import com.jakewharton.rxbinding2.widget.textChanges
 import com.trello.rxlifecycle2.components.support.RxFragment
 import com.vincent.filepicker.Constant
 import com.vincent.filepicker.filter.entity.NormalFile
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -39,7 +35,6 @@ import kotlinx.android.synthetic.main.view_options.*
 import java.io.IOException
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
-import java.util.concurrent.TimeUnit
 
 
 class MMInputFragment : RxFragment(), View.OnClickListener {
@@ -295,7 +290,8 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
 
     // takes data, converts into MMData, calls send
     private fun convertToMMDataAndSend(data: String, type: MMDataType) {
-        delegate?.sendMMData(MMData(data, type.ordinal))
+        val id = System.currentTimeMillis()
+        delegate?.sendMMData(MMData(id, data, type.ordinal))
     }
 
     // takes text from edit text and sends to mmData converter
