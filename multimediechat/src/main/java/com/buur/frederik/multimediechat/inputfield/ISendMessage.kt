@@ -1,4 +1,4 @@
-package com.buur.frederik.multimediechat.views.inputfield
+package com.buur.frederik.multimediechat.inputfield
 
 import com.buur.frederik.multimediechat.models.MMData
 

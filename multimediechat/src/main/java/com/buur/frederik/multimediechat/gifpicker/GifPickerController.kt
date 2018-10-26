@@ -1,4 +1,4 @@
-package com.buur.frederik.multimediechat.views.gifpicker
+package com.buur.frederik.multimediechat.gifpicker
 
 import android.util.Log
 import com.buur.frederik.multimediechat.api.MMServiceGenerator

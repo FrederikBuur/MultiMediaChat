@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.buur.frederik.multimediechat.models.MMData
-import com.buur.frederik.multimediechat.views.inputfield.ISendMessage
-import com.buur.frederik.multimediechat.views.inputfield.MMInputFieldView
+import com.buur.frederik.multimediechat.inputfield.ISendMessage
+import com.buur.frederik.multimediechat.inputfield.MMInputFragment
 import com.buur.frederik.multimediechatexample.R
 import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
@@ -82,9 +82,7 @@ class ChatFragment : MMFragment(), ISendMessage {
 
     private fun setupMMLib() {
 
-        mainActivity?.let {
-            MMInputFieldView.getMMInputFieldInstance(childFragmentManager, R.id.mmInputField)?.setup(it, mmView, this)
-        }
+            MMInputFragment.getMMInputFieldInstance(childFragmentManager, R.id.mmInputField)?.setup(this)
 
     }
 

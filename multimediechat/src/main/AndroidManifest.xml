@@ -19,8 +19,8 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".views.gifpicker.GifPickerActivity" />
-        <activity android:name=".views.messageviews.EnlargedImageView" android:theme="@style/noAnimNoActionTheme"/>
+        <activity android:name="com.buur.frederik.multimediechat.gifpicker.GifPickerActivity" />
+        <activity android:name="com.buur.frederik.multimediechat.messageviews.EnlargedImageView" android:theme="@style/noAnimNoActionTheme"/>
 
     </application>
 

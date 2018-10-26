@@ -1,17 +1,13 @@
-package com.buur.frederik.multimediechat.views.inputfield
+package com.buur.frederik.multimediechat.inputfield
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.drawable.Drawable
-import android.media.MediaPlayer
 import android.media.MediaRecorder
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
-import android.provider.MediaStore
 import android.support.v4.app.FragmentManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -23,36 +19,45 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
+import com.buur.frederik.multimediechat.extensions.formatToTimeString
+import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.helpers.ImageHelper
 import com.buur.frederik.multimediechat.models.MMData
-import com.buur.frederik.multimediechat.views.MMView
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
-import com.buur.frederik.multimediechat.views.gifpicker.GifPickerActivity
+import com.buur.frederik.multimediechat.gifpicker.GifPickerActivity
 import com.jakewharton.rxbinding2.view.touches
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.trello.rxlifecycle2.components.support.RxFragment
 import com.vincent.filepicker.Constant
 import com.vincent.filepicker.filter.entity.NormalFile
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.view_mm_input_field.*
 import kotlinx.android.synthetic.main.view_options.*
-import java.io.File
 import java.io.IOException
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
+import java.util.concurrent.TimeUnit
 
 
-class MMInputFieldView : RxFragment(), View.OnClickListener {
+class MMInputFragment : RxFragment(), View.OnClickListener {
+
+    private val tagg = "MMInputFragment"
+    private val recordingMaxLength: Long = 60000 // millisecond
+    private val recordingTimerInterval: Long = 50 // millisecond
+
+    private var mmInputController: MMInputController? = null
 
     private var isAudioButtonActivated: Boolean? = null
     private var discardRecording: Boolean? = null
 
-    private var mediaPlayer: MediaPlayer? = null
+    private var delegate: ISendMessage? = null
+
     private var mediaRecorder: MediaRecorder? = null
     private var outputAudioFile: String? = null
-
-    private var callerContext: Context? = null
-    private var mmView: View? = null
-    private var delegate: ISendMessage? = null
+    private var recordingTimerDisposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.view_mm_input_field, container, true)
@@ -60,6 +65,7 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupListeners()
     }
 
@@ -70,12 +76,12 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
 
             when (requestCode) {
                 // gif request code
-                MMInputFieldView.GIF_REQUEST_CODE -> {
+                MMInputFragment.GIF_REQUEST_CODE -> {
                     val gifUrl = data.getStringExtra(GifPickerActivity.GIF_KEY)
                     convertToMMDataAndSend(gifUrl, MMDataType.Gif)
                 }
                 // img or vid request code
-                MMInputFieldView.GALLERY_REQUEST_CODE -> {
+                MMInputFragment.GALLERY_REQUEST_CODE -> {
                     val image = data.data
                     image?.let {
                         if (it.toString().contains("/video/")) {
@@ -86,12 +92,12 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
                         }
                     }
                 }
-                MMInputFieldView.CAMERA_REQUEST_CODE -> {
+                MMInputFragment.CAMERA_REQUEST_CODE -> {
                     val image = data.extras?.get("data")
                     image
                 }
                 // doc request code
-                MMInputFieldView.DOCUMENT_REQUEST_CODE -> {
+                MMInputFragment.DOCUMENT_REQUEST_CODE -> {
                     val file = data.getParcelableArrayListExtra<NormalFile>(Constant.RESULT_PICK_FILE).firstOrNull()?.path
                     file?.let {
                         convertToMMDataAndSend(it, MMDataType.File)
@@ -102,16 +108,19 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    fun setup(callerContext: Context?, mmView: MMView, delegate: ISendMessage) {
-        this.callerContext = callerContext
-        this.mmView = mmView
+    fun setup(delegate: ISendMessage) {
         this.delegate = delegate
 
-        inputOptionsView.setup(mmView, this)
+        mediaSelectionView.setup( this)
+        AudioHelper.currentTimeVisualization(0f, recordMessageNotificationIndicator, recordMessageNotification)
+
+        if (mmInputController == null) {
+            mmInputController = MMInputController()
+        }
 
         context?.let {
             if (!PermissionRequester.devicePermissionIsGranted(it)) {
-                PermissionRequester.requestPermissions((callerContext as? AppCompatActivity))
+                PermissionRequester.requestPermissions((it as? AppCompatActivity))
             }
         }
     }
@@ -119,17 +128,17 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v) {
             optionsViewCamera -> {
-                inputOptionsView.openCamera()
+                mediaSelectionView.openCamera()
             }
             optionsViewFile -> {
-                inputOptionsView.openDocumentPicker()
+                mediaSelectionView.openDocumentPicker()
             }
             optionsViewGif -> {
-                inputOptionsView.openGifPicker(context, MMInputFieldView.GIF_REQUEST_CODE)
+                mediaSelectionView.openGifPicker(context, MMInputFragment.GIF_REQUEST_CODE)
 
             }
             optionsViewGallery -> {
-                inputOptionsView.openGalleryPicker()
+                mediaSelectionView.openGalleryPicker()
             }
             else -> {
             }
@@ -180,7 +189,7 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
                             if (inputEditText.text.trim().isNotEmpty()) {
                                 sendTextMessage()
                             } else {
-                                discardRecording = isTouchOutsideView(motionEvent, sendButtonImgView)
+                                discardRecording = mmInputController?.isTouchOutsideView(motionEvent, sendButton)
                                 stopRecording()
                                 sendOrDiscardRecording(motionEvent)
                             }
@@ -188,15 +197,14 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
                         MotionEvent.ACTION_MOVE -> {
                             if (inputEditText.text.toString().trim().isEmpty()) {
                                 // check is touch is outside of
-                                val isOutside = isTouchOutsideView(motionEvent, sendButtonImgView)
-                                updateRecordNotification(true, !isOutside)
+                                val isOutside = mmInputController?.isTouchOutsideView(motionEvent, sendButton)
+                                updateRecordNotification(true, isOutside != true)
                             }
                         }
                     }
                 }
                 .retry()
                 .subscribe({}, {
-                    it
                 })
 
     }
@@ -206,27 +214,29 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
             recordMessageNotification.visibility = View.VISIBLE
             if (showReleaseToSendText != true) {
                 // show release to discard
-                recordMessageTV.text = "release to discard"
+                recordMessageTV.text = "Release to cancel"
             } else {
                 // show release to send
-                recordMessageTV.text = "release to send"
+                recordMessageTV.text = "Drag to cancel, release to send"
             }
         } else {
             recordMessageNotification.visibility = View.GONE
+            AudioHelper.currentTimeVisualization(0f, recordMessageNotificationIndicator, recordMessageNotification)
         }
     }
+
+
 
     private fun sendOrDiscardRecording(motionEvent: MotionEvent) {
         if (discardRecording == false) {
             val downTime = SystemClock.uptimeMillis() - motionEvent.downTime
-            if (downTime < 500) {
-                showHoldToRecordToast()
+            if (downTime < 250) {
+                discardRecording = mmInputController?.showHoldToRecordToast(context)
             } else {
                 outputAudioFile?.let { convertToMMDataAndSend(it, MMDataType.Audio) }
             }
 
         } else {
-            // discard recording
             discardRecording = false
         }
     }
@@ -246,42 +256,42 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
             mediaRecorder?.prepare()
             mediaRecorder?.start()
             updateRecordNotification(true)
+            this.recordingTimerDisposable = mmInputController?.startRecordingTimeCounter(this.recordingTimerInterval, this.recordingMaxLength)
+                    ?.compose(bindToLifecycle())
+                    ?.subscribeOn(Schedulers.computation())
+                    ?.observeOn(AndroidSchedulers.mainThread())
+                    ?.doOnComplete {
+                        stopRecording(false)
+                    }
+                    ?.subscribe({ time ->
+                        val percentDecimal = (time.toFloat().div(this.recordingMaxLength)).times(this.recordingTimerInterval)
+                        Log.d( tagg, "$percentDecimal")
+                        AudioHelper.currentTimeVisualization(percentDecimal, recordMessageNotificationIndicator, recordMessageNotification)
+                    }, {})
         } catch (ise: IllegalStateException) {
             Log.d("Error", ise.message)
         } catch (ioe: IOException) {
             Log.d("Error", ioe.message)
         }
-
     }
 
-    private fun stopRecording() {
+    private fun stopRecording(shouldUpdateNotification: Boolean = true) {
         try {
             mediaRecorder?.stop()
             mediaRecorder?.release()
             mediaRecorder = null
 
         } catch (re: RuntimeException) {
-            showHoldToRecordToast()
+            this.discardRecording = mmInputController?.showHoldToRecordToast(context)
             re.message
         }
-        updateRecordNotification(false)
+        if (shouldUpdateNotification) {
+            updateRecordNotification(false)
+        }
+        if (recordingTimerDisposable?.isDisposed == false) {
+            recordingTimerDisposable?.dispose()
+        }
     }
-
-    private fun showHoldToRecordToast() {
-        // show hold-to-record view
-        Toast.makeText(context, "Hold to record a message", Toast.LENGTH_SHORT).show()
-        discardRecording = true
-    }
-
-    private fun isTouchOutsideView(motionEvent: MotionEvent, view: View): Boolean {
-        // checks if touch is outside of view bounds
-        val threshold = 50
-        return (motionEvent.x < 0.plus(threshold) ||
-                motionEvent.y < 0.plus(threshold) ||
-                motionEvent.x > view.measuredWidth.plus(threshold) ||
-                motionEvent.y > view.measuredHeight.plus(threshold))
-    }
-
 
     // takes data, converts into MMData, calls send
     private fun convertToMMDataAndSend(data: String, type: MMDataType) {
@@ -302,8 +312,6 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
 
         mediaRecorder?.release()
         mediaRecorder = null
-        mediaPlayer?.release()
-        mediaPlayer = null
 
     }
 
@@ -311,14 +319,13 @@ class MMInputFieldView : RxFragment(), View.OnClickListener {
 
         const val INPUT_TEXT_KEY = "inputText"
 
-        //        const val GALLERY_REQUEST_CODE = Config.RC_PICK_IMAGES
         const val GIF_REQUEST_CODE = 5492
         const val GALLERY_REQUEST_CODE = 4753
         const val CAMERA_REQUEST_CODE = 8925
         const val DOCUMENT_REQUEST_CODE = Constant.REQUEST_CODE_PICK_FILE //6286
 
-        fun getMMInputFieldInstance(childFragmentManager: FragmentManager, fragmentId: Int): MMInputFieldView? {
-            return childFragmentManager.findFragmentById(fragmentId) as? MMInputFieldView
+        fun getMMInputFieldInstance(childFragmentManager: FragmentManager, fragmentId: Int): MMInputFragment? {
+            return childFragmentManager.findFragmentById(fragmentId) as? MMInputFragment
         }
 
     }

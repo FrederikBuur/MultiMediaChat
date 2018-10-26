@@ -1,4 +1,4 @@
-package com.buur.frederik.multimediechat.views.gifpicker
+package com.buur.frederik.multimediechat.gifpicker
 
 import com.buur.frederik.multimediechat.models.gif.GifMultipleGifResponse
 import com.buur.frederik.multimediechat.models.gif.GifRandomResponse

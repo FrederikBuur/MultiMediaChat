@@ -1,17 +1,13 @@
-package com.buur.frederik.multimediechat.views.messageviews
+package com.buur.frederik.multimediechat.messageviews
 
 import android.content.Context
 import android.content.Intent
-import android.media.ThumbnailUtils
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.AttributeSet
 import android.view.View
-import android.widget.MediaController
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.models.MMData
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

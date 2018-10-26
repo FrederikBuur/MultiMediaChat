@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/textDark"
-    tools:context=".views.messageviews.EnlargedImageView">
+    tools:context=".messageviews.EnlargedImageView">
 
     <com.jsibbold.zoomage.ZoomageView
         android:id="@+id/zoomView"

@@ -1,4 +1,4 @@
-package com.buur.frederik.multimediechat.views.messageviews
+package com.buur.frederik.multimediechat.messageviews
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -8,8 +8,6 @@ import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.models.MMData
 import kotlinx.android.synthetic.main.view_file.view.*
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.ColorFilter
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.widget.Toast

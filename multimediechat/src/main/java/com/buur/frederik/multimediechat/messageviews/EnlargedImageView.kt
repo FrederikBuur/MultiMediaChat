@@ -1,4 +1,4 @@
-package com.buur.frederik.multimediechat.views.messageviews
+package com.buur.frederik.multimediechat.messageviews
 
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -12,7 +12,6 @@ import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.ImageLoader
 import kotlinx.android.synthetic.main.activity_enlarged_image_view.*
-import kotlinx.android.synthetic.main.view_video.view.*
 
 class EnlargedImageView : AppCompatActivity() {
 

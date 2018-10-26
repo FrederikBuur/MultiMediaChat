@@ -1,4 +1,4 @@
-package com.buur.frederik.multimediechat.views.gifpicker
+package com.buur.frederik.multimediechat.gifpicker
 
 import android.content.Context
 import android.util.AttributeSet

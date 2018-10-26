@@ -2,7 +2,7 @@
 <com.jcminarro.roundkornerlayout.RoundKornerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/audioMsgContainer"
-    android:layout_width="160dp"
+    android:layout_width="wrap_content"
     android:layout_height="@dimen/margin_36"
     android:clickable="true"
     android:focusable="true"
@@ -10,38 +10,29 @@
 
     <FrameLayout
         android:id="@+id/audioCurrentTimeIndicator"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="@color/textDark"
-        android:alpha="0.2"
-        android:layout_gravity="start|bottom"/>
-
-    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start|bottom"
+        android:alpha="0.2"
+        android:background="@color/textDark" />
+
+    <com.gauravk.audiovisualizer.visualizer.WaveVisualizer
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/audioVisualizer"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center|bottom"
+        custom:avDensity="0.2"
+        custom:avType="fill"
+        custom:avColor="@color/colorAccent"
+        custom:avSpeed="normal"/>
+
+    <ImageView
+        android:id="@+id/audioActionImg"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/margin_8"
-        android:paddingEnd="@dimen/margin_8"
-        android:layout_gravity="center">
-
-        <!--<TextView-->
-            <!--android:text="0:00"-->
-            <!--android:id="@+id/audioTimeIndicator"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toTopOf="parent"-->
-            <!--app:layout_constraintBottom_toBottomOf="parent"/>-->
-
-        <ImageView
-            android:id="@+id/audioActionImg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_play"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-    </android.support.constraint.ConstraintLayout>
+        android:layout_gravity="end|center_vertical"
+        android:src="@android:drawable/ic_media_play"
+        app:layout_constraintHorizontal_bias="1" />
 
 </com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>

@@ -3,10 +3,9 @@ package com.buur.frederik.multimediechatexample.fragments.chatfragment
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import android.widget.TextView
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.models.MMData
-import com.buur.frederik.multimediechat.views.messageviews.*
+import com.buur.frederik.multimediechat.messageviews.*
 
 class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
