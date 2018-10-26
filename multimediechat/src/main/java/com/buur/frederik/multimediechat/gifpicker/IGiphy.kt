@@ -19,6 +19,7 @@ interface IGiphy {
     fun getTrendingGifs(
             @Query("api_key") api_key: String,
             @Query("limit") limit: Int,
+            @Query("offset") offset: Int,
             @Query("rating") rating: String
     ): Observable<GifMultipleGifResponse>
 

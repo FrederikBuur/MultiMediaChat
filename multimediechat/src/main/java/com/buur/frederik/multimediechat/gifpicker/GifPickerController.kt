@@ -7,6 +7,7 @@ import io.reactivex.Observable
 
 class GifPickerController {
 
+    private val tag = "GifPickerController"
     private val GIPHY_API_KEY = "Ms6Tzk690HOJO8FU52fPndoLlVBlR8W6"
     private var gifClient: IGiphy? = null
 
@@ -17,22 +18,26 @@ class GifPickerController {
         return gifClient!!
     }
 
-    fun getTrendingGifs(): Observable<GifMultipleGifResponse>? {
-        return getGifClient().getTrendingGifs(GIPHY_API_KEY, 30, "G")
+    fun getTrendingGifs(offset: Int): Observable<GifMultipleGifResponse>? {
+        return getGifClient().getTrendingGifs(GIPHY_API_KEY, gifFetchAmount, offset, "G")
                 .doOnNext {
                 }
                 .doOnError { error ->
-                    Log.d(this.toString(), error.message)
+                    Log.d(tag, error.message)
                 }
     }
 
-    fun getSearchGifs(search: String): Observable<GifMultipleGifResponse> {
-        return getGifClient().getSearchGifs(GIPHY_API_KEY, search, 30, 0, "G", "en")
+    fun getSearchGifs(search: String, offset: Int): Observable<GifMultipleGifResponse> {
+        return getGifClient().getSearchGifs(GIPHY_API_KEY, search, gifFetchAmount, offset, "G", "en")
                 .doOnNext {
                 }
                 .doOnError { error ->
-                    Log.d(this.toString(), error.message)
+                    Log.d(tag, error.message)
                 }
+    }
+
+    companion object {
+        const val gifFetchAmount = 30
     }
 
 }

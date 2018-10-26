@@ -3,20 +3,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/greyWhite"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/gifSearchField"
-        android:hint="Search..."
-        android:inputType="text"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_52" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/margin_8">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/gifRecyclerView"
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/background_search_bar"
+            android:layout_margin="@dimen/margin_8">
+
+            <EditText
+                android:id="@+id/gifSearchField"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_12"
+                android:layout_marginEnd="@dimen/margin_12"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center"
+                android:textColor="@color/textDark"
+                android:textColorHint="@color/greyDark"
+                android:textCursorDrawable="@color/colorAccent"
+                android:hint="Search..."
+                android:inputType="text" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scrollbars="vertical"
-        android:layout_weight="1"/>
+        android:layout_weight="1">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/gifRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/margin_2"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            android:scrollbars="vertical" />
+
+        <ProgressBar
+            android:id="@+id/gifProgressBar"
+            android:layout_width="@dimen/margin_52"
+            android:layout_height="@dimen/margin_52"
+            android:indeterminateTint="@color/colorAccent"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
 
 </LinearLayout>

@@ -9,6 +9,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.models.gif.GifData
@@ -44,6 +45,9 @@ class GifView : FrameLayout, View.OnClickListener {
         Glide.with(context)
                 .asGif()
                 .load(url)
+                .apply(RequestOptions.centerCropTransform().centerCrop()
+                        .override(200, 200)
+                )
                 .listener(object : RequestListener<GifDrawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<GifDrawable>?, isFirstResource: Boolean): Boolean {
                         return false

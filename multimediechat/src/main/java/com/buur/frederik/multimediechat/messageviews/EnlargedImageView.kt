@@ -37,7 +37,7 @@ class EnlargedImageView : AppCompatActivity() {
     private fun setupView() {
         type?.let { t ->
             when (t) {
-                MMDataType.Image.ordinal -> {
+                MMDataType.Image.ordinal, MMDataType.Gif.ordinal -> {
                     setupForImage()
                 }
                 MMDataType.Video.ordinal -> {

@@ -9,6 +9,7 @@
     <dimen name="margin_36">36dp</dimen>
     <dimen name="margin_48">48dp</dimen>
     <dimen name="margin_52">52dp</dimen>
+    <dimen name="margin_56">56dp</dimen>
     <dimen name="margin_96">96dp</dimen>
 
     <!--text message view-->

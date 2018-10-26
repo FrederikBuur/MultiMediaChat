@@ -14,6 +14,7 @@
     <color name="greyLight">#e6e6e6</color>
     <color name="greyWhite">#f7f7f7</color>
     <color name="grey">#a1a1a1</color>
+    <color name="greyDark">#6b6b6b</color>
 
     <color name="icon_color">@color/grey</color>
 
