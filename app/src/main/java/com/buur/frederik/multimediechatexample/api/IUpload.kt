@@ -16,4 +16,10 @@ interface IUpload {
             @Part image: MultipartBody.Part
     ): Observable<UploadResponse>
 
+    @Multipart
+    @POST("audio/")
+    fun postAudio(
+            @Part audio: MultipartBody.Part
+    ): Observable<UploadResponse>
+
 }

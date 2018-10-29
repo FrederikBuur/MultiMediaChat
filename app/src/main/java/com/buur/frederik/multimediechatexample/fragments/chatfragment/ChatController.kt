@@ -1,33 +1,23 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.AudioHelper
-import com.buur.frederik.multimediechat.helpers.ImageHelper
+import com.buur.frederik.multimediechat.helpers.UploadHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechatexample.api.IUpload
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
-import com.buur.frederik.multimediechatexample.models.UploadResponse
 import com.google.gson.Gson
-import com.trello.rxlifecycle2.components.support.RxFragment
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import org.json.JSONException
-import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
 
 class ChatController {
 
@@ -82,14 +72,20 @@ class ChatController {
                     val gson = Gson().toJson(mmData)
                     Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
                 }
-                MMDataType.Image.ordinal -> {
-                    ImageHelper.prepareImagePathToUpload(mmData)
+                MMDataType.Image.ordinal,
+                MMDataType.Audio.ordinal -> {
+                    UploadHelper.prepareMMDataToUpload(mmData)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .concatMap { body ->
-                                getUploadClient().postImage(body)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
+                                val obs = when(mmData.type) {
+                                    MMDataType.Image.ordinal -> getUploadClient().postImage(body)
+                                    MMDataType.Audio.ordinal -> getUploadClient().postAudio(body)
+                                    else -> null
+                                }
+                                        obs
+                                        ?.subscribeOn(Schedulers.io())
+                                        ?.observeOn(AndroidSchedulers.mainThread())
                             }
                             .doOnNext { uploadResponse ->
                                 mmData.source = uploadResponse.url
@@ -106,16 +102,30 @@ class ChatController {
                 MMDataType.Video.ordinal -> {
                     Observable.just("TODO")
                 }
-                MMDataType.Audio.ordinal -> {
-                    Observable.just("TODO")
-                }
+//                MMDataType.Audio.ordinal -> {
+//                    UploadHelper.prepareMMDataToUpload(mmData)
+//                            .subscribeOn(Schedulers.io())
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .concatMap { body ->
+//                                getUploadClient().postAudio(body)
+//                                        .subscribeOn(Schedulers.io())
+//                                        .observeOn(AndroidSchedulers.mainThread())
+//                            }
+//                            .doOnNext { uploadResponse ->
+//                                mmData.source = uploadResponse.url
+//                                val gson = Gson().toJson(mmData)
+//                                socket?.emit(TOPIC_NEW_MESSAGE, gson)
+//                            }
+//                            .doOnError {
+//                                Observable.just(it.message)
+//                            }
+//                }
                 else -> {
                     Observable.just(Log.e(tag, "trying to send unknown mmdata type")) // other type then expected
                 }
 
             }
-        }
-        else {
+        } else {
             Observable.just("No connection to server")
         }
     }

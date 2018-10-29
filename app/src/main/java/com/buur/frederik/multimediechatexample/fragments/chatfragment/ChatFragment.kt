@@ -74,20 +74,6 @@ class ChatFragment : MMFragment(), ISendMessage {
                 })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        if (this.newMessageDisposable?.isDisposed == false) {
-            this.newMessageDisposable?.dispose()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (this.newMessageDisposable?.isDisposed == true) {
-            setupNewMessageListener()
-        }
-    }
-
     private fun setupRecyclerView() {
         // setup adapter
         if (adapter == null) {
@@ -120,11 +106,6 @@ class ChatFragment : MMFragment(), ISendMessage {
 
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList(MESSAGE_LIST_KEY, messageList)
-        super.onSaveInstanceState(outState)
-    }
-
     private fun sendToDummyBackend(mmData: MMData) {
         val disp = chatController?.sendMessageToServer(mmData)
                 ?.compose(bindToLifecycle())
@@ -141,6 +122,26 @@ class ChatFragment : MMFragment(), ISendMessage {
         chatRecyclerView.post {
             chatRecyclerView.scrollToPosition(messageList?.size?.minus(1) ?: 0)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelableArrayList(MESSAGE_LIST_KEY, messageList)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (this.newMessageDisposable?.isDisposed == false) {
+            this.newMessageDisposable?.dispose()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (this.newMessageDisposable?.isDisposed == true) {
+            setupNewMessageListener()
+        }
+
     }
 
     companion object {

@@ -6,26 +6,24 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.support.media.ExifInterface
-import android.util.Base64
 import com.buur.frederik.multimediechat.models.MMData
-import com.google.gson.Gson
 import io.reactivex.Observable
-import java.io.ByteArrayOutputStream
 import java.io.File
 import android.provider.MediaStore
 import android.util.Log
+import com.buur.frederik.multimediechat.enums.MMDataType
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.lang.Exception
 
 
-object ImageHelper {
+object UploadHelper {
 
     private const val IMAGE_MAX_SIZE = 1500
 
+    // for images
     private fun rotateBitmapIfNeeded(uriPath: String, bitmap: Bitmap?): Bitmap? {
 
         val ei = ExifInterface(uriPath)
@@ -51,25 +49,41 @@ object ImageHelper {
         }
     }
 
-    fun prepareImagePathToUpload(mmData: MMData): Observable<MultipartBody.Part> {
-
+    // converting mmData to upload object
+    fun prepareMMDataToUpload(mmData: MMData): Observable<MultipartBody.Part> {
         return Observable.create { emitter ->
-
+            var reqFile: RequestBody? = null
+            var partName: String? = null
+            var fileName: String? = null
             val file = File(mmData.source)
             if (!file.exists()) {
-                Log.d("", "")
+                Throwable("files doesn't exists")
             }
-            val bitmap = ImageHelper.rotateBitmapIfNeeded(file.path, ImageHelper.downscaleFile(file))
 
-            val tempFile = File.createTempFile("image-", ".jpg")
-            FileOutputStream(tempFile).use { stream ->
-                bitmap?.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+            when(mmData.type) {
+                MMDataType.Image.ordinal -> {
+                    val bitmap = UploadHelper.rotateBitmapIfNeeded(file.path, UploadHelper.downscaleFile(file))
+                    val tempFile = File.createTempFile("MultiMediaImage_", ".jpg")
+                    FileOutputStream(tempFile).use { stream ->
+                        bitmap?.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+                    }
+                    reqFile = RequestBody.create(MediaType.parse(mmData.source), tempFile)
+                    partName = "image"
+                    fileName = tempFile.name
+                }
+                MMDataType.Audio.ordinal -> {
+                    reqFile = RequestBody.create(MediaType.parse(mmData.source), file)
+                    partName = "audio"
+                    fileName = file.name
+                }
             }
-            val reqFile = RequestBody.create(MediaType.parse("image/*"), tempFile)
-            val body = MultipartBody.Part.createFormData("image", tempFile.name, reqFile)
-            if (!emitter.isDisposed) {
-                emitter.onNext(body)
-                emitter.onComplete()
+
+            if (partName != null && fileName != null && reqFile != null) {
+                val body = MultipartBody.Part.createFormData(partName, fileName, reqFile)
+                if (!emitter.isDisposed) {
+                    emitter.onNext(body)
+                    emitter.onComplete()
+                }
             }
         }
     }
@@ -87,6 +101,7 @@ object ImageHelper {
         return selectedImagePath
     }
 
+    // to downscale big files, such as images
     private fun downscaleFile(f: File): Bitmap? {
 
         //Decode image size

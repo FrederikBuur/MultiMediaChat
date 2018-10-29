@@ -1,8 +1,14 @@
 package com.buur.frederik.multimediechat.helpers
 
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.models.MMData
+import io.reactivex.Observable
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 object AudioHelper {
 

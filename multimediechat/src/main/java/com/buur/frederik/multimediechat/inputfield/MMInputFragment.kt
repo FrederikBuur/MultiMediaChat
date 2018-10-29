@@ -18,7 +18,7 @@ import android.view.ViewGroup
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.AudioHelper
-import com.buur.frederik.multimediechat.helpers.ImageHelper
+import com.buur.frederik.multimediechat.helpers.UploadHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.buur.frederik.multimediechat.gifpicker.GifPickerActivity
@@ -82,7 +82,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                         if (it.toString().contains("/video/")) {
                             convertToMMDataAndSend(it.toString(), MMDataType.Video)
                         } else {
-                            val path = ImageHelper.getPathFromURI(image, context)
+                            val path = UploadHelper.getPathFromURI(image, context)
                             convertToMMDataAndSend(path ?: "", MMDataType.Image)
                         }
                     }
