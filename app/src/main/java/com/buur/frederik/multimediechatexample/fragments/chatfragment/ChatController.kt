@@ -5,11 +5,13 @@ import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.buur.frederik.multimediechat.enums.MMDataType
+import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.helpers.ImageHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechatexample.api.IUpload
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
+import com.buur.frederik.multimediechatexample.models.UploadResponse
 import com.google.gson.Gson
 import com.trello.rxlifecycle2.components.support.RxFragment
 import io.reactivex.Observable
@@ -33,7 +35,6 @@ class ChatController {
 
     private var act: AppCompatActivity? = null
     private var socket: Socket? = null
-    private var publishSubjectDisposable: Disposable? = null
     private var publishSubject: PublishSubject<MMData>? = null
 
     private var uploadAPI: IUpload? = null
@@ -72,67 +73,54 @@ class ChatController {
 
     fun newMessagesPublisher(): Observable<MMData>? {
         return this.publishSubject
-                ?.doOnSubscribe {
-                    this.publishSubjectDisposable = it
-                }
-                ?.doOnNext {
-                    Log.d(TAG, "New message id: ${it.id} type: ${it.type}, source: ${it.source}")
-                }
     }
 
-    fun sendMessageToServer(mmData: MMData): Observable<Boolean> {
-
-        return Observable.create { emitter ->
-            if (socket?.connected() == true) {
-                when (mmData.type) {
-                    MMDataType.Text.ordinal, MMDataType.Gif.ordinal -> {
-                        val gson = Gson().toJson(mmData)
-                        Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
-                    }
-                    MMDataType.Image.ordinal -> {
-                        ImageHelper.prepareImagePathToUpload(mmData)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .concatMap { body ->
-                                    getUploadClient().postImage(body)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                }
-                                .doOnNext { uploadResponse ->
-                                    mmData.source = uploadResponse.url
-                                    val gson = Gson().toJson(mmData)
-                                    socket?.emit(TOPIC_NEW_MESSAGE, gson)
-                                    emitter.onNext(true)
-                                    emitter.onComplete()
-                                }
-                                .doOnError {
-                                    emitter.onError(Throwable())
-                                    emitter.onComplete()
-                                }
-                    }
-                    MMDataType.File.ordinal -> {
-                        Observable.just("TODO")
-                    }
-                    MMDataType.Video.ordinal -> {
-                        Observable.just("TODO")
-                    }
-                    MMDataType.Audio.ordinal -> {
-                        Observable.just("TODO")
-                    }
-                    else -> {
-                        Observable.just(Log.e(tag, "trying to send unknown mmdata type")) // other type then expected
-                    }
-
+    fun sendMessageToServer(mmData: MMData): Observable<*> {
+        return if (socket?.connected() == true) {
+            when (mmData.type) {
+                MMDataType.Text.ordinal, MMDataType.Gif.ordinal -> {
+                    val gson = Gson().toJson(mmData)
+                    Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
                 }
-            } else {
-                emitter.onError(Throwable("No connection to server"))
-                emitter.onComplete()
+                MMDataType.Image.ordinal -> {
+                    ImageHelper.prepareImagePathToUpload(mmData)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .concatMap { body ->
+                                getUploadClient().postImage(body)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                            }
+                            .doOnNext { uploadResponse ->
+                                mmData.source = uploadResponse.url
+                                val gson = Gson().toJson(mmData)
+                                Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
+                            }
+                            .doOnError {
+                                it
+                            }
+                }
+                MMDataType.File.ordinal -> {
+                    Observable.just("TODO")
+                }
+                MMDataType.Video.ordinal -> {
+                    Observable.just("TODO")
+                }
+                MMDataType.Audio.ordinal -> {
+                    Observable.just("TODO")
+                }
+                else -> {
+                    Observable.just(Log.e(tag, "trying to send unknown mmdata type")) // other type then expected
+                }
+
             }
+        }
+        else {
+            Observable.just("No connection to server")
         }
     }
 
     companion object {
-        const val TAG = "ChatController"
         const val TOPIC_NEW_MESSAGE = "new_message"
     }
 

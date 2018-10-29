@@ -1,6 +1,7 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
 import com.buur.frederik.multimediechatexample.models.User
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_chat.*
@@ -24,6 +26,7 @@ class ChatFragment : MMFragment(), ISendMessage {
     private var messageList: ArrayList<MMData>? = null
 
     private var chatController: ChatController? = null
+    private var newMessageDisposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_chat, container, false)
@@ -59,9 +62,8 @@ class ChatFragment : MMFragment(), ISendMessage {
     }
 
     private fun setupNewMessageListener() {
-        chatController?.newMessagesPublisher()
+        newMessageDisposable = chatController?.newMessagesPublisher()
                 ?.compose(bindToLifecycle())
-                ?.subscribeOn(Schedulers.io())
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribe({ mmData ->
                     messageList?.add(mmData)
@@ -70,6 +72,20 @@ class ChatFragment : MMFragment(), ISendMessage {
                 }, {
                     it
                 })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (this.newMessageDisposable?.isDisposed == false) {
+            this.newMessageDisposable?.dispose()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (this.newMessageDisposable?.isDisposed == true) {
+            setupNewMessageListener()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -83,7 +99,7 @@ class ChatFragment : MMFragment(), ISendMessage {
 
     private fun setupMMLib() {
 
-            MMInputFragment.getMMInputFieldInstance(childFragmentManager, R.id.mmInputField)?.setup(this)
+        MMInputFragment.getMMInputFieldInstance(childFragmentManager, R.id.mmInputField)?.setup(this)
 
     }
 
