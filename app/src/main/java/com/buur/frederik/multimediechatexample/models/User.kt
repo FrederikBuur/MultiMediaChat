@@ -23,7 +23,8 @@ open class User : RealmObject() {
             } ?: kotlin.run {
                 val userRealm = realm.where(User::class.java).findFirst()
                 userRealm?.let { user ->
-                    SessionController.getInstance().setUser(user)
+                    val userCopy = realm.copyFromRealm(user)
+                    SessionController.getInstance().setUser(userCopy)
                     true
                 } ?: kotlin.run {
                     false
