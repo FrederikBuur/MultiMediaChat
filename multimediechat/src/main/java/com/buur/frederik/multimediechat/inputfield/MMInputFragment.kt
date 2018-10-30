@@ -79,10 +79,10 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                 MMInputFragment.GALLERY_REQUEST_CODE -> {
                     val image = data.data
                     image?.let {
+                        val path = UploadHelper.getPathFromURI(it, context)
                         if (it.toString().contains("/video/")) {
-                            convertToMMDataAndSend(it.toString(), MMDataType.Video)
+                            convertToMMDataAndSend(path ?: "", MMDataType.Video)
                         } else {
-                            val path = UploadHelper.getPathFromURI(image, context)
                             convertToMMDataAndSend(path ?: "", MMDataType.Image)
                         }
                     }
@@ -238,7 +238,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
 
     private fun startRecording() {
 
-        val audioName = "/MultiMediaAudio_${System.currentTimeMillis()}.3gp"
+        val audioName = "/${System.currentTimeMillis()}.3gp"
         outputAudioFile = Environment.getExternalStorageDirectory().absolutePath + audioName
 
         mediaRecorder = MediaRecorder()

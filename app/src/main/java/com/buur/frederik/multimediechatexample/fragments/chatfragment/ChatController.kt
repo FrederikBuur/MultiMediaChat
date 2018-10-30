@@ -4,13 +4,13 @@ import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.buur.frederik.multimediechat.enums.MMDataType
-import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.helpers.UploadHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechatexample.api.IUpload
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
 import com.google.gson.Gson
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -73,17 +73,19 @@ class ChatController {
                     Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
                 }
                 MMDataType.Image.ordinal,
-                MMDataType.Audio.ordinal -> {
+                MMDataType.Audio.ordinal,
+                MMDataType.Video.ordinal-> {
                     UploadHelper.prepareMMDataToUpload(mmData)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .concatMap { body ->
-                                val obs = when(mmData.type) {
+                                val uploadObservable = when (mmData.type) {
                                     MMDataType.Image.ordinal -> getUploadClient().postImage(body)
                                     MMDataType.Audio.ordinal -> getUploadClient().postAudio(body)
+                                    MMDataType.Video.ordinal -> getUploadClient().postVideo(body)
                                     else -> null
                                 }
-                                        obs
+                                uploadObservable
                                         ?.subscribeOn(Schedulers.io())
                                         ?.observeOn(AndroidSchedulers.mainThread())
                             }
@@ -99,27 +101,6 @@ class ChatController {
                 MMDataType.File.ordinal -> {
                     Observable.just("TODO")
                 }
-                MMDataType.Video.ordinal -> {
-                    Observable.just("TODO")
-                }
-//                MMDataType.Audio.ordinal -> {
-//                    UploadHelper.prepareMMDataToUpload(mmData)
-//                            .subscribeOn(Schedulers.io())
-//                            .observeOn(AndroidSchedulers.mainThread())
-//                            .concatMap { body ->
-//                                getUploadClient().postAudio(body)
-//                                        .subscribeOn(Schedulers.io())
-//                                        .observeOn(AndroidSchedulers.mainThread())
-//                            }
-//                            .doOnNext { uploadResponse ->
-//                                mmData.source = uploadResponse.url
-//                                val gson = Gson().toJson(mmData)
-//                                socket?.emit(TOPIC_NEW_MESSAGE, gson)
-//                            }
-//                            .doOnError {
-//                                Observable.just(it.message)
-//                            }
-//                }
                 else -> {
                     Observable.just(Log.e(tag, "trying to send unknown mmdata type")) // other type then expected
                 }

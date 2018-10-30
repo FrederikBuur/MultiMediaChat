@@ -11,7 +11,10 @@ import io.reactivex.Observable
 import java.io.File
 import android.provider.MediaStore
 import android.util.Log
+import com.buur.frederik.multimediechat.api.ProgressRequestBody
 import com.buur.frederik.multimediechat.enums.MMDataType
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -22,6 +25,7 @@ import java.io.FileOutputStream
 object UploadHelper {
 
     private const val IMAGE_MAX_SIZE = 1500
+    private val tag = "UploadHelper"
 
     // for images
     private fun rotateBitmapIfNeeded(uriPath: String, bitmap: Bitmap?): Bitmap? {
@@ -52,41 +56,77 @@ object UploadHelper {
     // converting mmData to upload object
     fun prepareMMDataToUpload(mmData: MMData): Observable<MultipartBody.Part> {
         return Observable.create { emitter ->
-            var reqFile: RequestBody? = null
+            var reqBody: RequestBody? = null
             var partName: String? = null
             var fileName: String? = null
             val file = File(mmData.source)
             if (!file.exists()) {
-                Throwable("files doesn't exists")
+                emitter.onError(Throwable("files doesn't exists"))
+                emitter.onComplete()
             }
 
-            when(mmData.type) {
+            when (mmData.type) {
                 MMDataType.Image.ordinal -> {
-                    val bitmap = UploadHelper.rotateBitmapIfNeeded(file.path, UploadHelper.downscaleFile(file))
+                    val bitmap = rotateBitmapIfNeeded(file.path, UploadHelper.downscaleFile(file))
                     val tempFile = File.createTempFile("MultiMediaImage_", ".jpg")
                     FileOutputStream(tempFile).use { stream ->
                         bitmap?.compress(Bitmap.CompressFormat.JPEG, 75, stream)
                     }
-                    reqFile = RequestBody.create(MediaType.parse(mmData.source), tempFile)
+                    reqBody = RequestBody.create(MediaType.parse(mmData.source), tempFile)
                     partName = "image"
                     fileName = tempFile.name
                 }
+                MMDataType.Video.ordinal -> {
+                    reqBody = RequestBody.create(MediaType.parse(mmData.source), file)
+                    partName = "video"
+                    fileName = "MultiMediaVideo_${file.name}"
+                }
                 MMDataType.Audio.ordinal -> {
-                    reqFile = RequestBody.create(MediaType.parse(mmData.source), file)
+                    reqBody = RequestBody.create(MediaType.parse(mmData.source), file)
                     partName = "audio"
-                    fileName = file.name
+                    fileName = "MultiMediaAudio_${file.name}"
+                }
+                else -> {
+                    emitter.onError(Throwable("Unsupported"))
+                    emitter.onComplete()
                 }
             }
 
-            if (partName != null && fileName != null && reqFile != null) {
-                val body = MultipartBody.Part.createFormData(partName, fileName, reqFile)
+            if (partName != null && fileName != null && reqBody != null) {
+                val bodyPart = MultipartBody.Part.createFormData(partName, fileName, reqBody)
                 if (!emitter.isDisposed) {
-                    emitter.onNext(body)
+                    emitter.onNext(bodyPart)
                     emitter.onComplete()
                 }
             }
         }
     }
+
+//    fun prepareVideoToUpload(mmData: MMData) : Observable<Any> {
+//        return Observable.create { emitter ->
+//            val file = File(mmData.source)
+//            if (!file.exists()) {
+//                emitter.onError(Throwable("files doesn't exists"))
+//                emitter.onComplete()
+//            }
+////            val reqBody = RequestBody.create(MediaType.parse(mmData.source), file)
+//            val reqBody = ProgressRequestBody(file)
+//            reqBody.getProgressSubject()
+//                    .doOnDispose {
+//                        Log.d("", "")
+//                    }
+//                    .subscribe({ progress ->
+//                        Log.d(tag, "Upload progress: $progress")
+//                    }, {
+//                        it
+//                    })
+//            val bodyPart = MultipartBody.Part.createFormData("video", file.name, reqBody)
+//            if (!emitter.isDisposed) {
+//                emitter.onNext(bodyPart)
+//                emitter.onComplete()
+//            }
+//        }
+//    }
 
     // https://stackoverflow.com/questions/11732872/android-how-can-i-call-camera-or-gallery-intent-together
     fun getPathFromURI(uri: Uri, context: Context?): String? {
