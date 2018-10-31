@@ -95,7 +95,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                 MMInputFragment.DOCUMENT_REQUEST_CODE -> {
                     val file = data.getParcelableArrayListExtra<NormalFile>(Constant.RESULT_PICK_FILE).firstOrNull()?.path
                     file?.let {
-                        convertToMMDataAndSend(it, MMDataType.File)
+                        convertToMMDataAndSend(it, MMDataType.Document)
                     }
                 }
             }

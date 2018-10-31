@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
-    android:id="@+id/fileContainer"
+    android:id="@+id/documentContainer"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clickable="true"
@@ -13,10 +13,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_4"
         android:layout_marginBottom="@dimen/margin_4"
-        android:paddingEnd="@dimen/margin_12">
+        android:paddingEnd="@dimen/margin_12"
+        android:paddingStart="0dp">
 
         <ImageView
-            android:id="@+id/fileImageView"
+            android:id="@+id/documentImageView"
             android:layout_width="wrap_content"
             android:layout_height="55dp"
             android:paddingStart="@dimen/margin_4"
@@ -26,21 +27,21 @@
             android:layout_gravity="center"/>
 
         <LinearLayout
-            android:id="@+id/fileDescriptionContainer"
+            android:id="@+id/documentDescriptionContainer"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:maxWidth="@dimen/margin_96"
             android:layout_gravity="center"
             app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toEndOf="@id/fileImageView"
+            app:layout_constraintStart_toEndOf="@id/documentImageView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:text="here is a sample title to see how it looks"
-                android:id="@+id/fileTitle"
+                android:id="@+id/documentTitle"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:maxLines="2"
@@ -51,7 +52,7 @@
 
             <TextView
                 android:text="Type"
-                android:id="@+id/fileType"
+                android:id="@+id/documentType"
                 android:textSize="12sp"
                 android:textColor="@color/grey"
                 android:layout_width="wrap_content"
@@ -59,7 +60,7 @@
 
             <TextView
                 android:text="Size"
-                android:id="@+id/fileSize"
+                android:id="@+id/documentSize"
                 android:textSize="12sp"
                 android:textColor="@color/grey"
                 android:layout_width="wrap_content"

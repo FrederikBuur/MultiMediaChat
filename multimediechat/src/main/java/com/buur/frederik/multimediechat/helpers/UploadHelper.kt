@@ -86,6 +86,11 @@ object UploadHelper {
                     partName = "audio"
                     fileName = "MultiMediaAudio_${file.name}"
                 }
+                MMDataType.Document.ordinal -> {
+                    reqBody = RequestBody.create(MediaType.parse(mmData.source), file)
+                    partName = "document"
+                    fileName = "MultiMediaDocument_${file.name}"
+                }
                 else -> {
                     emitter.onError(Throwable("Unsupported"))
                     emitter.onComplete()

@@ -6,8 +6,9 @@ import android.util.AttributeSet
 import android.view.View
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.models.MMData
-import kotlinx.android.synthetic.main.view_file.view.*
+import kotlinx.android.synthetic.main.view_document.view.*
 import android.content.Intent
+import android.net.Uri
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.widget.Toast
@@ -15,7 +16,7 @@ import java.io.File
 import java.text.DecimalFormat
 
 
-class FileView : SuperView, View.OnClickListener {
+class DocumentView : SuperView, View.OnClickListener {
 
     private val kb = 1024
     private val mb = kb * kb
@@ -24,7 +25,7 @@ class FileView : SuperView, View.OnClickListener {
     var file: File? = null
 
     constructor(context: Context) : super(context) {
-        View.inflate(context, R.layout.view_file, this)
+        View.inflate(context, R.layout.view_document, this)
     }
 
     constructor(context: Context, attrs: AttributeSet?)
@@ -37,34 +38,34 @@ class FileView : SuperView, View.OnClickListener {
         this.isSender = isSender
         this.mmData = mmData
 
-        val path = this.mmData?.source as? String
+        val path = this.mmData?.source
         file = File(path)
 
         setupFileDetails()
 
-        fileImageView.setColorFilter(
+        documentImageView.setColorFilter(
                 if (isSender) {
                     ContextCompat.getColor(context, R.color.textWhite)
                 } else {
                     ContextCompat.getColor(context, R.color.colorPrimary)
                 })
 
-        this.setParams(fileContainer)
-        this.setTextColor(fileTitle)
+        this.setParams(documentContainer)
+        this.setTextColor(documentTitle)
 
-        fileContainer.setOnClickListener(this)
+        documentContainer.setOnClickListener(this)
 
     }
 
     private fun setupFileDetails() {
-        fileTitle.text = getFileTitle()
-        fileType.text = getFileType()
-        fileSize.text = getFileSize()
+        documentTitle.text = getFileTitle()
+        documentType.text = getFileType()
+        documentSize.text = getFileSize()
     }
 
     override fun onClick(v: View?) {
-        if (v == fileContainer) {
-            openFile()
+        if (v == documentContainer) {
+            openDocument()
         }
     }
 
@@ -78,8 +79,12 @@ class FileView : SuperView, View.OnClickListener {
 
     private fun getFileSize(): String {
         return file?.let {
-
             val size = it.length()
+            documentSize.visibility = if (size < 1) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
             when {
                 size > mb -> format.format(size / mb) + " MB"
                 size > kb -> format.format(size / kb) + " KB"
@@ -111,21 +116,23 @@ class FileView : SuperView, View.OnClickListener {
         }
     }
 
-    private fun openFile() {
-        if (file?.exists() == true) {
+    private fun openDocument() {
+        val uri = if (file?.exists() == true) {
             file?.let {
-                val uri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".fileprovider", it)
-
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(uri, "application/pdf")
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                try {
-                    context.startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    Toast.makeText(context, "No application available to view PDF", Toast.LENGTH_SHORT).show()
-                }
+                FileProvider.getUriForFile(context, context.applicationContext.packageName + ".fileprovider", it)
             }
+        } else {
+            Uri.parse(this.mmData?.source)
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri, "application/pdf")
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(context, "Not able to open document", Toast.LENGTH_SHORT).show()
         }
     }
 

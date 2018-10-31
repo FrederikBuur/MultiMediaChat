@@ -10,7 +10,6 @@ import com.buur.frederik.multimediechatexample.api.IUpload
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
 import com.google.gson.Gson
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -74,6 +73,7 @@ class ChatController {
                 }
                 MMDataType.Image.ordinal,
                 MMDataType.Audio.ordinal,
+                MMDataType.Document.ordinal,
                 MMDataType.Video.ordinal-> {
                     UploadHelper.prepareMMDataToUpload(mmData)
                             .subscribeOn(Schedulers.io())
@@ -83,6 +83,7 @@ class ChatController {
                                     MMDataType.Image.ordinal -> getUploadClient().postImage(body)
                                     MMDataType.Audio.ordinal -> getUploadClient().postAudio(body)
                                     MMDataType.Video.ordinal -> getUploadClient().postVideo(body)
+                                    MMDataType.Document.ordinal -> getUploadClient().postDocument(body)
                                     else -> null
                                 }
                                 uploadObservable
@@ -98,7 +99,7 @@ class ChatController {
                                 it
                             }
                 }
-                MMDataType.File.ordinal -> {
+                MMDataType.Document.ordinal -> {
                     Observable.just("TODO")
                 }
                 else -> {

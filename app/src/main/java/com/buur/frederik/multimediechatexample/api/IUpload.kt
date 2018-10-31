@@ -28,4 +28,10 @@ interface IUpload {
             @Part video: MultipartBody.Part
     ): Observable<UploadResponse>
 
+    @Multipart
+    @POST("document/")
+    fun postDocument(
+            @Part document: MultipartBody.Part
+    ): Observable<UploadResponse>
+
 }
