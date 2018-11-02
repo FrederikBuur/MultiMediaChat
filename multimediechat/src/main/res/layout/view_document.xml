@@ -1,73 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
-    android:id="@+id/documentContainer"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:clickable="true"
-    android:focusable="true"
+    android:id="@+id/documentContainer"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_4"
-        android:layout_marginBottom="@dimen/margin_4"
-        android:paddingEnd="@dimen/margin_12"
-        android:paddingStart="0dp">
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/documentImageView"
+        <TextView
+            android:id="@+id/docMsgSender"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:paddingStart="@dimen/margin_4"
-            android:paddingEnd="0dp"
-            android:src="@drawable/ic_file"
-            android:adjustViewBounds="true"
-            android:layout_gravity="center"/>
-
-        <LinearLayout
-            android:id="@+id/documentDescriptionContainer"
-            android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:maxWidth="@dimen/margin_96"
-            android:layout_gravity="center"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toEndOf="@id/documentImageView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_marginStart="@dimen/margin_12"
+            android:layout_marginEnd="@dimen/margin_12"
+            android:textSize="@dimen/view_message_info_text_size"
+            android:text="sender" />
 
-            <TextView
-                android:text="here is a sample title to see how it looks"
-                android:id="@+id/documentTitle"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:maxLines="2"
-                android:ellipsize="end"
-                android:textColor="@color/textDark"
+
+        <com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
+            android:id="@+id/documentContentContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            app:corner_radius="@dimen/view_message_corner_radius">
+
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_4"
+                android:layout_marginBottom="@dimen/margin_4"
+                android:orientation="horizontal"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_12">
 
-            <TextView
-                android:text="Type"
-                android:id="@+id/documentType"
-                android:textSize="12sp"
-                android:textColor="@color/grey"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/documentImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="55dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:paddingStart="@dimen/margin_4"
+                    android:paddingEnd="0dp"
+                    android:src="@drawable/ic_file" />
 
-            <TextView
-                android:text="Size"
-                android:id="@+id/documentSize"
-                android:textSize="12sp"
-                android:textColor="@color/grey"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:id="@+id/documentDescriptionContainer"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:maxWidth="@dimen/margin_96"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/documentImageView"
+                    app:layout_constraintTop_toTopOf="parent">
 
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/documentTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="here is a sample title to see how it looks"
+                        android:textColor="@color/textDark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/documentType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Type"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/documentSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Size"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+        <TextView
+            android:id="@+id/docMsgTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/margin_12"
+            android:textSize="@dimen/view_message_info_text_size"
+            android:text="time" />
     </LinearLayout>
-
-</com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+</FrameLayout>

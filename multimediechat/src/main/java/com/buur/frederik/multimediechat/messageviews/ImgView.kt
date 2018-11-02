@@ -30,11 +30,12 @@ class ImgView: SuperView, View.OnClickListener {
         this.mmData?.source?.let { ImageLoader.loadImage(context, it, imgMsgContent, imgMsgProgress) }
 
         this.setParams(imgMsgContainer)
-        imgMsgContainer.setOnClickListener(this)
+        this.setupDateAndSender(imgMsgTime, imgMsgSender)
+        imgMsgContentContainer.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
-        if (v == imgMsgContainer) {
+        if (v == imgMsgContentContainer) {
             val intent = Intent(context, EnlargedImageView::class.java)
             mmData?.let { data ->
                 intent.putExtra("source", data.source)

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.messageviews.*
+import com.buur.frederik.multimediechatexample.controllers.SessionController
 
 class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
@@ -30,7 +31,7 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
 
         val itemView = holder.itemView
         val mmData = getMMData(position)
-        val isSender = position % 2 == 0
+        val isSender = isMMDataMsgSender(mmData)
 
         when(itemView) {
             is ImgView -> {
@@ -63,6 +64,11 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
 
     override fun getItemCount(): Int {
         return list?.count() ?: 0
+    }
+
+    private fun isMMDataMsgSender(mmData: MMData): Boolean {
+        val id = SessionController.getInstance().getUser()?.id ?: -1
+        return mmData.sender_id?.equals(id) == true
     }
 
     private fun getMMData(position: Int): MMData {

@@ -43,7 +43,7 @@ abstract class MMActivity : RxAppCompatActivity() {
         hideKeyboard()
     }
 
-    fun hideKeyboard() {
+    private fun hideKeyboard() {
 
         this.currentFocus?.let {
             val imm = this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager

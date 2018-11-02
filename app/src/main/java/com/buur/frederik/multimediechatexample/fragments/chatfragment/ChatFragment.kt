@@ -1,7 +1,6 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.inputfield.ISendMessage
 import com.buur.frederik.multimediechat.inputfield.MMInputFragment
 import com.buur.frederik.multimediechatexample.R
+import com.buur.frederik.multimediechatexample.controllers.SessionController
 import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
@@ -99,14 +99,22 @@ class ChatFragment : MMFragment(), ISendMessage {
 
     override fun sendMMData(mmData: MMData) {
 
-        sendToDummyBackend(mmData)
+        // customize mmdata
+        mmData.sender_id = SessionController.getInstance().getUser()?.id
+        mmData.sender_name = SessionController.getInstance().getUser()?.name
+        mmData.date = System.currentTimeMillis()
+
+        // send message to server
+        sendMessageToServer(mmData)
+
+        // update ui
         messageList?.add(mmData)
         adapter?.notifyDataSetChanged()
         scrollToBottomPost()
 
     }
 
-    private fun sendToDummyBackend(mmData: MMData) {
+    private fun sendMessageToServer(mmData: MMData) {
         val disp = chatController?.sendMessageToServer(mmData)
                 ?.compose(bindToLifecycle())
                 ?.subscribeOn(Schedulers.io())
