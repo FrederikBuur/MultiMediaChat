@@ -1,6 +1,7 @@
 package com.buur.frederik.multimediechat.messageviews
 
 import android.content.Context
+import android.opengl.Visibility
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.Gravity
@@ -59,11 +60,25 @@ abstract class SuperView : FrameLayout {
     }
 
     fun setupDateAndSender(dateView: TextView, senderView: TextView) {
-        dateView.text = getDateFormat()
-        senderView.text = mmData?.sender_name
+
+        val name = mmData?.sender_name
+        val date = mmData?.date
+
+        if (name == null && date == null) {
+            dateView.visibility = View.GONE
+            senderView.visibility = View.GONE
+            return
+        }
 
         val lpd = dateView.layoutParams as LinearLayout.LayoutParams
         val lps = senderView.layoutParams as LinearLayout.LayoutParams
+
+        dateView.visibility = mmData?.date?.let {
+            dateView.text = getDateFormat()
+            View.VISIBLE
+        } ?: kotlin.run {
+            View.GONE
+        }
 
         if (isSender == true) {
             lpd.gravity = Gravity.START
@@ -71,7 +86,10 @@ abstract class SuperView : FrameLayout {
         } else {
             lpd.gravity = Gravity.END
             lps.gravity = Gravity.START
-            senderView.visibility = View.VISIBLE
+            name?.let {
+                senderView.text = it
+                senderView.visibility = View.VISIBLE
+            }
         }
         dateView.layoutParams = lpd
         senderView.layoutParams = lps

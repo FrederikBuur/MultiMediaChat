@@ -14,8 +14,6 @@
             android:id="@+id/audioMsgSender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_12"
-            android:layout_marginEnd="@dimen/margin_12"
             android:textSize="@dimen/view_message_info_text_size"
             android:text="sender" />
 
@@ -61,7 +59,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginEnd="@dimen/margin_12"
             android:textSize="@dimen/view_message_info_text_size"
             android:text="time" />
     </LinearLayout>

@@ -45,7 +45,7 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
         this.length = 0
         AudioHelper.currentTimeVisualization(0f, audioCurrentTimeIndicator, audioMsgContainer)
 
-        this.setParams(audioMsgContainer)
+        this.setParams(audioMsgContainer, audioMsgContentContainer)
         this.setupDateAndSender(audioMsgTime, audioMsgSender)
         audioMsgContentContainer.setOnClickListener(this)
     }
