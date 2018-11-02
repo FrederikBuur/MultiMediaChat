@@ -22,13 +22,14 @@ class TextMessageView: SuperView {
 
     override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
         this.isSender = isSender
+        this.mmData = mmData
         textMsgContent.text = (mmData.source as? String) ?: "Error"
 
         val color = if (isSender) R.color.textWhite else R.color.textDark
         textMsgContent.setTextColor(ContextCompat.getColor(context, color))
 
-        this.setParams(textMsgContainer)
-
+        this.setParams(textMsgContainer, textMsgContent, textMsgContentContainer)
+        this.setupDateAndSender(textMsgTime, textMsgSender)
     }
 
 }

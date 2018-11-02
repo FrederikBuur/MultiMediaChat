@@ -50,10 +50,11 @@ class DocumentView : SuperView, View.OnClickListener {
                     ContextCompat.getColor(context, R.color.colorPrimary)
                 })
 
-        this.setParams(documentContainer)
+        this.setParams(documentContainer, documentContentContainer)
+        this.setupDateAndSender(docMsgTime, docMsgSender)
         this.setTextColor(documentTitle)
 
-        documentContainer.setOnClickListener(this)
+        documentContentContainer.setOnClickListener(this)
 
     }
 
@@ -64,7 +65,7 @@ class DocumentView : SuperView, View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        if (v == documentContainer) {
+        if (v == documentContentContainer) {
             openDocument()
         }
     }
