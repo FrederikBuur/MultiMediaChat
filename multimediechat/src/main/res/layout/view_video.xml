@@ -1,37 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/vidMsgContainer"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:clickable="true"
-    android:focusable="true"
-    app:corner_radius="@dimen/view_message_corner_radius">
+    android:layout_height="wrap_content">
 
-    <VideoView
-        android:id="@+id/vidMsgContent"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/view_message_width_max"
-        android:layout_gravity="center"
-        android:adjustViewBounds="true"
-        />
-
-    <ProgressBar
-        android:id="@+id/imgMsgProgress"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:progressDrawable="@color/colorAccent"/>
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/vidMsgAction"
-        android:layout_width="@dimen/margin_48"
-        android:layout_height="@dimen/margin_48"
-        android:paddingStart="10dp"
-        android:paddingEnd="@dimen/margin_8"
-        android:layout_gravity="center"
-        android:src="@android:drawable/ic_media_play"
-        android:background="@drawable/shape_circle_btn"/>
+        <TextView
+            android:id="@+id/vidMsgSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_12"
+            android:layout_marginEnd="@dimen/margin_12"
+            android:textSize="@dimen/view_message_info_text_size"
+            android:text="sender" />
 
-</com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+        <com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
+            android:id="@+id/vidMsgContentContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            app:corner_radius="@dimen/view_message_corner_radius">
+
+            <ImageView
+                android:id="@+id/vidMsgContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="@dimen/view_message_width_max"
+                android:maxHeight="@dimen/view_message_height_max"
+                android:src="@drawable/background_image_placeholder" />
+
+            <ProgressBar
+                android:id="@+id/imgMsgProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:progressDrawable="@color/colorAccent" />
+
+            <ImageView
+                android:id="@+id/vidMsgAction"
+                android:layout_width="@dimen/margin_48"
+                android:layout_height="@dimen/margin_48"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle_btn"
+                android:paddingStart="10dp"
+                android:paddingEnd="@dimen/margin_8"
+                android:src="@android:drawable/ic_media_play" />
+
+        </com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+
+        <TextView
+            android:id="@+id/vidMsgTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/margin_12"
+            android:textSize="@dimen/view_message_info_text_size"
+            android:text="time" />
+    </LinearLayout>
+</FrameLayout>

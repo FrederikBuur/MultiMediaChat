@@ -1,29 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/imgMsgContainer"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:clickable="true"
-    android:focusable="true"
-    app:corner_radius="@dimen/view_message_corner_radius">
+    android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/imgMsgContent"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/imgMsgSender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="@dimen/view_message_width_max"
-            android:maxHeight="@dimen/view_message_height_max"
-            android:adjustViewBounds="true"
-            android:src="@drawable/background_image_placeholder"/>
+            android:textSize="@dimen/view_message_info_text_size"
+            android:text="sender" />
 
-        <ProgressBar
-            android:id="@+id/imgMsgProgress"
+        <com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
+            android:id="@+id/imgMsgContentContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:progressDrawable="@color/colorAccent"/>
+            android:clickable="true"
+            android:focusable="true"
+            app:corner_radius="@dimen/view_message_corner_radius">
 
-    </com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+            <ImageView
+                android:id="@+id/imgMsgContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxWidth="@dimen/view_message_width_max"
+                android:maxHeight="@dimen/view_message_height_max"
+                android:src="@drawable/background_image_placeholder" />
+
+            <ProgressBar
+                android:id="@+id/imgMsgProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:progressDrawable="@color/colorAccent" />
+        </com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+
+        <TextView
+            android:id="@+id/imgMsgTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textSize="@dimen/view_message_info_text_size"
+            android:text="time" />
+
+    </LinearLayout>
+</FrameLayout>

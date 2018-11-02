@@ -1,38 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.jcminarro.roundkornerlayout.RoundKornerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/audioMsgContainer"
     android:layout_width="wrap_content"
-    android:layout_height="@dimen/margin_36"
-    android:clickable="true"
-    android:focusable="true"
-    app:corner_radius="@dimen/view_message_corner_radius">
+    android:layout_height="wrap_content">
 
-    <FrameLayout
-        android:id="@+id/audioCurrentTimeIndicator"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="start|bottom"
-        android:alpha="0.2"
-        android:background="@color/textDark" />
-
-    <com.gauravk.audiovisualizer.visualizer.WaveVisualizer
-        xmlns:custom="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/audioVisualizer"
-        android:layout_width="150dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center|bottom"
-        custom:avDensity="0.2"
-        custom:avType="fill"
-        custom:avColor="@color/colorAccent"
-        custom:avSpeed="normal"/>
-
-    <ImageView
-        android:id="@+id/audioActionImg"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
-        android:src="@android:drawable/ic_media_play"
-        app:layout_constraintHorizontal_bias="1" />
+        android:orientation="vertical">
 
-</com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+        <TextView
+            android:id="@+id/audioMsgSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/view_message_info_text_size"
+            android:text="sender" />
+
+        <com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
+            android:id="@+id/audioMsgContentContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/margin_36"
+            android:clickable="true"
+            android:focusable="true"
+            app:corner_radius="@dimen/view_message_corner_radius">
+
+            <FrameLayout
+                android:id="@+id/audioCurrentTimeIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="start|bottom"
+                android:alpha="0.2"
+                android:background="@color/textDark" />
+
+            <com.gauravk.audiovisualizer.visualizer.WaveVisualizer
+                xmlns:custom="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/audioVisualizer"
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center|bottom"
+                custom:avColor="@color/colorAccent"
+                custom:avDensity="0.2"
+                custom:avSpeed="normal"
+                custom:avType="fill" />
+
+            <ImageView
+                android:id="@+id/audioActionImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:src="@android:drawable/ic_media_play"
+                app:layout_constraintHorizontal_bias="1" />
+
+        </com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+
+        <TextView
+            android:id="@+id/audioMsgTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textSize="@dimen/view_message_info_text_size"
+            android:text="time" />
+    </LinearLayout>
+</FrameLayout>

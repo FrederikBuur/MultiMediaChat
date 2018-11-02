@@ -45,8 +45,9 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
         this.length = 0
         AudioHelper.currentTimeVisualization(0f, audioCurrentTimeIndicator, audioMsgContainer)
 
-        this.setParams(audioMsgContainer)
-        audioMsgContainer.setOnClickListener(this)
+        this.setParams(audioMsgContainer, audioMsgContentContainer)
+        this.setupDateAndSender(audioMsgTime, audioMsgSender)
+        audioMsgContentContainer.setOnClickListener(this)
     }
 
     private fun setupColors(isSender: Boolean) {
@@ -99,7 +100,7 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
 
     override fun onClick(v: View?) {
         when (v) {
-            audioMsgContainer -> {
+            audioMsgContentContainer -> {
                 playAudio()
             }
         }

@@ -32,18 +32,18 @@ class VideoView: SuperView, View.OnClickListener {
         this.mmData = mmData
 
         val uri = Uri.parse((mmData.source))
-        disp = Observable.just(vidMsgContent.setVideoURI(uri))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({}, {})
-
+//        disp = Observable.just(vidMsgContent.setVideoURI(uri))
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe({}, {})
 
         this.setParams(vidMsgContainer)
-        vidMsgContainer.setOnClickListener(this)
+        this.setupDateAndSender(vidMsgTime, vidMsgSender)
+        vidMsgContentContainer.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
-        if (v == vidMsgContainer) {
+        if (v == vidMsgContentContainer) {
             val intent = Intent(context, EnlargedImageView::class.java)
             this.mmData?.let { data ->
                 intent.putExtra("source", data.source)

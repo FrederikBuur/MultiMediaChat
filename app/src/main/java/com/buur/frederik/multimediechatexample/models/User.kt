@@ -35,7 +35,7 @@ open class User : RealmObject() {
         fun createUser(realm: Realm, userName: String) {
             realm.executeTransaction { innerRealm ->
                 val user = User()
-                user.id = 1
+                user.id = System.currentTimeMillis()
                 user.name = userName
                 innerRealm.copyToRealmOrUpdate(user)
                 SessionController.getInstance().setUser(user)
