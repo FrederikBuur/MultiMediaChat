@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!--shared -->
     <color name="colorPrimary">#214e79</color>
     <color name="colorPrimaryDark">#1a3e61</color>
     <color name="colorAccent">#f4262a</color>
 
-    <color name="textWhite">#dedede</color>
+    <color name="textBright">#dedede</color>
+    <color name="textWhite">#f1f1f1</color>
     <color name="textDark">#313131</color>
 
 
@@ -15,6 +17,9 @@
     <color name="grey">#a1a1a1</color>
 
     <color name="icon_color">@color/grey</color>
+
+    <color name="notification_background_positive">#4dbc55</color>
+    <color name="notification_background_negative">#9c2f35</color>
 
     <!--chat page-->
     <color name="color_recycler_view_thumb">#62f4262a</color>

@@ -1,6 +1,7 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +52,7 @@ class ChatFragment : MMFragment(), ISendMessage {
         if (chatController == null) {
             chatController = ChatController()
         }
-        chatController?.establishServerConnection(context)
+        chatController?.startServerConnection(context)
 
         setupRecyclerView()
         setupMMLib()
@@ -65,10 +66,17 @@ class ChatFragment : MMFragment(), ISendMessage {
         newMessageDisposable = chatController?.newMessagesPublisher()
                 ?.compose(bindToLifecycle())
                 ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribe({ mmData ->
-                    messageList?.add(mmData)
-                    adapter?.notifyDataSetChanged()
-                    scrollToBottomPost()
+                ?.subscribe({ data ->
+                    when (data) {
+                        is MMData -> {
+                            messageList?.add(data)
+                            adapter?.notifyDataSetChanged()
+                            scrollToBottomPost()
+                        }
+                        is String -> {
+                            this.mainActivity?.showTopNotification(data)
+                        }
+                    }
                 }, {
                     it
                 })
@@ -84,9 +92,7 @@ class ChatFragment : MMFragment(), ISendMessage {
     }
 
     private fun setupMMLib() {
-
         MMInputFragment.getMMInputFieldInstance(childFragmentManager, R.id.mmInputField)?.setup(this)
-
     }
 
     private fun shouldShowLoginPage() {
@@ -98,7 +104,6 @@ class ChatFragment : MMFragment(), ISendMessage {
     }
 
     override fun sendMMData(mmData: MMData) {
-
         // customize mmdata
         mmData.sender_id = SessionController.getInstance().getUser()?.id
         mmData.sender_name = SessionController.getInstance().getUser()?.name
@@ -111,7 +116,6 @@ class ChatFragment : MMFragment(), ISendMessage {
         messageList?.add(mmData)
         adapter?.notifyDataSetChanged()
         scrollToBottomPost()
-
     }
 
     private fun sendMessageToServer(mmData: MMData) {
@@ -139,6 +143,7 @@ class ChatFragment : MMFragment(), ISendMessage {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        chatController?.stopServerConnection()
         if (this.newMessageDisposable?.isDisposed == false) {
             this.newMessageDisposable?.dispose()
         }

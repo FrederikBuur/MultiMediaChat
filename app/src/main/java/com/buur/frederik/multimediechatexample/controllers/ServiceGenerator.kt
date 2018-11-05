@@ -30,7 +30,7 @@ class ServiceGenerator {
     }
 
     companion object {
-        const val MM_BASE_URL = "http://192.168.0.14:3000/" // home
+        const val MM_BASE_URL = "http://192.168.1.13:3000/" // home
         //    const val MM_BASE_URL = "http://192.168.1.239:3000/api/" // amsiq
     }
 

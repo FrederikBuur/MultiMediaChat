@@ -42,7 +42,7 @@
                 android:text="Sample text message..."
                 android:textSize="14sp"
                 android:textStyle="normal"
-                android:textColor="@color/textWhite"
+                android:textColor="@color/textBright"
                 android:typeface="sans" />
 
                 <TextView

@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="Drag to cancel, release to send"
-                    android:textColor="@color/textWhite" />
+                    android:textColor="@color/textBright" />
 
             </LinearLayout>
 

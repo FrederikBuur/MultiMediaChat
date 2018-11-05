@@ -25,7 +25,7 @@ class TextMessageView: SuperView {
         this.mmData = mmData
         textMsgContent.text = (mmData.source as? String) ?: "Error"
 
-        val color = if (isSender) R.color.textWhite else R.color.textDark
+        val color = if (isSender) R.color.textBright else R.color.textDark
         textMsgContent.setTextColor(ContextCompat.getColor(context, color))
 
         this.setParams(textMsgContainer, textMsgContent, textMsgContentContainer)

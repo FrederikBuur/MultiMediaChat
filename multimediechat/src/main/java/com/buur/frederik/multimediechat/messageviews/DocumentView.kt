@@ -45,7 +45,7 @@ class DocumentView : SuperView, View.OnClickListener {
 
         documentImageView.setColorFilter(
                 if (isSender) {
-                    ContextCompat.getColor(context, R.color.textWhite)
+                    ContextCompat.getColor(context, R.color.textBright)
                 } else {
                     ContextCompat.getColor(context, R.color.colorPrimary)
                 })

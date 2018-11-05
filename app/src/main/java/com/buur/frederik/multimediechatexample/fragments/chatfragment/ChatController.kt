@@ -9,6 +9,7 @@ import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechatexample.api.IUpload
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
+import com.buur.frederik.multimediechatexample.controllers.SessionController
 import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,7 +25,7 @@ class ChatController {
 
     private var act: AppCompatActivity? = null
     private var socket: Socket? = null
-    private var publishSubject: PublishSubject<MMData>? = null
+    private var publishSubject: PublishSubject<Any>? = null
 
     private var uploadAPI: IUpload? = null
 
@@ -51,16 +52,44 @@ class ChatController {
         })
     }
 
-    fun establishServerConnection(context: Context?) {
+    private val onUserJoined = Emitter.Listener { args ->
+        this.act?.runOnUiThread(Runnable {
+            try {
+                val userName = args[0].toString()
+                publishSubject?.onNext(userName)
+            } catch (e: JSONException) {
+                e.message
+                return@Runnable
+            }
+        })
+    }
+
+    fun startServerConnection(context: Context?) {
         this.act = context as? AppCompatActivity
         this.act?.let {
             this.socket = (it.application as? MultiMediaApplication)?.socket
             this.socket?.on(TOPIC_NEW_MESSAGE, onNewMessage)
+            this.socket?.on(TOPIC_USER_JOINED, onUserJoined)
             this.socket?.connect()
+
+            // emit that new user joined chat
+            SessionController.getInstance().getUser()?.name?.let { name ->
+                //val gson = Gson().toJson(name)
+                if (this.socket?.connected() == true) {
+                    this.socket?.emit(TOPIC_USER_JOINED, name)
+                }
+            }
         }
     }
 
-    fun newMessagesPublisher(): Observable<MMData>? {
+    fun stopServerConnection() {
+        this.socket?.disconnect()
+        this.socket?.off(TOPIC_NEW_MESSAGE, onNewMessage)
+        this.socket?.off(TOPIC_USER_JOINED, onUserJoined)
+
+    }
+
+    fun newMessagesPublisher(): Observable<Any>? {
         return this.publishSubject
     }
 
@@ -114,6 +143,7 @@ class ChatController {
 
     companion object {
         const val TOPIC_NEW_MESSAGE = "new_message"
+        const val TOPIC_USER_JOINED = "user_joined"
     }
 
 }

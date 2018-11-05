@@ -55,7 +55,7 @@ abstract class SuperView : FrameLayout {
     }
 
     fun setTextColor(tv: TextView) {
-        val color = if (this.isSender == true) R.color.textWhite else R.color.textDark
+        val color = if (this.isSender == true) R.color.textBright else R.color.textDark
         tv.setTextColor(ContextCompat.getColor(context, color))
     }
 
