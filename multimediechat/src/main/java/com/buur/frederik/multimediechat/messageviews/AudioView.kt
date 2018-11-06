@@ -36,7 +36,7 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    override fun setup(isSender: Boolean, mmData: MMData, time: Int?) {
+    override fun setup(isSender: Boolean, mmData: MMData?, time: Int?) {
         this.isSender = isSender
         this.mmData = mmData
 

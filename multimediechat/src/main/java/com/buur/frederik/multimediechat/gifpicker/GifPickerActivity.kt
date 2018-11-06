@@ -145,9 +145,7 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
                     updateGifList(gifResponse.data)
                     gifTotalCount = gifResponse.pagination.total_count
                     showGifProgress(false)
-                }, {
-                    it
-                })
+                }, {})
     }
 
     private fun searchGifs(search: String, newSearch: Boolean, offset: Int = 0) {

@@ -27,7 +27,7 @@ abstract class SuperView : FrameLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    abstract fun setup(isSender: Boolean, mmData: MMData, time: Int? = null)
+    abstract fun setup(isSender: Boolean, mmData: MMData?, time: Int? = null)
 
     fun setParams(viewContainer: FrameLayout, viewWithBackground: View? = null, viewExtra: View? = null) {
         val params1 = viewContainer.layoutParams as FrameLayout.LayoutParams

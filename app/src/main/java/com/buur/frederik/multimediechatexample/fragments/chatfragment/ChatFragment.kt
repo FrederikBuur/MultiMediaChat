@@ -1,7 +1,6 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
 import com.buur.frederik.multimediechatexample.models.User
+import com.jakewharton.rxbinding2.widget.textChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -26,8 +26,11 @@ class ChatFragment : MMFragment(), ISendMessage {
     private var adapter: ChatAdapter? = null
     private var messageList: ArrayList<MMData>? = null
 
+    private var mmInputFrag: MMInputFragment? = null
+
     private var chatController: ChatController? = null
     private var newMessageDisposable: Disposable? = null
+    private var isTypingDisposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_chat, container, false)
@@ -58,24 +61,52 @@ class ChatFragment : MMFragment(), ISendMessage {
         setupMMLib()
 
         scrollToBottomPost()
-        setupNewMessageListener()
+        setupNewEventListener()
+        setupTypingListener()
 
     }
 
-    private fun setupNewMessageListener() {
+    private fun setupNewEventListener() {
         newMessageDisposable = chatController?.newMessagesPublisher()
                 ?.compose(bindToLifecycle())
                 ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribe({ data ->
-                    when (data) {
-                        is MMData -> {
-                            messageList?.add(data)
+                ?.subscribe({ event ->
+                    val type = event.type
+                    when (type) {
+                        EventType.Message.ordinal -> {
+                            val mmData = event.data as MMData
+                            messageList?.add(mmData)
                             adapter?.notifyDataSetChanged()
                             scrollToBottomPost()
                         }
-                        is String -> {
-                            this.mainActivity?.showTopNotification(data)
+                        EventType.UserConnected.ordinal -> {
+                            val name = event.data as String
+                            this.mainActivity?.showTopNotification(name)
                         }
+                        EventType.StartTyping.ordinal -> {
+                            val user = event.data as User
+                            this.adapter?.addUserIsTyping(user)
+                            scrollToBottomPost()
+//                            Toast.makeText(context, "${user.name} typing", Toast.LENGTH_SHORT).show()
+                        }
+                        EventType.StopTyping.ordinal -> {
+                            val user = event.data as User
+                            this.adapter?.removeUserIsTyping(user)
+//                            Toast.makeText(context, "${user.name} stop typing", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }, {
+                    it
+                })
+    }
+
+    private fun setupTypingListener() {
+        isTypingDisposable = mmInputFrag?.getEditText()?.textChanges()
+                ?.compose(bindToLifecycle())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe({
+                    if (it.isNotEmpty()) {
+                        chatController?.userStartedTyping(true)
                     }
                 }, {
                     it
@@ -92,7 +123,8 @@ class ChatFragment : MMFragment(), ISendMessage {
     }
 
     private fun setupMMLib() {
-        MMInputFragment.getMMInputFieldInstance(childFragmentManager, R.id.mmInputField)?.setup(this)
+        mmInputFrag = MMInputFragment.getMMInputFieldInstance(childFragmentManager, R.id.mmInputField)
+        mmInputFrag?.setup(this)
     }
 
     private fun shouldShowLoginPage() {
@@ -147,14 +179,19 @@ class ChatFragment : MMFragment(), ISendMessage {
         if (this.newMessageDisposable?.isDisposed == false) {
             this.newMessageDisposable?.dispose()
         }
+        if (this.isTypingDisposable?.isDisposed == false) {
+            this.isTypingDisposable?.dispose()
+        }
     }
 
     override fun onStart() {
         super.onStart()
         if (this.newMessageDisposable?.isDisposed == true) {
-            setupNewMessageListener()
+            setupNewEventListener()
         }
-
+        if (this.isTypingDisposable?.isDisposed == true) {
+            setupTypingListener()
+        }
     }
 
     companion object {

@@ -6,28 +6,38 @@ import android.util.Log
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.UploadHelper
 import com.buur.frederik.multimediechat.models.MMData
+import com.buur.frederik.multimediechatexample.activities.MainActivity
 import com.buur.frederik.multimediechatexample.api.IUpload
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
 import com.buur.frederik.multimediechatexample.controllers.SessionController
+import com.buur.frederik.multimediechatexample.models.NewEventResponse
+import com.buur.frederik.multimediechatexample.models.User
 import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONException
+import java.util.concurrent.TimeUnit
 
 class ChatController {
 
     private val tag = "ChatController"
+    private val typingDebounceDuration = 2000L
 
     private var act: AppCompatActivity? = null
     private var socket: Socket? = null
-    private var publishSubject: PublishSubject<Any>? = null
+    private var eventPublishSubject: PublishSubject<NewEventResponse>? = null
+    private var typingPublishSubject: PublishSubject<Int>? = null
+    private var typingDisposable: Disposable? = null
 
+    private var context: Context? = null
     private var uploadAPI: IUpload? = null
+    private var userIsTyping: Boolean? = null
 
     private fun getUploadClient(): IUpload {
         if (uploadAPI == null) {
@@ -37,14 +47,16 @@ class ChatController {
     }
 
     init {
-        this.publishSubject = PublishSubject.create()
+        this.eventPublishSubject = PublishSubject.create()
+        this.typingPublishSubject = PublishSubject.create()
     }
 
     private val onNewMessage = Emitter.Listener { args ->
         this.act?.runOnUiThread(Runnable {
             try {
                 val mmData = Gson().fromJson(args[0].toString(), MMData::class.java)
-                publishSubject?.onNext(mmData)
+                val event = NewEventResponse(EventType.Message.ordinal, mmData)
+                eventPublishSubject?.onNext(event)
             } catch (e: JSONException) {
                 e.message
                 return@Runnable
@@ -56,7 +68,34 @@ class ChatController {
         this.act?.runOnUiThread(Runnable {
             try {
                 val userName = args[0].toString()
-                publishSubject?.onNext(userName)
+                val event = NewEventResponse(EventType.UserConnected.ordinal, userName)
+                eventPublishSubject?.onNext(event)
+            } catch (e: JSONException) {
+                e.message
+                return@Runnable
+            }
+        })
+    }
+
+    private val onUserTyping = Emitter.Listener { args ->
+        this.act?.runOnUiThread(Runnable {
+            try {
+                val user = Gson().fromJson(args[0].toString(), User::class.java)
+                val event = NewEventResponse(EventType.StartTyping.ordinal, user)
+                eventPublishSubject?.onNext(event)
+            } catch (e: JSONException) {
+                e.message
+                return@Runnable
+            }
+        })
+    }
+
+    private val onUserStopTyping = Emitter.Listener { args ->
+        this.act?.runOnUiThread(Runnable {
+            try {
+                val user = Gson().fromJson(args[0].toString(), User::class.java)
+                val event = NewEventResponse(EventType.StopTyping.ordinal, user)
+                eventPublishSubject?.onNext(event)
             } catch (e: JSONException) {
                 e.message
                 return@Runnable
@@ -65,19 +104,20 @@ class ChatController {
     }
 
     fun startServerConnection(context: Context?) {
+        this.context = context
         this.act = context as? AppCompatActivity
         this.act?.let {
             this.socket = (it.application as? MultiMediaApplication)?.socket
             this.socket?.on(TOPIC_NEW_MESSAGE, onNewMessage)
             this.socket?.on(TOPIC_USER_JOINED, onUserJoined)
+            this.socket?.on(TOPIC_USER_TYPING, onUserTyping)
+            this.socket?.on(TOPIC_USER_STOP_TYPING, onUserStopTyping)
             this.socket?.connect()
 
             // emit that new user joined chat
             SessionController.getInstance().getUser()?.name?.let { name ->
-                //val gson = Gson().toJson(name)
-                if (this.socket?.connected() == true) {
-                    this.socket?.emit(TOPIC_USER_JOINED, name)
-                }
+                this.socket?.emit(TOPIC_USER_JOINED, name)
+                setupTypingPublisher()
             }
         }
     }
@@ -86,24 +126,26 @@ class ChatController {
         this.socket?.disconnect()
         this.socket?.off(TOPIC_NEW_MESSAGE, onNewMessage)
         this.socket?.off(TOPIC_USER_JOINED, onUserJoined)
-
+        this.socket?.off(TOPIC_USER_TYPING, onUserTyping)
+        this.socket?.off(TOPIC_USER_STOP_TYPING, onUserStopTyping)
     }
 
-    fun newMessagesPublisher(): Observable<Any>? {
-        return this.publishSubject
+    fun newMessagesPublisher(): Observable<NewEventResponse>? {
+        return this.eventPublishSubject
     }
 
     fun sendMessageToServer(mmData: MMData): Observable<*> {
         return if (socket?.connected() == true) {
             when (mmData.type) {
                 MMDataType.Text.ordinal, MMDataType.Gif.ordinal -> {
+                    userStartedTyping(false)
                     val gson = Gson().toJson(mmData)
                     Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
                 }
                 MMDataType.Image.ordinal,
                 MMDataType.Audio.ordinal,
                 MMDataType.Document.ordinal,
-                MMDataType.Video.ordinal-> {
+                MMDataType.Video.ordinal -> {
                     UploadHelper.prepareMMDataToUpload(mmData)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -120,6 +162,7 @@ class ChatController {
                                         ?.observeOn(AndroidSchedulers.mainThread())
                             }
                             .doOnNext { uploadResponse ->
+                                userStartedTyping(false)
                                 mmData.source = uploadResponse.url
                                 val gson = Gson().toJson(mmData)
                                 Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
@@ -128,22 +171,53 @@ class ChatController {
                                 it
                             }
                 }
-                MMDataType.Document.ordinal -> {
-                    Observable.just("TODO")
-                }
                 else -> {
                     Observable.just(Log.e(tag, "trying to send unknown mmdata type")) // other type then expected
                 }
-
             }
+
         } else {
             Observable.just("No connection to server")
+        }
+    }
+
+    private fun setupTypingPublisher() {
+        val disp = this.typingPublishSubject
+                //?.compose(currentFragment.bindToLifecycle())
+                ?.debounce(typingDebounceDuration, TimeUnit.MILLISECONDS)
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.doOnSubscribe {
+                    this.typingDisposable = it
+                }
+                ?.doOnNext {
+                    userIsTyping = false
+                    userStartedTyping(false)
+                }
+                ?.doOnError {
+                    it
+                }?.subscribe()
+    }
+
+    fun userStartedTyping(didStartTyping: Boolean) {
+        SessionController.getInstance().getUser()?.let { user ->
+            val gson = Gson().toJson(user)
+            if (didStartTyping) {
+                typingPublishSubject?.onNext(1)
+                if (userIsTyping != true) {
+                    socket?.emit(TOPIC_USER_TYPING, gson)
+                }
+                userIsTyping = true
+            } else if (userIsTyping == false) {
+                socket?.emit(TOPIC_USER_STOP_TYPING, gson)
+                userIsTyping = false
+            }
         }
     }
 
     companion object {
         const val TOPIC_NEW_MESSAGE = "new_message"
         const val TOPIC_USER_JOINED = "user_joined"
+        const val TOPIC_USER_TYPING = "user_typing"
+        const val TOPIC_USER_STOP_TYPING = "user_stop_typing"
     }
-
 }

@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.AudioHelper
@@ -301,6 +302,10 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
         if (textMessage.isEmpty()) return
         inputEditText.text.clear()
         convertToMMDataAndSend(textMessage, MMDataType.Text)
+    }
+
+    fun getEditText(): EditText {
+        return inputEditText
     }
 
     override fun onStop() {
