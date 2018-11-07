@@ -9,27 +9,25 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.buur.frederik.multimediechat.R
+import kotlin.math.roundToInt
 
 object ImageLoader {
 
     fun loadImage(context: Context, image: Any, view: ImageView, progress: View? = null) {
 
-        val dp = context.resources.getDimension(R.dimen.view_message_height_max)
-//                context.resources.getDimension(R.dimen.view_message_height_max) +
-//                context.resources.getDimension(R.dimen.view_message_margin)
-        val px = (dp * context.resources.displayMetrics.density).toInt()
+        val size = (context.resources.getDimension(R.dimen.view_message_height_max)).roundToInt()
 
         Glide.with(context)
                 .load(image)
                 .apply(RequestOptions.centerCropTransform().fitCenter()
-                        .placeholder( R.drawable.background_image_placeholder)
+                        .placeholder(R.drawable.background_image_placeholder)
                         .error(R.drawable.background_image_placeholder)
-                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                        .override(px, px)
+                        .override(size, size)
                 )
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable>, isFirstResource: Boolean): Boolean {

@@ -2,28 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-android {
-    compileSdkVersion 28
-
-    defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-}
-
 ext {
     Glide = '4.7.1'                   // https://github.com/bumptech/glide/releases
     Firebase = '12.0.1'               // https://firebase.google.com/support/release-notes/android
@@ -102,6 +80,28 @@ dependencies {
     // DocumentPicker
 //    implementation 'com.droidninja:filepicker:2.1.5' //https://arunsharma.me/blog/integrate-android-file-picker-photopicker-document-picker-android/
     implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8'
+
+}
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
 
 }
 
