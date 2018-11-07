@@ -138,6 +138,7 @@ class ChatController {
         return if (socket?.connected() == true) {
             when (mmData.type) {
                 MMDataType.Text.ordinal, MMDataType.Gif.ordinal -> {
+                    userIsTyping = false
                     userStartedTyping(false)
                     val gson = Gson().toJson(mmData)
                     Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
@@ -162,7 +163,6 @@ class ChatController {
                                         ?.observeOn(AndroidSchedulers.mainThread())
                             }
                             .doOnNext { uploadResponse ->
-                                userStartedTyping(false)
                                 mmData.source = uploadResponse.url
                                 val gson = Gson().toJson(mmData)
                                 Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))

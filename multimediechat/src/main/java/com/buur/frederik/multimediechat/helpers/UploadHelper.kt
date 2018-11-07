@@ -67,11 +67,13 @@ object UploadHelper {
 
             when (mmData.type) {
                 MMDataType.Image.ordinal -> {
-                    val bitmap = rotateBitmapIfNeeded(file.path, UploadHelper.downscaleFile(file))
+                    var bitmap = rotateBitmapIfNeeded(file.path, UploadHelper.downscaleFile(file))
                     val tempFile = File.createTempFile("MultiMediaImage_", ".jpg")
                     FileOutputStream(tempFile).use { stream ->
                         bitmap?.compress(Bitmap.CompressFormat.JPEG, 75, stream)
                     }
+                    bitmap?.recycle()
+                    bitmap = null
                     reqBody = RequestBody.create(MediaType.parse(mmData.source), tempFile)
                     partName = "image"
                     fileName = tempFile.name
@@ -153,9 +155,9 @@ object UploadHelper {
         val o = BitmapFactory.Options()
         o.inJustDecodeBounds = true
 
-        var fis = FileInputStream(f)
-        BitmapFactory.decodeStream(fis, null, o)
-        fis.close()
+        FileInputStream(f).use {
+            BitmapFactory.decodeStream(it, null, o)
+        }
 
         var scale = 1
         if (o.outHeight > IMAGE_MAX_SIZE || o.outWidth > IMAGE_MAX_SIZE) {
@@ -165,11 +167,10 @@ object UploadHelper {
         //Decode with inSampleSize
         val o2 = BitmapFactory.Options()
         o2.inSampleSize = scale
-        fis = FileInputStream(f)
-        val bitmap = BitmapFactory.decodeStream(fis, null, o2)
-        fis.close()
+        FileInputStream(f).use {
+            return BitmapFactory.decodeStream(it, null, o2)
 
-        return bitmap
+        }
     }
 
 }
