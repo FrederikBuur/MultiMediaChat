@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
 import com.buur.frederik.multimediechat.R
+import com.buur.frederik.multimediechat.helpers.ImageLoader
 import com.buur.frederik.multimediechat.models.MMData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -36,6 +37,7 @@ class VideoView: SuperView, View.OnClickListener {
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe({}, {})
+        this.mmData?.source?.let { ImageLoader.loadImage(context, it, vidMsgContent, progress = imgMsgProgress, asBitmap = true) }
 
         this.setParams(vidMsgContainer)
         this.setupDateAndSender(vidMsgTime, vidMsgSender)
