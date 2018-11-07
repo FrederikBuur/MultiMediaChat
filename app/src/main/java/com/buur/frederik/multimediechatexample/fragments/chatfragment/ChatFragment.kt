@@ -1,6 +1,7 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,8 @@ import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
 import com.buur.frederik.multimediechatexample.models.User
+import com.jakewharton.rxbinding2.view.layoutChangeEvents
+import com.jakewharton.rxbinding2.view.layoutChanges
 import com.jakewharton.rxbinding2.widget.textChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -31,6 +34,7 @@ class ChatFragment : MMFragment(), ISendMessage {
     private var chatController: ChatController? = null
     private var newMessageDisposable: Disposable? = null
     private var isTypingDisposable: Disposable? = null
+    private var resizeContainerDisposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_chat, container, false)
@@ -63,7 +67,24 @@ class ChatFragment : MMFragment(), ISendMessage {
         scrollToBottomPost()
         setupNewEventListener()
         setupTypingListener()
+        setupResizeListener()
+    }
 
+    private fun setupResizeListener() {
+        resizeContainerDisposable = chatFragmentContainer?.layoutChanges()
+                ?.compose(bindToLifecycle())
+                ?.doOnNext {
+                    //scrollToBottomIfNeeded()
+                }
+                ?.subscribe({}, {})
+
+        val dips = chatRecyclerView.layoutChangeEvents()
+                .compose(bindToLifecycle())
+                .doOnNext {
+                    if (it.bottom() < it.oldBottom())
+                    scrollToBottomIfNeeded()
+                }
+                .subscribe({}, {})
     }
 
     private fun setupNewEventListener() {
@@ -77,7 +98,7 @@ class ChatFragment : MMFragment(), ISendMessage {
                             val mmData = event.data as MMData
                             messageList?.add(mmData)
                             adapter?.notifyDataSetChanged()
-                            scrollToBottomPost()
+                            scrollToBottomIfNeeded()
                         }
                         EventType.UserConnected.ordinal -> {
                             val name = event.data as String
@@ -86,7 +107,7 @@ class ChatFragment : MMFragment(), ISendMessage {
                         EventType.StartTyping.ordinal -> {
                             val user = event.data as User
                             this.adapter?.addUserIsTyping(user)
-                            scrollToBottomPost()
+                            scrollToBottomIfNeeded()
 //                            Toast.makeText(context, "${user.name} typing", Toast.LENGTH_SHORT).show()
                         }
                         EventType.StopTyping.ordinal -> {
@@ -118,6 +139,9 @@ class ChatFragment : MMFragment(), ISendMessage {
         if (adapter == null) {
             context?.let { adapter = ChatAdapter(it, messageList) }
         }
+        //val lm = LinearLayoutManager(context)
+        //lm.initialPrefetchItemCount = 5
+        //chatRecyclerView.layoutManager = lm
         chatRecyclerView.adapter = adapter
 
     }
@@ -162,9 +186,13 @@ class ChatFragment : MMFragment(), ISendMessage {
                 })
     }
 
+    private fun scrollToBottomIfNeeded() {
+        scrollToBottomPost()
+    }
+
     private fun scrollToBottomPost() {
         chatRecyclerView.post {
-            chatRecyclerView.scrollToPosition(messageList?.size?.minus(1) ?: 0)
+            chatRecyclerView.scrollToPosition(adapter?.itemCount?.minus(1) ?: 0)
         }
     }
 
