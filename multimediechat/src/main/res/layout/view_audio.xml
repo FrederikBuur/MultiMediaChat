@@ -44,6 +44,14 @@
                 custom:avSpeed="normal"
                 custom:avType="fill" />
 
+            <TextView
+                android:text="00:12"
+                android:id="@+id/audioLengthTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="@dimen/margin_8"/>
+
             <ImageView
                 android:id="@+id/audioActionImg"
                 android:layout_width="wrap_content"
