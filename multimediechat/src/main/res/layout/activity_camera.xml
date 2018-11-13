@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cameraActivityContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".camera.CameraActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.wonderkiln.camerakit.CameraView
+            android:id="@+id/cameraKitView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:keepScreenOn="true"
+            app:ckMethod="still"
+            app:ckFacing="back"
+            app:ckFocus="tapWithMarker"
+            app:ckJpegQuality="100"
+            app:ckPermissions="strict"
+            app:ckVideoQuality="max720p"
+            app:ckPinchToZoom="true"
+            app:ckDoubleTapToToggleFacing="true"/>
+
+        <Button
+            android:id="@+id/cameraCaptureButton"
+            android:layout_width="@dimen/margin_72"
+            android:layout_height="@dimen/margin_72"
+            android:layout_gravity="center"
+            android:background="@drawable/shape_circle_camera_capture"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".95" />
+
+        <Button
+            android:id="@+id/cameraFacingDirectionButton"
+            android:layout_width="@dimen/margin_36"
+            android:layout_height="@dimen/margin_36"
+            android:background="@drawable/ic_switch_camera"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@id/cameraCaptureButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cameraCaptureButton"
+            app:layout_constraintTop_toTopOf="@id/cameraCaptureButton" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/cameraVideoLengthIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_8"
+        android:background="@color/colorAccent"
+        android:layout_gravity="top|start"/>
+
+    <FrameLayout
+        android:id="@+id/cameraFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+</FrameLayout>

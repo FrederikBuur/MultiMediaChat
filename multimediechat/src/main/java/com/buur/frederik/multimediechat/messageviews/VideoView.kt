@@ -8,10 +8,7 @@ import android.view.View
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.helpers.ImageLoader
 import com.buur.frederik.multimediechat.models.MMData
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.view_video.view.*
 
 class VideoView: SuperView, View.OnClickListener {
@@ -46,7 +43,7 @@ class VideoView: SuperView, View.OnClickListener {
 
     override fun onClick(v: View?) {
         if (v == vidMsgContentContainer) {
-            val intent = Intent(context, EnlargedImageView::class.java)
+            val intent = Intent(context, EnlargedContentView::class.java)
             this.mmData?.let { data ->
                 intent.putExtra("source", data.source)
                 intent.putExtra("type", data.type)

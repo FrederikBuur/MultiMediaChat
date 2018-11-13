@@ -18,10 +18,6 @@ import java.text.DecimalFormat
 
 class DocumentView : SuperView, View.OnClickListener {
 
-    private val kb = 1024
-    private val mb = kb * kb
-    private val format = DecimalFormat("#.##")
-
     var file: File? = null
 
     constructor(context: Context) : super(context) {
@@ -61,7 +57,7 @@ class DocumentView : SuperView, View.OnClickListener {
     private fun setupFileDetails() {
         documentTitle.text = getFileTitle()
         documentType.text = getFileType()
-        documentSize.text = getFileSize()
+        file?.let { documentSize.text = getFileSize(it) }
     }
 
     override fun onClick(v: View?) {
@@ -73,24 +69,6 @@ class DocumentView : SuperView, View.OnClickListener {
     private fun getFileTitle(): String {
         return file?.path?.let { path ->
             path.substring(path.lastIndexOf("/") + 1)
-        } ?: kotlin.run {
-            "Unknown"
-        }
-    }
-
-    private fun getFileSize(): String {
-        return file?.let {
-            val size = it.length()
-            documentSize.visibility = if (size < 1) {
-                View.GONE
-            } else {
-                View.VISIBLE
-            }
-            when {
-                size > mb -> format.format(size / mb) + " MB"
-                size > kb -> format.format(size / kb) + " KB"
-                else -> format.format(size) + " Byte"
-            }
         } ?: kotlin.run {
             "Unknown"
         }
@@ -134,6 +112,27 @@ class DocumentView : SuperView, View.OnClickListener {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(context, "Not able to open document", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    companion object {
+
+        private val kb = 1024
+        private val mb = kb * kb
+        private val format = DecimalFormat("#.##")
+
+        fun getFileSize(file: File, view: View? = null): String {
+            val size = file.length()
+            view?.visibility = if (size < 1) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
+            return when {
+                size > mb -> format.format(size / mb) + " MB"
+                size > kb -> format.format(size / kb) + " KB"
+                else -> format.format(size) + " Byte"
+            }
         }
     }
 

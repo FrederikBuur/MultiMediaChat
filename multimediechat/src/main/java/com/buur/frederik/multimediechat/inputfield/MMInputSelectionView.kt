@@ -1,5 +1,6 @@
 package com.buur.frederik.multimediechat.inputfield
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.support.v4.app.Fragment
@@ -9,6 +10,9 @@ import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.gifpicker.GifPickerActivity
 import android.provider.MediaStore
+import android.support.v7.app.AppCompatActivity
+import com.buur.frederik.multimediechat.camera.CameraActivity
+import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.vincent.filepicker.Constant
 import com.vincent.filepicker.activity.NormalFilePickActivity
 
@@ -16,8 +20,11 @@ import com.vincent.filepicker.activity.NormalFilePickActivity
 class MMInputSelectionView : FrameLayout {
 
     private var fragment: Fragment? = null
-    private var optionsContainer: FrameLayout? = null
-    private var rootLayout: View? = null
+    private var act: AppCompatActivity? = null
+        get() {
+            return context as? AppCompatActivity
+        }
+
 
     init {
         View.inflate(context, R.layout.view_options, this)
@@ -35,43 +42,51 @@ class MMInputSelectionView : FrameLayout {
         this.fragment = fragment
     }
 
-    fun openCamera() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-
-        val chooserIntent = Intent(Intent.ACTION_CHOOSER)
-        val contentSelectionIntent = Intent(Intent.ACTION_GET_CONTENT)
-//        contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE)
-//        contentSelectionIntent.type = "*/*"
-        val intentArray = arrayOf(takePictureIntent, takeVideoIntent)
-        chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent)
-        chooserIntent.putExtra(Intent.EXTRA_TITLE, "Choose an action")
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray)
-        fragment?.startActivityForResult(chooserIntent, MMInputFragment.CAMERA_REQUEST_CODE)
-
+    fun openCamera(requestCode: Int) {
+        context?.let { con ->
+            if (PermissionRequester.isCameraPermissionGranted(con) &&
+                    PermissionRequester.isMicrophonePermissionGranted(con)) {
+                val intent = Intent(context, CameraActivity::class.java)
+                fragment?.startActivityForResult(intent, requestCode)
+            } else {
+                PermissionRequester.requestPermissions(act, Manifest.permission.CAMERA)
+                PermissionRequester.requestPermissions(act, Manifest.permission.RECORD_AUDIO)
+            }
+        }
     }
 
-    fun openGalleryPicker() {
-        val intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        intent.type = "image/* video/*"
-        fragment?.startActivityForResult(intent, MMInputFragment.GALLERY_REQUEST_CODE)
+    fun openGalleryPicker(requestCode: Int) {
+        context?.let { con ->
+            if (PermissionRequester.isWriteExternalStorageGranted(con) &&
+                    PermissionRequester.isReadExternalStorageGranted(con)) {
+                val intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                intent.type = "image/* video/*"
+                fragment?.startActivityForResult(intent, requestCode)
+            } else {
+                PermissionRequester.requestPermissions(act, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                PermissionRequester.requestPermissions(act, Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
     }
 
-    fun openDocumentPicker() {
-//        var intent = Intent(Intent.ACTION_GET_CONTENT)
-//        intent.type = "application/pdf"
-//        intent = Intent.createChooser(intent, "Choose a file")
-//        fragment?.startActivityForResult(intent, MMInputFragment.DOCUMENT_REQUEST_CODE)
-
-        val intent = Intent(context, NormalFilePickActivity::class.java)
-        intent.putExtra(Constant.MAX_NUMBER, 1)
+    fun openDocumentPicker(requestCode: Int) {
+        context?.let { con ->
+            if (PermissionRequester.isWriteExternalStorageGranted(con) &&
+                    PermissionRequester.isReadExternalStorageGranted(con)) {
+                val intent = Intent(context, NormalFilePickActivity::class.java)
+                intent.putExtra(Constant.MAX_NUMBER, 1)
 //        intent.putExtra(NormalFilePickActivity.SUFFIX, arrayOf("xlsx", "xls", "doc", "docx", "ppt", "pptx", "pdf"))
-        intent.putExtra(NormalFilePickActivity.SUFFIX, arrayOf("pdf"))
-        fragment?.startActivityForResult(intent, MMInputFragment.DOCUMENT_REQUEST_CODE)
+                intent.putExtra(NormalFilePickActivity.SUFFIX, arrayOf("pdf"))
+                fragment?.startActivityForResult(intent, requestCode)
+            } else {
+                PermissionRequester.requestPermissions(act, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                PermissionRequester.requestPermissions(act, Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
 
     }
 
-    fun openGifPicker(context: Context?, requestCode: Int) {
+    fun openGifPicker(requestCode: Int) {
         val i = Intent(context, GifPickerActivity::class.java)
         fragment?.startActivityForResult(i, requestCode)
     }

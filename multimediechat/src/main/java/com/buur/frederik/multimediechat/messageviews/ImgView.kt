@@ -36,7 +36,7 @@ class ImgView: SuperView, View.OnClickListener {
 
     override fun onClick(v: View?) {
         if (v == imgMsgContentContainer) {
-            val intent = Intent(context, EnlargedImageView::class.java)
+            val intent = Intent(context, EnlargedContentView::class.java)
             mmData?.let { data ->
                 intent.putExtra("source", data.source)
                 intent.putExtra("type", data.type)

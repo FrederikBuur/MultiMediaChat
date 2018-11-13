@@ -13,9 +13,9 @@ import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.ImageLoader
 import kotlinx.android.synthetic.main.activity_enlarged_image_view.*
 
-class EnlargedImageView : AppCompatActivity() {
+class EnlargedContentView : AppCompatActivity() {
 
-    val tag = "EnlargedImageView"
+    val tag = "EnlargedContentView"
 
     var source: String? = null
     var type: Int? = null

@@ -1,5 +1,6 @@
 package com.buur.frederik.multimediechat.inputfield
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import com.buur.frederik.multimediechat.R
+import com.buur.frederik.multimediechat.camera.CameraActivity
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.helpers.UploadHelper
@@ -89,8 +91,15 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                     }
                 }
                 MMInputFragment.CAMERA_REQUEST_CODE -> {
-                    val image = data.extras?.get("data")
-                    image
+                    val content = data.getStringExtra(CameraActivity.CAMERA_CONTENT_KEY)
+                    val type = data.getStringExtra(CameraActivity.CAMERA_TYPE_KEY).toIntOrNull() ?: -1
+                    val mmType =
+                            if (type == MMDataType.Video.ordinal) {
+                        MMDataType.Video
+                    } else {
+                        MMDataType.Image
+                    }
+                    convertToMMDataAndSend(content, mmType)
                 }
                 // doc request code
                 MMInputFragment.DOCUMENT_REQUEST_CODE -> {
@@ -113,28 +122,22 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
         if (mmInputController == null) {
             mmInputController = MMInputController()
         }
-
-        context?.let {
-            if (!PermissionRequester.devicePermissionIsGranted(it)) {
-                PermissionRequester.requestPermissions((it as? AppCompatActivity))
-            }
-        }
     }
 
     override fun onClick(v: View?) {
         when (v) {
             optionsViewCamera -> {
-                mediaSelectionView.openCamera()
+                mediaSelectionView.openCamera(CAMERA_REQUEST_CODE)
             }
             optionsViewFile -> {
-                mediaSelectionView.openDocumentPicker()
+                mediaSelectionView.openDocumentPicker(DOCUMENT_REQUEST_CODE)
             }
             optionsViewGif -> {
-                mediaSelectionView.openGifPicker(context, MMInputFragment.GIF_REQUEST_CODE)
+                mediaSelectionView.openGifPicker(GIF_REQUEST_CODE)
 
             }
             optionsViewGallery -> {
-                mediaSelectionView.openGalleryPicker()
+                mediaSelectionView.openGalleryPicker(GALLERY_REQUEST_CODE)
             }
             else -> {
             }
@@ -238,8 +241,14 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
     }
 
     private fun startRecording() {
+        context?.let { con ->
+            if (!PermissionRequester.isMicrophonePermissionGranted(con)) {
+                PermissionRequester.requestPermissions(con as? AppCompatActivity, Manifest.permission.RECORD_AUDIO)
+                return
+            }
+        }
 
-        val audioName = "/${System.currentTimeMillis()}.3gp"
+        val audioName = "/MultiMediaAudio_${System.currentTimeMillis()}.3gp"
         outputAudioFile = Environment.getExternalStorageDirectory().absolutePath + audioName
 
         mediaRecorder = MediaRecorder()
@@ -261,7 +270,6 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                     }
                     ?.subscribe({ time ->
                         val percentDecimal = (time.toFloat().div(this.recordingMaxLength)).times(this.recordingTimerInterval)
-                        Log.d( tagg, "$percentDecimal")
                         AudioHelper.currentTimeVisualization(percentDecimal, recordMessageNotificationIndicator, recordMessageNotification)
                     }, {})
         } catch (ise: IllegalStateException) {

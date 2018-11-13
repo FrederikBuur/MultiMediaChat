@@ -20,7 +20,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.2.70"
@@ -80,6 +79,12 @@ dependencies {
     // DocumentPicker
 //    implementation 'com.droidninja:filepicker:2.1.5' //https://arunsharma.me/blog/integrate-android-file-picker-photopicker-document-picker-android/
     implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8'
+
+    // CameraKit
+//    implementation 'com.camerakit:camerakit:1.0.0-beta3.9'
+    implementation 'com.wonderkiln:camerakit:0.13.0'
+    implementation 'com.camerakit:jpegkit:0.1.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.24.0'
 
 }
 

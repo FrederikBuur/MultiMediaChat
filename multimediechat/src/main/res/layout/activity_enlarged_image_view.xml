@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/textDark"
-    tools:context=".messageviews.EnlargedImageView">
+    android:background="@color/black"
+    tools:context=".messageviews.EnlargedContentView">
 
     <com.jsibbold.zoomage.ZoomageView
         android:id="@+id/zoomView"

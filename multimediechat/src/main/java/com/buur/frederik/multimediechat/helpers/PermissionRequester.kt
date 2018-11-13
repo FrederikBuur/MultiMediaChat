@@ -11,19 +11,29 @@ object PermissionRequester {
 
     private const val REQUEST_PERMISSION_CODE = 1000
 
-    fun devicePermissionIsGranted(context: Context): Boolean {
+    fun isWriteExternalStorageGranted(context: Context): Boolean {
         val writeExternal = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val recordAudio = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
-
-        return writeExternal == PackageManager.PERMISSION_GRANTED &&
-                recordAudio == PackageManager.PERMISSION_GRANTED
+        return writeExternal == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestPermissions(activity: AppCompatActivity?) {
+    fun isReadExternalStorageGranted(context: Context): Boolean {
+        val readExternal = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+        return readExternal == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun isMicrophonePermissionGranted(context: Context): Boolean {
+        val recordAudio = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
+        return recordAudio == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun isCameraPermissionGranted(context: Context): Boolean {
+        val useCamera = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+        return useCamera == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun requestPermissions(activity: AppCompatActivity?, permission: String) {
         activity?.let {
-            ActivityCompat.requestPermissions(it, arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.RECORD_AUDIO)
+            ActivityCompat.requestPermissions(it, arrayOf(permission)
                     , REQUEST_PERMISSION_CODE)
         }
     }

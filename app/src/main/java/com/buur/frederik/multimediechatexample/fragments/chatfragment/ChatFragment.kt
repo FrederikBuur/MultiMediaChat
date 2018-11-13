@@ -1,5 +1,6 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
