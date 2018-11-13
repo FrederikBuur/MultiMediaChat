@@ -77,8 +77,7 @@ dependencies {
     implementation 'com.gauravk.audiovisualizer:audiovisualizer:0.9.1'
 
     // DocumentPicker
-//    implementation 'com.droidninja:filepicker:2.1.5' //https://arunsharma.me/blog/integrate-android-file-picker-photopicker-document-picker-android/
-    implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8'
+    implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8' //https://github.com/fishwjy/MultiType-FilePicker
 
     // CameraKit
 //    implementation 'com.camerakit:camerakit:1.0.0-beta3.9'
