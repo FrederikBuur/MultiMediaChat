@@ -55,6 +55,16 @@ open class MMData(
             }
         }
 
+        fun isFileTooBig(path: String?, size: Int): Boolean {
+            val file = File(path)
+            return if (file.exists()) {
+                val l = file.length()
+                l >= size
+            } else {
+                true
+            }
+        }
+
     }
 
 }

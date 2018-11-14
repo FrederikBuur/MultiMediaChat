@@ -17,6 +17,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.camera.CameraActivity
 import com.buur.frederik.multimediechat.enums.MMDataType
@@ -43,6 +44,7 @@ import java.lang.RuntimeException
 class MMInputFragment : RxFragment(), View.OnClickListener {
 
     private val tagg = "MMInputFragment"
+    private val fileSizeLimit = 15000000
     private val recordingMaxLength: Long = 60000 // millisecond
     private val recordingTimerInterval: Long = 50 // millisecond
 
@@ -78,18 +80,23 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                     val gifUrl = data.getStringExtra(GifPickerActivity.GIF_KEY)
                     convertToMMDataAndSend(gifUrl, MMDataType.Gif)
                 }
-                // img or vid request code
+                // gallery request code
                 MMInputFragment.GALLERY_REQUEST_CODE -> {
                     val image = data.data
                     image?.let {
                         val path = UploadHelper.getPathFromURI(it, context)
                         if (it.toString().contains("/video/")) {
-                            convertToMMDataAndSend(path ?: "", MMDataType.Video)
+                            if (!MMData.isFileTooBig(path, fileSizeLimit)) {
+                                convertToMMDataAndSend(path ?: "", MMDataType.Video)
+                            } else {
+                                Toast.makeText(context, "File too large", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
                             convertToMMDataAndSend(path ?: "", MMDataType.Image)
                         }
                     }
                 }
+                // camera request code
                 MMInputFragment.CAMERA_REQUEST_CODE -> {
                     val content = data.getStringExtra(CameraActivity.CAMERA_CONTENT_KEY)
                     val type = data.getStringExtra(CameraActivity.CAMERA_TYPE_KEY).toIntOrNull() ?: -1
@@ -101,11 +108,15 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                     }
                     convertToMMDataAndSend(content, mmType)
                 }
-                // doc request code
+                // document request code
                 MMInputFragment.DOCUMENT_REQUEST_CODE -> {
                     val file = data.getParcelableArrayListExtra<NormalFile>(Constant.RESULT_PICK_FILE).firstOrNull()?.path
-                    file?.let {
-                        convertToMMDataAndSend(it, MMDataType.Document)
+                    file?.let { path ->
+                        if (!MMData.isFileTooBig(path, fileSizeLimit)) {
+                            convertToMMDataAndSend(path, MMDataType.Document)
+                        } else {
+                            Toast.makeText(context, "File too large", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

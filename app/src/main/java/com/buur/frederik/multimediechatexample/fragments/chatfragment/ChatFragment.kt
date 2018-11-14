@@ -186,7 +186,7 @@ class ChatFragment : MMFragment(), ISendMessage {
                     // remove mmData from list since it failed to upload
                     val didRemoveMMData = messageList?.remove(mmData)
                     if (didRemoveMMData == true) adapter?.notifyDataSetChanged()
-                    Toast.makeText(context, "", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Sending failed", Toast.LENGTH_SHORT).show()
                 })
     }
 
