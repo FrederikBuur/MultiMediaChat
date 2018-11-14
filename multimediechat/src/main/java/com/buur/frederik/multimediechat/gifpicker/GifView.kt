@@ -34,9 +34,6 @@ class GifView : FrameLayout, View.OnClickListener {
         this.gifData = gifData
         this.gifClickDelegate = gifClickDelegate
 
-//        val width = this.measuredWidth
-//        calculateHeight(width, gif)
-
         insertGifIntoImageView(gifData?.images?.preview_gif?.url)
         gifImageContainer.setOnClickListener(this)
     }
@@ -46,6 +43,7 @@ class GifView : FrameLayout, View.OnClickListener {
                 .asGif()
                 .load(url)
                 .apply(RequestOptions.centerCropTransform().centerCrop()
+                        .placeholder(R.drawable.backgroung_gif_placeholder)
                         .override(200, 200)
                 )
                 .listener(object : RequestListener<GifDrawable> {
@@ -67,23 +65,5 @@ class GifView : FrameLayout, View.OnClickListener {
             }
         }
     }
-
-
-//    private fun calculateHeight(width: Int, gif: Gif?) {
-//
-//        val h = gif?.height?.toFloatOrNull()
-//        val w = gif?.width?.toFloatOrNull()
-//
-//        val ratio = h?.div(w ?: 1f)
-//        ratio?.let {setHeightFromWidth(it)}
-//    }
-//
-//    private fun setHeightFromWidth(ratio: Float) {
-//        val currentWidth = this.measuredWidth.toFloat()
-//        val newHeight = currentWidth * ratio
-//
-//        val params = FrameLayout.LayoutParams(currentWidth.toInt(), newHeight.toInt())
-//        gifImageView.layoutParams = params
-//    }
 
 }

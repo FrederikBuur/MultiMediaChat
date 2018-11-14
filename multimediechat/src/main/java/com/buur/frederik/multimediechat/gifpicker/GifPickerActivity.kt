@@ -39,7 +39,7 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
     private var currentDisposable: Disposable? = null
     private var searchListenerDisposable: Disposable? = null
 
-    private var shouldFetchMore: Boolean = false
+    private var canFetchMore: Boolean = false
         get() {
             return gifTotalCount.minus(GifPickerController.gifFetchAmount) > gifList?.count() ?: 0
         }
@@ -117,7 +117,7 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
                         val totalCount = layoutManager.itemCount
                         val lastVisible = layoutManager.findLastVisibleItemPosition()
 
-                        if (lastVisible > totalCount.minus(5) && !isFetching.get() && shouldFetchMore) {
+                        if (lastVisible > totalCount.minus(5) && !isFetching.get() && canFetchMore) {
                             lastSearch?.let {
                                 searchGifs(it, false, gifList?.count() ?: 0)
                             } ?: kotlin.run {
