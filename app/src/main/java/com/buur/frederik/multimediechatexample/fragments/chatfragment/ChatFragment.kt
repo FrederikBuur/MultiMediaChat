@@ -89,7 +89,7 @@ class ChatFragment : MMFragment(), ISendMessage {
     }
 
     private fun setupNewEventListener() {
-        newMessageDisposable = chatController?.newMessagesPublisher()
+        newMessageDisposable = chatController?.eventPublishSubject
                 ?.compose(bindToLifecycle())
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribe({ event ->
@@ -183,7 +183,10 @@ class ChatFragment : MMFragment(), ISendMessage {
                 ?.subscribe({
                     it
                 }, {
-                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                    // remove mmData from list since it failed to upload
+                    val didRemoveMMData = messageList?.remove(mmData)
+                    if (didRemoveMMData == true) adapter?.notifyDataSetChanged()
+                    Toast.makeText(context, "", Toast.LENGTH_SHORT).show()
                 })
     }
 

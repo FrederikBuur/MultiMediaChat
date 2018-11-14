@@ -20,8 +20,11 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.socket.client.Socket
+import io.socket.client.SocketIOException
 import io.socket.emitter.Emitter
 import org.json.JSONException
+import java.net.SocketException
+import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 
 class ChatController {
@@ -31,7 +34,7 @@ class ChatController {
 
     private var act: AppCompatActivity? = null
     private var socket: Socket? = null
-    private var eventPublishSubject: PublishSubject<NewEventResponse>? = null
+    var eventPublishSubject: PublishSubject<NewEventResponse>? = null
     private var typingPublishSubject: PublishSubject<Int>? = null
     private var typingDisposable: Disposable? = null
 
@@ -130,55 +133,70 @@ class ChatController {
         this.socket?.off(TOPIC_USER_STOP_TYPING, onUserStopTyping)
     }
 
-    fun newMessagesPublisher(): Observable<NewEventResponse>? {
-        return this.eventPublishSubject
-    }
-
-    fun sendMessageToServer(mmData: MMData): Observable<*> {
-        return if (socket?.connected() == true) {
-            when (mmData.type) {
-                MMDataType.Text.ordinal, MMDataType.Gif.ordinal -> {
-                    userIsTyping = false
-                    userStartedTyping(false)
-                    val gson = Gson().toJson(mmData)
-                    Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
-                }
-                MMDataType.Image.ordinal,
-                MMDataType.Audio.ordinal,
-                MMDataType.Document.ordinal,
-                MMDataType.Video.ordinal -> {
-                    UploadHelper.prepareMMDataToUpload(mmData)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .concatMap { body ->
-                                val uploadObservable = when (mmData.type) {
-                                    MMDataType.Image.ordinal -> getUploadClient().postImage(body)
-                                    MMDataType.Audio.ordinal -> getUploadClient().postAudio(body)
-                                    MMDataType.Video.ordinal -> getUploadClient().postVideo(body)
-                                    MMDataType.Document.ordinal -> getUploadClient().postDocument(body)
-                                    else -> null
+    fun sendMessageToServer(mmData: MMData): Observable<Int> {
+        return Observable.create { emitter ->
+            if (socket?.connected() == true) {
+                when (mmData.type) {
+                    MMDataType.Text.ordinal, MMDataType.Gif.ordinal -> {
+                        userIsTyping = false
+                        userStartedTyping(false)
+                        val gson = Gson().toJson(mmData)
+                        socket?.emit(TOPIC_NEW_MESSAGE, gson)
+                        emitter.onNext(1)
+                        emitter.onComplete()
+                    }
+                    MMDataType.Image.ordinal,
+                    MMDataType.Audio.ordinal,
+                    MMDataType.Document.ordinal,
+                    MMDataType.Video.ordinal -> {
+                        UploadHelper.prepareMMDataToUpload(mmData)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .concatMap { body ->
+                                    val uploadObservable = when (mmData.type) {
+                                        MMDataType.Image.ordinal -> getUploadClient().postImage(body)
+                                        MMDataType.Audio.ordinal -> getUploadClient().postAudio(body)
+                                        MMDataType.Video.ordinal -> getUploadClient().postVideo(body)
+                                        MMDataType.Document.ordinal -> getUploadClient().postDocument(body)
+                                        else -> null
+                                    }
+                                    uploadObservable
+                                            ?.subscribeOn(Schedulers.io())
+                                            ?.observeOn(AndroidSchedulers.mainThread())
                                 }
-                                uploadObservable
-                                        ?.subscribeOn(Schedulers.io())
-                                        ?.observeOn(AndroidSchedulers.mainThread())
-                            }
-                            .doOnNext { uploadResponse ->
-                                mmData.source = uploadResponse.url
-                                val gson = Gson().toJson(mmData)
-                                Observable.just(socket?.emit(TOPIC_NEW_MESSAGE, gson))
-                            }
-                            .doOnError {
-                                it
-                            }
+                                .doOnNext { uploadResponse ->
+                                    MMData.deleteFile(mmData.source)
+                                    mmData.source = uploadResponse.url
+                                    val gson = Gson().toJson(mmData)
+                                    socket?.emit(TOPIC_NEW_MESSAGE, gson)
+                                    emitter.onNext(1)
+                                    emitter.onComplete()
+                                }
+                                .doOnError { error ->
+                                    when (error) {
+                                        is SocketException, is SocketTimeoutException -> {
+                                            MMData.deleteFile(mmData.source)
+                                        }
+                                        else -> {
+                                            error
+                                        }
+                                    }
+                                    emitter.onError(error)
+                                    emitter.onComplete()
+                                }
+                                .subscribe({}, {})
+                    }
+                    else -> {
+                        emitter.onError(Throwable("Unknown MMData type"))
+                        emitter.onComplete()
+                    }
                 }
-                else -> {
-                    Observable.just(Log.e(tag, "trying to send unknown mmdata type")) // other type then expected
-                }
-            }
 
-        } else {
-            Observable.just("No connection to server")
-            // delete potential files
+            } else {
+                MMData.deleteFile(mmData.source)
+                emitter.onError(SocketException())
+                emitter.onComplete()
+            }
         }
     }
 

@@ -13,6 +13,7 @@ import android.widget.MediaController
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.ImageLoader
+import com.buur.frederik.multimediechat.models.MMData
 import kotlinx.android.synthetic.main.fragment_content_preview.*
 import java.io.File
 
@@ -91,10 +92,7 @@ class ContentPreviewFragment : Fragment(), View.OnClickListener {
 
     fun handleBackPress() {
         content?.let { c ->
-            val file = File(c)
-            if (file.exists()) {
-                file.delete()
-            }
+            MMData.deleteFile(c)
         }
         (context as? CameraActivity)?.supportFragmentManager?.popBackStack()
     }

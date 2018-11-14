@@ -2,6 +2,8 @@ package com.buur.frederik.multimediechat.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
+import java.io.File
 
 open class MMData(
         var id: Long,
@@ -44,6 +46,15 @@ open class MMData(
         override fun newArray(size: Int): Array<MMData?> {
             return arrayOfNulls(size)
         }
+
+        fun deleteFile(filePath: String) {
+            val file = File(filePath)
+            if (file.exists()) {
+                file.delete()
+                Log.d("MMData", "deleted file $filePath")
+            }
+        }
+
     }
 
 }
