@@ -1,12 +1,11 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
-import android.content.res.Configuration
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.buur.frederik.multimediechat.helpers.MMToast
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.inputfield.ISendMessage
 import com.buur.frederik.multimediechat.inputfield.MMInputFragment
@@ -186,7 +185,7 @@ class ChatFragment : MMFragment(), ISendMessage {
                     // remove mmData from list since it failed to upload
                     val didRemoveMMData = messageList?.remove(mmData)
                     if (didRemoveMMData == true) adapter?.notifyDataSetChanged()
-                    Toast.makeText(context, "Sending failed", Toast.LENGTH_SHORT).show()
+                    MMToast.showToast(context, "Sending failed", Toast.LENGTH_SHORT)
                 })
     }
 

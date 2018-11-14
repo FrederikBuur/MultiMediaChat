@@ -26,6 +26,7 @@ import com.buur.frederik.multimediechat.helpers.UploadHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.buur.frederik.multimediechat.gifpicker.GifPickerActivity
+import com.buur.frederik.multimediechat.helpers.MMToast
 import com.jakewharton.rxbinding2.view.touches
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.trello.rxlifecycle2.components.support.RxFragment
@@ -89,7 +90,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                             if (!MMData.isFileTooBig(path, fileSizeLimit)) {
                                 convertToMMDataAndSend(path ?: "", MMDataType.Video)
                             } else {
-                                Toast.makeText(context, "File too large", Toast.LENGTH_SHORT).show()
+                                MMToast.showToast(context, "File too large", Toast.LENGTH_SHORT)
                             }
                         } else {
                             convertToMMDataAndSend(path ?: "", MMDataType.Image)
@@ -115,7 +116,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                         if (!MMData.isFileTooBig(path, fileSizeLimit)) {
                             convertToMMDataAndSend(path, MMDataType.Document)
                         } else {
-                            Toast.makeText(context, "File too large", Toast.LENGTH_SHORT).show()
+                            MMToast.showToast(context, "File too large", Toast.LENGTH_SHORT)
                         }
                     }
                 }

@@ -1,10 +1,10 @@
 package com.buur.frederik.multimediechat.inputfield
 
 import android.content.Context
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import com.buur.frederik.multimediechat.helpers.MMToast
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 
@@ -31,7 +31,7 @@ class MMInputController {
     }
 
     fun showHoldToRecordToast(context: Context?): Boolean {
-        Toast.makeText(context, "Hold to record a message", Toast.LENGTH_SHORT).show()
+        MMToast.showToast(context, "Hold to record a message", Toast.LENGTH_SHORT)
         return true
     }
 

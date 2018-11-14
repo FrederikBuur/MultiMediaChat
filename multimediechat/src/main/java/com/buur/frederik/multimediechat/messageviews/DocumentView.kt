@@ -12,6 +12,7 @@ import android.net.Uri
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.widget.Toast
+import com.buur.frederik.multimediechat.helpers.MMToast
 import java.io.File
 import java.text.DecimalFormat
 
@@ -111,14 +112,14 @@ class DocumentView : SuperView, View.OnClickListener {
         try {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(context, "Not able to open document", Toast.LENGTH_SHORT).show()
+            MMToast.showToast(context, "Not able to open document", Toast.LENGTH_SHORT)
         }
     }
 
     companion object {
 
-        private val kb = 1024
-        private val mb = kb * kb
+        private const val kb = 1024
+        private const val mb = kb * kb
         private val format = DecimalFormat("#.##")
 
         fun getFileSize(file: File, view: View? = null): String {
