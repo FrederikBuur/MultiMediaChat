@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit
 import io.reactivex.disposables.Disposable
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListener {
@@ -47,15 +48,15 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
         setupColors(isSender)
 //        resetView()
 
-        val uri = Uri.parse(mmData?.source)
-        val mmr = MediaMetadataRetriever()
-        mmr.setDataSource(mmData?.source)
-        val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        val millis = Integer.parseInt(duration).toLong()
-
-        val format = "mm:ss"
-        val s = SimpleDateFormat(format, Locale.getDefault()).format(Date(millis))
-        audioLengthTextView.text = s
+//        val uri = Uri.parse(mmData?.source)
+//        val mmr = MediaMetadataRetriever()
+//        mmr.setDataSource(context, uri)
+//        val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+//        val millis = Integer.parseInt(duration).toLong()
+//
+//        val format = "mm:ss"
+//        val s = SimpleDateFormat(format, Locale.getDefault()).format(Date(millis))
+//        audioLengthTextView.text = s
 
         this.length = 0
         AudioHelper.currentTimeVisualization(0f, audioCurrentTimeIndicator, audioMsgContainer)
