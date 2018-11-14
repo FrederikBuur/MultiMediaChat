@@ -3,13 +3,14 @@ package com.buur.frederik.multimediechat.models
 import android.os.Parcel
 import android.os.Parcelable
 
-class MMData(
+open class MMData(
         var id: Long,
         var source: String,
         val type: Int,
         var sender_id: Long? = null,
         var sender_name: String? = null,
-        var date: Long? = null
+        var date: Long? = null,
+        var is_send: Boolean? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readLong(),
@@ -17,7 +18,8 @@ class MMData(
             parcel.readInt(),
             parcel.readValue(Long::class.java.classLoader) as? Long,
             parcel.readString(),
-            parcel.readValue(Long::class.java.classLoader) as? Long) {
+            parcel.readValue(Long::class.java.classLoader) as? Long,
+            parcel.readValue(Boolean::class.java.classLoader) as? Boolean) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -27,6 +29,7 @@ class MMData(
         parcel.writeValue(sender_id)
         parcel.writeString(sender_name)
         parcel.writeValue(date)
+        parcel.writeValue(is_send)
     }
 
     override fun describeContents(): Int {
@@ -42,4 +45,5 @@ class MMData(
             return arrayOfNulls(size)
         }
     }
+
 }

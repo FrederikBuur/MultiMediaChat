@@ -178,6 +178,7 @@ class ChatController {
 
         } else {
             Observable.just("No connection to server")
+            // delete potential files
         }
     }
 
@@ -199,6 +200,8 @@ class ChatController {
     }
 
     fun userStartedTyping(didStartTyping: Boolean) {
+        if (socket?.connected() != true) return
+
         SessionController.getInstance().getUser()?.let { user ->
             val gson = Gson().toJson(user)
             if (didStartTyping) {

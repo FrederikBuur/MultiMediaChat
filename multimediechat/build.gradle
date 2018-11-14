@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'realm-android'
 
 ext {
     Glide = '4.7.1'                   // https://github.com/bumptech/glide/releases
@@ -109,4 +111,3 @@ android {
 
 }
 
-apply plugin: 'kotlin-android-extensions'

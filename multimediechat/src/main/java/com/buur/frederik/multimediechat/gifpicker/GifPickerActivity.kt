@@ -1,7 +1,9 @@
 package com.buur.frederik.multimediechat.gifpicker
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -214,6 +216,12 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
             searchListenerDisposable?.dispose()
         }
         super.onDestroy()
+    }
+
+    fun isConnected(context: Context?): Boolean {
+        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val activeNetwork = cm?.activeNetworkInfo
+        return activeNetwork?.isConnected == true
     }
 
     companion object {

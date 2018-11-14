@@ -103,7 +103,7 @@ class ChatFragment : MMFragment(), ISendMessage {
                         }
                         EventType.UserConnected.ordinal -> {
                             val name = event.data as String
-                            this.mainActivity?.showTopNotification(name)
+                            this.mainActivity?.showTopNotification("$name joined", true)
                         }
                         EventType.StartTyping.ordinal -> {
                             val user = event.data as User

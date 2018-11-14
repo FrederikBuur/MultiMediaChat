@@ -17,6 +17,8 @@ class MultiMediaApplication: Application() {
     override fun onCreate() {
         super.onCreate()
 
+        instance = this
+
         setupLeakCanary()
         setupSocketIOConnection()
         setupRealm()
@@ -46,6 +48,14 @@ class MultiMediaApplication: Application() {
         Realm.init(this)
         val config = RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build()
         Realm.setDefaultConfiguration(config)
+    }
+
+    fun setConnectionListener(listener: ConnectionHandler.ConnectionReceiverListener) {
+        ConnectionHandler.connectivityReceiverListener = listener
+    }
+
+    companion object {
+        var instance: MultiMediaApplication? = null
     }
 
 }
