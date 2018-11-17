@@ -1,6 +1,8 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +17,7 @@ import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
 import com.buur.frederik.multimediechatexample.models.User
+import com.jakewharton.rxbinding2.view.focusChanges
 import com.jakewharton.rxbinding2.view.layoutChangeEvents
 import com.jakewharton.rxbinding2.view.layoutChanges
 import com.jakewharton.rxbinding2.widget.textChanges
@@ -29,12 +32,14 @@ class ChatFragment : MMFragment(), ISendMessage {
     private var adapter: ChatAdapter? = null
     private var messageList: ArrayList<MMData>? = null
 
+    private var sharedLatestVisibleItem = 0
+    private var sharedVisibleItemCount = 0
+
     private var mmInputFrag: MMInputFragment? = null
 
     private var chatController: ChatController? = null
     private var newMessageDisposable: Disposable? = null
     private var isTypingDisposable: Disposable? = null
-    private var resizeContainerDisposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_chat, container, false)
@@ -63,6 +68,7 @@ class ChatFragment : MMFragment(), ISendMessage {
 
         setupRecyclerView()
         setupMMLib()
+        //saveSharedListPositionValues()
 
         scrollToBottomPost()
         setupNewEventListener()
@@ -71,18 +77,27 @@ class ChatFragment : MMFragment(), ISendMessage {
     }
 
     private fun setupResizeListener() {
-        resizeContainerDisposable = chatFragmentContainer?.layoutChanges()
+
+        val disp1 = chatRecyclerView.layoutChangeEvents()
+                .compose(bindToLifecycle())
+                .doOnNext {
+                    if (it.bottom() < it.oldBottom()) {
+                        scrollToBottomIfNearBottom()
+                    }
+                }
+                .subscribe({}, {})
+
+        val disp2 = mmInputFrag?.getEditText()?.focusChanges()
                 ?.compose(bindToLifecycle())
                 ?.doOnNext {
-                    //scrollToBottomIfNeeded()
+//                    this@ChatFragment.saveSharedListPositionValues()
                 }
                 ?.subscribe({}, {})
 
-        val dips = chatRecyclerView.layoutChangeEvents()
+        val disp = chatRecyclerView.layoutChanges()
                 .compose(bindToLifecycle())
                 .doOnNext {
-                    if (it.bottom() < it.oldBottom())
-                    scrollToBottomIfNeeded()
+//                    this@ChatFragment.saveSharedListPositionValues()
                 }
                 .subscribe({}, {})
     }
@@ -98,7 +113,7 @@ class ChatFragment : MMFragment(), ISendMessage {
                             val mmData = event.data as MMData
                             messageList?.add(mmData)
                             adapter?.notifyDataSetChanged()
-                            scrollToBottomIfNeeded()
+                            scrollToBottomIfNearBottom(true)
                         }
                         EventType.UserConnected.ordinal -> {
                             val name = event.data as String
@@ -107,13 +122,11 @@ class ChatFragment : MMFragment(), ISendMessage {
                         EventType.StartTyping.ordinal -> {
                             val user = event.data as User
                             this.adapter?.addUserIsTyping(user)
-                            scrollToBottomIfNeeded()
-//                            Toast.makeText(context, "${user.name} typing", Toast.LENGTH_SHORT).show()
+                            scrollToBottomIfNearBottom()
                         }
                         EventType.StopTyping.ordinal -> {
                             val user = event.data as User
                             this.adapter?.removeUserIsTyping(user)
-//                            Toast.makeText(context, "${user.name} stop typing", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }, {
@@ -139,11 +152,19 @@ class ChatFragment : MMFragment(), ISendMessage {
         if (adapter == null) {
             context?.let { adapter = ChatAdapter(it, messageList) }
         }
-        //val lm = LinearLayoutManager(context)
-        //lm.initialPrefetchItemCount = 5
-        //chatRecyclerView.layoutManager = lm
         chatRecyclerView.adapter = adapter
+        chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
 
+                val layoutManager = chatRecyclerView.layoutManager as? LinearLayoutManager
+
+                if (layoutManager?.findLastCompletelyVisibleItemPosition() == ((adapter?.itemCount ?: 0) - 1)) {
+                    // is scrolled to bot
+//                    saveSharedListPositionValues()
+                }
+            }
+        })
     }
 
     private fun setupMMLib() {
@@ -189,15 +210,30 @@ class ChatFragment : MMFragment(), ISendMessage {
                 })
     }
 
-    private fun scrollToBottomIfNeeded() {
-        scrollToBottomPost()
+    private fun scrollToBottomIfNearBottom(isNewElementAdded: Boolean = false) {
+        val layoutManager = chatRecyclerView?.layoutManager as? LinearLayoutManager
+
+        val itemCount = layoutManager?.itemCount ?: 0
+        val lastVisiblePosition = layoutManager?.findLastVisibleItemPosition() ?: 0
+
+        val offset = if (isNewElementAdded) 3 else 2
+        if (lastVisiblePosition >= itemCount - offset) {
+            scrollToBottomPost()
+        }
     }
 
     private fun scrollToBottomPost() {
         chatRecyclerView.post {
             chatRecyclerView.scrollToPosition(adapter?.itemCount?.minus(1) ?: 0)
+//            saveSharedListPositionValues()
         }
     }
+
+//    private fun saveSharedListPositionValues() {
+//        val layoutManager = chatRecyclerView.layoutManager as? LinearLayoutManager
+//        sharedLatestVisibleItem  = layoutManager?.findLastVisibleItemPosition() ?: 0
+//        sharedVisibleItemCount = layoutManager?.childCount?.minus(1) ?: 0
+//    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelableArrayList(MESSAGE_LIST_KEY, messageList)
