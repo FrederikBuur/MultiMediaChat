@@ -14,8 +14,6 @@
             android:id="@+id/vidMsgSender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_12"
-            android:layout_marginEnd="@dimen/margin_12"
             android:textSize="@dimen/view_message_info_text_size"
             android:text="sender" />
 

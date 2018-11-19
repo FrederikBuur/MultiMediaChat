@@ -5,16 +5,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.os.Environment
 import android.support.media.ExifInterface
 import com.buur.frederik.multimediechat.models.MMData
 import io.reactivex.Observable
 import java.io.File
 import android.provider.MediaStore
-import android.util.Log
-import com.buur.frederik.multimediechat.api.ProgressRequestBody
 import com.buur.frederik.multimediechat.enums.MMDataType
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -56,13 +53,16 @@ object UploadHelper {
     // converting mmData to upload object
     fun prepareMMDataToUpload(mmData: MMData): Observable<MultipartBody.Part> {
         return Observable.create { emitter ->
-            var reqBody: RequestBody? = null
-            var partName: String? = null
-            var fileName: String? = null
-            val file = File(mmData.source)
+            val reqBody: RequestBody?
+            val partName: String?
+            val fileName: String?
+
+            var file = File(mmData.source)
             if (!file.exists()) {
-                emitter.onError(Throwable("files doesn't exists"))
-                emitter.onComplete()
+                 file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), mmData.source)
+//                emitter.onError(Throwable("files doesn't exists"))
+//                emitter.onComplete()
+//                return@create
             }
 
             when (mmData.type) {
@@ -96,6 +96,7 @@ object UploadHelper {
                 else -> {
                     emitter.onError(Throwable("Unsupported"))
                     emitter.onComplete()
+                    return@create
                 }
             }
 
@@ -137,11 +138,17 @@ object UploadHelper {
 
     // https://stackoverflow.com/questions/11732872/android-how-can-i-call-camera-or-gallery-intent-together
     fun getPathFromURI(uri: Uri, context: Context?): String? {
-        val filePath = arrayOf(MediaStore.Images.Media.DATA)
-        val c = context?.contentResolver?.query(uri, filePath,
-                null, null, null)
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+
+        val c = context?.contentResolver?.query(
+                uri,
+                projection,
+                null,
+                null,
+                null
+        )
         c?.moveToFirst()
-        val columnIndex = c?.getColumnIndex(filePath[0])
+        val columnIndex = c?.getColumnIndex(projection[0])
         val selectedImagePath = c?.getString(columnIndex ?: 1)
         c?.close()
 

@@ -165,7 +165,9 @@ class ChatController {
                                             ?.observeOn(AndroidSchedulers.mainThread())
                                 }
                                 .doOnNext { uploadResponse ->
-                                    MMData.deleteFile(mmData.source)
+                                    if (mmData.type == MMDataType.Audio.ordinal) {
+                                        MMData.deleteFile(mmData.source)
+                                    }
                                     mmData.source = uploadResponse.url
                                     val gson = Gson().toJson(mmData)
                                     socket?.emit(TOPIC_NEW_MESSAGE, gson)
