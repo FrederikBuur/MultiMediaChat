@@ -48,13 +48,13 @@ class ChatFragment : MMFragment(), ISendMessage {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        savedInstanceState?.let { state ->
-            val restoredList = state.getParcelableArrayList<MMData>(MESSAGE_LIST_KEY)
-            messageList = restoredList
-        } ?: kotlin.run {
-            messageList = SampleData.populateDummyData()
+//        savedInstanceState?.let { state ->
+//            val restoredList = state.getParcelableArrayList<MMData>(MESSAGE_LIST_KEY)
+//            messageList = restoredList
+//        } ?: kotlin.run {
+//            messageList = SampleData.populateDummyData()
             shouldShowLoginPage()
-        }
+//        }
 
         setupViews()
     }
@@ -63,6 +63,9 @@ class ChatFragment : MMFragment(), ISendMessage {
 
         if (chatController == null) {
             chatController = ChatController()
+        }
+        if (messageList == null) {
+            messageList = ArrayList()
         }
         chatController?.startServerConnection(context)
 
@@ -235,10 +238,10 @@ class ChatFragment : MMFragment(), ISendMessage {
 //        sharedVisibleItemCount = layoutManager?.childCount?.minus(1) ?: 0
 //    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList(MESSAGE_LIST_KEY, messageList)
-        super.onSaveInstanceState(outState)
-    }
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        outState.putParcelableArrayList(MESSAGE_LIST_KEY, messageList)
+//        super.onSaveInstanceState(outState)
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

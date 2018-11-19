@@ -16,6 +16,7 @@ import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.SessionController
 import com.buur.frederik.multimediechatexample.fragments.chatfragment.ChatController
 import io.realm.Realm
+import java.sql.Connection
 
 
 class MainActivity : MMActivity(), ConnectionHandler.ConnectionReceiverListener {
@@ -88,6 +89,11 @@ class MainActivity : MMActivity(), ConnectionHandler.ConnectionReceiverListener 
     override fun onResume() {
         super.onResume()
         ConnectionHandler.setListener(this, this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(ConnectionHandler.connectivityReceiver)
     }
 
     override fun onNetworkChanged(isConnected: Boolean) {

@@ -21,6 +21,7 @@ class ConnectionHandler : BroadcastReceiver() {
     companion object {
 
         var connectivityReceiverListener: ConnectionReceiverListener? = null
+        var connectivityReceiver: ConnectionHandler? = null
 
         fun isConnected(context: Context?): Boolean {
             val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
@@ -32,7 +33,7 @@ class ConnectionHandler : BroadcastReceiver() {
             val intentFilter = IntentFilter()
             intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
 
-            val connectivityReceiver = ConnectionHandler()
+            connectivityReceiver = ConnectionHandler()
             context.registerReceiver(connectivityReceiver, intentFilter)
 
             /*register connection status listener*/
