@@ -248,7 +248,9 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
             }
 
         } else {
+            // discard recording
             discardRecording = false
+            outputAudioFile?.let { MMData.deleteFile(it) }
         }
     }
 
@@ -331,15 +333,12 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
     override fun onStop() {
         super.onStop()
 
+        AudioHelper.releaseExoPlayer()
         mediaRecorder?.release()
         mediaRecorder = null
-
     }
 
     companion object {
-
-        const val INPUT_TEXT_KEY = "inputText"
-
         const val GIF_REQUEST_CODE = 5492
         const val GALLERY_REQUEST_CODE = 4753
         const val CAMERA_REQUEST_CODE = 8925

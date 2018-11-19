@@ -19,6 +19,7 @@
     <color name="black">#000000</color>
 
     <color name="icon_color_grey">@color/grey</color>
+    <color name="icon_color_grey_light">@color/greyLight</color>
     <color name="icon_color_white">@color/white</color>
 
     <color name="background_msg_sender">@color/colorPrimary</color>

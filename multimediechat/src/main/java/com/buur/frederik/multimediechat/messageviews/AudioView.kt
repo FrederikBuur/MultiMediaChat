@@ -1,9 +1,6 @@
 package com.buur.frederik.multimediechat.messageviews
 
 import android.content.Context
-import android.media.MediaMetadataRetriever
-import android.media.MediaPlayer
-import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -11,23 +8,20 @@ import com.bumptech.glide.Glide
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.models.MMData
+import com.github.satoshun.reactivex.exoplayer2.PlayerStateChangedEvent
+import com.google.android.exoplayer2.Player
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import com.trello.rxlifecycle2.components.support.RxFragment
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.view_audio.view.*
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
 import io.reactivex.disposables.Disposable
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashMap
 
 
-class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListener {
+class AudioView : SuperView, View.OnClickListener {
 
     private val tag = "AudioView"
-
-    private var mediaPlayer: MediaPlayer? = null
-    private var length: Int? = null
 
     private var durationDisposable: Disposable? = null
 
@@ -46,20 +40,10 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
         this.mmData = mmData
 
         setupColors(isSender)
-//        resetView()
 
-//        val uri = Uri.parse(mmData?.source)
-//        val mmr = MediaMetadataRetriever()
-//        mmr.setDataSource(context, uri)
-//        val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-//        val millis = Integer.parseInt(duration).toLong()
-//
-//        val format = "mm:ss"
-//        val s = SimpleDateFormat(format, Locale.getDefault()).format(Date(millis))
-//        audioLengthTextView.text = s
-
-        this.length = 0
-        AudioHelper.currentTimeVisualization(0f, audioCurrentTimeIndicator, audioMsgContainer)
+        if (AudioHelper.currentMMData?.id != this.mmData?.id) {
+            AudioHelper.currentTimeVisualization(0f, audioCurrentTimeIndicator, audioMsgContainer)
+        }
 
         this.setParams(audioMsgContainer, audioMsgContentContainer)
         this.setupDateAndSender(audioMsgTime, audioMsgSender)
@@ -75,44 +59,23 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
         this.setTextColor(audioLengthTextView)
     }
 
-    private fun setupMediaPlayer(audio: String) {
-        try {
-            if (mediaPlayer == null) {
-                mediaPlayer = MediaPlayer()
-                mediaPlayer?.reset()
-                mediaPlayer?.setDataSource(audio)
-                mediaPlayer?.isLooping = false
-                mediaPlayer?.setOnCompletionListener(this)
-                mediaPlayer?.prepare()
-                mediaPlayer?.let {
-                    if (it.audioSessionId != -1) {
-                        audioVisualizer.setAudioSessionId(it.audioSessionId)
-                    }
-
-                }
-            }
-        } catch (e: Exception) {
-            e.message
-        }
-    }
-
     private fun setupDurationListener() {
-
-        val max = (mediaPlayer?.duration ?: 1).toFloat()
+        val max = AudioHelper.exoPlayer?.duration ?: 0L
         durationDisposable = Observable.just(Log.d(tag, "duration listener started"))
-                .repeatWhen { completed -> completed.delay(30, TimeUnit.MILLISECONDS) }
+                .repeatWhen { completed ->
+                    completed.delay(30, TimeUnit.MILLISECONDS)
+                }
+                .doOnSubscribe {
+                    AudioHelper.durationDisposables?.add(it)
+                }
                 .observeOn(AndroidSchedulers.mainThread())
-                .retry()
                 .subscribe({ _ ->
-                    val current = mediaPlayer?.currentPosition?.toFloat()
+                    val current = AudioHelper.exoPlayer?.currentPosition?.toFloat()
                     val percentDecimal = current?.div(max)
                     percentDecimal?.let {
                         AudioHelper.currentTimeVisualization(it, audioCurrentTimeIndicator, audioMsgContainer)
                     }
-
-                }, {
-                    it
-                })
+                }, {})
     }
 
     override fun onClick(v: View?) {
@@ -124,70 +87,90 @@ class AudioView : SuperView, View.OnClickListener, MediaPlayer.OnCompletionListe
     }
 
     private fun playAudio() {
-
-        if (mediaPlayer?.isPlaying != true) {
-            length?.let {
-                mediaPlayer?.seekTo(it)
-            } ?: kotlin.run {
-                (mmData?.source)?.let {
-                    setupMediaPlayer(it)
-                    setupDurationListener()
+        AudioHelper.exoPlayer?.let { player ->
+            // if is playing
+            if (AudioHelper.currentMMData?.id == mmData?.id) {
+                when (player.playbackState) {
+                    Player.STATE_READY -> {
+                        if (player.playWhenReady) {
+                            // pause
+                            AudioHelper.pauseExoPlayer()
+                            showPauseButton(false)
+                        } else {
+                            // resume
+                            AudioHelper.resumeExoPlayer()
+                            showPauseButton(true)
+                        }
+                    }
+                    Player.STATE_ENDED -> {
+                        // restart
+                        AudioHelper.exoPlayer
+                        AudioHelper.restartExoPlayer()
+                        showPauseButton(true)
+                    }
+                    else -> {
+                    }
                 }
+            } else {
+                AudioHelper.releaseExoPlayer()
+                setupAndStartExoPlayer()
             }
-            mediaPlayer?.start()
-            audioVisualizer.visibility = View.VISIBLE
-            showPauseButton(true)
-        } else {
-            try {
-                mediaPlayer?.pause()
-                length = mediaPlayer?.currentPosition
-                showPauseButton(false)
-            } catch (e: Exception) {
-                e.message
-            }
+        } ?: kotlin.run {
+            setupAndStartExoPlayer()
         }
     }
 
-    private fun showPauseButton(shouldShowPause: Boolean) {
-        val img = if (shouldShowPause) {
-            android.R.drawable.ic_media_pause
-        } else {
-            android.R.drawable.ic_media_play
-        }
-        Glide.with(this)
-                .load(img)
-                .into(audioActionImg)
+    private fun setupAndStartExoPlayer() {
+        this.mmData?.let { AudioHelper.setupExoPlayer(context, it) }
+        exoPlayerListener()
+        showPauseButton(true)
     }
 
-    override fun onCompletion(mp: MediaPlayer?) {
-        resetView()
-        resetAudio()
-    }
-
-    private fun resetAudio() {
-        audioVisualizer.visibility = View.INVISIBLE
-        audioVisualizer.release()
-        this.mediaPlayer?.let {
-            it.stop()
-            it.release()
-        }
-        this.mediaPlayer = null
-
-        if (durationDisposable?.isDisposed == false) {
-            durationDisposable?.dispose()
-        }
+    private fun exoPlayerListener() {
+        AudioHelper.currentExoPlayerListenerDisposable = AudioHelper.getExoPlayerEventListener()
+                ?.doOnDispose {
+                    resetView()
+                }
+                ?.subscribe({ event ->
+                    when (event) {
+                        is PlayerStateChangedEvent -> {
+                            when (event.playbackState) {
+                                Player.STATE_ENDED -> {
+                                    resetView()
+                                    AudioHelper.completeExoPlayer()
+                                }
+                                Player.STATE_READY -> {
+                                    if (durationDisposable?.isDisposed != false) {
+                                        setupDurationListener()
+                                    }
+                                }
+                                else -> {
+                                    event.playbackState
+                                }
+                            }
+                        }
+                    }
+                }, {})
     }
 
     private fun resetView() {
         showPauseButton(false)
+        if (durationDisposable?.isDisposed == false) {
+            durationDisposable?.dispose()
+        }
+        durationDisposable = null
         AudioHelper.currentTimeVisualization(0f, audioCurrentTimeIndicator, audioMsgContainer)
-        length = null
     }
 
-    override fun onDetachedFromWindow() {
-        resetView()
-        resetAudio()
-        super.onDetachedFromWindow()
+    private fun showPauseButton(shouldShowPause: Boolean) {
+        val img = if (shouldShowPause) {
+            R.drawable.ic_pause
+        } else {
+            R.drawable.ic_play_arrow
+        }
+        Glide.with(this)
+                .load(img)
+                .into(audioActionImg)
     }
 
 }

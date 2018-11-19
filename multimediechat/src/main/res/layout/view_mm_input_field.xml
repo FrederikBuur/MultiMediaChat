@@ -79,7 +79,7 @@
             android:background="@color/colorPrimary"
             android:elevation="@dimen/margin_8"
             android:visibility="gone"
-            app:corner_radius="@dimen/view_message_corner_radius">
+            app:corner_radius="@dimen/margin_24">
 
             <FrameLayout
                 android:id="@+id/recordMessageNotificationIndicator"

@@ -25,6 +25,7 @@
             android:theme="@style/noActionTheme" />
         <activity
             android:name=".messageviews.EnlargedContentView"
+            android:configChanges="orientation"
             android:theme="@style/noAnimNoActionTheme"
             android:windowSoftInputMode="stateHidden" />
         <activity

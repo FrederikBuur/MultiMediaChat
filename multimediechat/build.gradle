@@ -71,8 +71,7 @@ dependencies {
     // ImageView zoom
     implementation 'com.jsibbold:zoomage:1.2.0'
 
-    // ImagePicker
-//    implementation 'com.github.nguyenhoanglam:ImagePicker:1.3.0'
+    // Image viewer
     implementation 'com.jsibbold:zoomage:1.2.0'
 
     // Audio visualizer
@@ -82,10 +81,17 @@ dependencies {
     implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8' //https://github.com/fishwjy/MultiType-FilePicker
 
     // CameraKit
-//    implementation 'com.camerakit:camerakit:1.0.0-beta3.9'
     implementation 'com.wonderkiln:camerakit:0.13.0'
     implementation 'com.camerakit:jpegkit:0.1.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.24.0'
+
+    // ExoPlayer
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.9.0'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.0'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.9.0'
+
+    // RxExoPlayer
+    implementation 'com.github.satoshun.reactivex.exoplayer2:rxexoplayer:0.2.0'
 
 }
 
@@ -100,6 +106,11 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     buildTypes {
