@@ -70,6 +70,35 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
         setupListeners()
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        grantResults.forEach { result ->
+            if (result != 0) return
+        }
+        when {
+            PermissionRequester.isPermissionArraySame(permissions.toList(),
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE).toList()) -> {
+                // gallery
+                mediaSelectionView.openGalleryPicker(GALLERY_REQUEST_CODE)
+            }
+            PermissionRequester.isPermissionArraySame(permissions.toList(),
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE).toList()) -> {
+                // document
+                mediaSelectionView.openDocumentPicker(DOCUMENT_REQUEST_CODE)
+            }
+            PermissionRequester.isPermissionArraySame(permissions.toList(),
+                    arrayOf(Manifest.permission.CAMERA,
+                            Manifest.permission.RECORD_AUDIO).toList()) -> {
+                // camera
+                mediaSelectionView.openCamera(CAMERA_REQUEST_CODE)
+            }
+            else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -100,13 +129,14 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                 // camera request code
                 MMInputFragment.CAMERA_REQUEST_CODE -> {
                     val content = data.getStringExtra(CameraActivity.CAMERA_CONTENT_KEY)
-                    val type = data.getStringExtra(CameraActivity.CAMERA_TYPE_KEY).toIntOrNull() ?: -1
+                    val type = data.getStringExtra(CameraActivity.CAMERA_TYPE_KEY).toIntOrNull()
+                            ?: -1
                     val mmType =
                             if (type == MMDataType.Video.ordinal) {
-                        MMDataType.Video
-                    } else {
-                        MMDataType.Image
-                    }
+                                MMDataType.Video
+                            } else {
+                                MMDataType.Image
+                            }
                     convertToMMDataAndSend(content, mmType)
                 }
                 // document request code
@@ -128,7 +158,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
     fun setup(delegate: ISendMessage) {
         this.delegate = delegate
 
-        mediaSelectionView.setup( this)
+        mediaSelectionView.setup(this)
         AudioHelper.currentTimeVisualization(0f, recordMessageNotificationIndicator, recordMessageNotification)
 
         if (mmInputController == null) {
@@ -237,7 +267,6 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
     }
 
 
-
     private fun sendOrDiscardRecording(motionEvent: MotionEvent) {
         if (discardRecording == false) {
             val downTime = SystemClock.uptimeMillis() - motionEvent.downTime
@@ -257,7 +286,8 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
     private fun startRecording() {
         context?.let { con ->
             if (!PermissionRequester.isMicrophonePermissionGranted(con)) {
-                PermissionRequester.requestPermissions(con as? AppCompatActivity, Manifest.permission.RECORD_AUDIO)
+                PermissionRequester.requestPermissions(this,
+                        arrayOf(Manifest.permission.RECORD_AUDIO))
                 return
             }
         }

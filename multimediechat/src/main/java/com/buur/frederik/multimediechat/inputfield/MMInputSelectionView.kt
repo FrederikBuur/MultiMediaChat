@@ -44,13 +44,13 @@ class MMInputSelectionView : FrameLayout {
 
     fun openCamera(requestCode: Int) {
         context?.let { con ->
-            if (PermissionRequester.isCameraPermissionGranted(con) &&
-                    PermissionRequester.isMicrophonePermissionGranted(con)) {
+            if (PermissionRequester.isCameraPermissionGranted(con)) {
                 val intent = Intent(context, CameraActivity::class.java)
                 fragment?.startActivityForResult(intent, requestCode)
             } else {
-                PermissionRequester.requestPermissions(act, Manifest.permission.CAMERA)
-                PermissionRequester.requestPermissions(act, Manifest.permission.RECORD_AUDIO)
+                PermissionRequester.requestPermissions(fragment,
+                        arrayOf(Manifest.permission.CAMERA,
+                                Manifest.permission.RECORD_AUDIO))
             }
         }
     }
@@ -63,8 +63,9 @@ class MMInputSelectionView : FrameLayout {
                 intent.type = "image/* video/*"
                 fragment?.startActivityForResult(intent, requestCode)
             } else {
-                PermissionRequester.requestPermissions(act, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                PermissionRequester.requestPermissions(act, Manifest.permission.READ_EXTERNAL_STORAGE)
+                PermissionRequester.requestPermissions(fragment,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE))
             }
         }
     }
@@ -79,8 +80,9 @@ class MMInputSelectionView : FrameLayout {
                 intent.putExtra(NormalFilePickActivity.SUFFIX, arrayOf("pdf"))
                 fragment?.startActivityForResult(intent, requestCode)
             } else {
-                PermissionRequester.requestPermissions(act, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                PermissionRequester.requestPermissions(act, Manifest.permission.READ_EXTERNAL_STORAGE)
+                PermissionRequester.requestPermissions(fragment,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE))
             }
         }
 

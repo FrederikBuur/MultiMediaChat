@@ -3,13 +3,12 @@ package com.buur.frederik.multimediechat.helpers
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 
 object PermissionRequester {
 
-    private const val REQUEST_PERMISSION_CODE = 1000
+    const val REQUEST_PERMISSION_CODE = 1000
 
     fun isWriteExternalStorageGranted(context: Context): Boolean {
         val writeExternal = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -31,10 +30,19 @@ object PermissionRequester {
         return useCamera == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestPermissions(activity: AppCompatActivity?, permission: String) {
-        activity?.let {
-            ActivityCompat.requestPermissions(it, arrayOf(permission)
+    fun requestPermissions(fragment: Fragment?, permissions: Array<String>) {
+        fragment?.requestPermissions(permissions
                     , REQUEST_PERMISSION_CODE)
-        }
     }
+
+    fun isPermissionArraySame(arr1: List<String>, arr2: List<String>): Boolean {
+        if (arr1.size != arr2.size) return false
+
+        arr1.forEachIndexed { index, s ->
+            if (s != arr2[index]) return false
+        }
+
+        return true
+    }
+
 }
