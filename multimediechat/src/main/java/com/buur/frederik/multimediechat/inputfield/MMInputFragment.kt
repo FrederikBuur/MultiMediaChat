@@ -37,6 +37,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.view_mm_input_field.*
 import kotlinx.android.synthetic.main.view_options.*
+import java.io.File
 import java.io.IOException
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
@@ -144,7 +145,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                     val file = data.getParcelableArrayListExtra<NormalFile>(Constant.RESULT_PICK_FILE).firstOrNull()?.path
                     file?.let { path ->
                         if (!MMData.isFileTooBig(path, fileSizeLimit)) {
-                            convertToMMDataAndSend(path, MMDataType.Document)
+                            convertToMMDataAndSend(path, MMDataType.Document, size = File(path).length())
                         } else {
                             MMToast.showToast(context, "File too large", Toast.LENGTH_SHORT)
                         }
@@ -273,7 +274,9 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
             if (downTime < 250) {
                 discardRecording = mmInputController?.showHoldToRecordToast(context)
             } else {
-                outputAudioFile?.let { convertToMMDataAndSend(it, MMDataType.Audio) }
+                outputAudioFile?.let {
+                    convertToMMDataAndSend(it, MMDataType.Audio, size = File(it).length())
+                }
             }
 
         } else {
@@ -342,9 +345,9 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
     }
 
     // takes data, converts into MMData, calls send
-    private fun convertToMMDataAndSend(data: String, type: MMDataType) {
+    private fun convertToMMDataAndSend(data: String, type: MMDataType, size: Long? = null) {
         val id = System.currentTimeMillis()
-        delegate?.sendMMData(MMData(id, data, type.ordinal))
+        delegate?.sendMMData(MMData(id, data, type.ordinal, size = size))
     }
 
     // takes text from edit text and sends to mmData converter

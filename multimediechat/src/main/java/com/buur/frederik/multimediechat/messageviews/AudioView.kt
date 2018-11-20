@@ -18,6 +18,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.view_audio.view.*
 import java.util.concurrent.TimeUnit
 import io.reactivex.disposables.Disposable
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class AudioView : SuperView, View.OnClickListener {
@@ -44,6 +46,13 @@ class AudioView : SuperView, View.OnClickListener {
 
         if (AudioHelper.currentMMData?.id != this.mmData?.id) {
             AudioHelper.currentTimeVisualization(0f, audioCurrentTimeIndicator, audioMsgContainer)
+        }
+
+        this.mmData?.size?.let { size ->
+            val format = "mm:ss"
+            val time = SimpleDateFormat(format,  Locale.getDefault()).format(Date(size))
+            audioLengthTextView.text = time
+
         }
 
         this.setParams(audioMsgContainer, audioMsgContentContainer)

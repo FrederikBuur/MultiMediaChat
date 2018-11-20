@@ -58,7 +58,7 @@ class DocumentView : SuperView, View.OnClickListener {
     private fun setupFileDetails() {
         documentTitle.text = getFileTitle()
         documentType.text = getFileType()
-        file?.let { documentSize.text = getFileSize(it) }
+        this.mmData?.size?.let { documentSize.text = getFileSize(it) }
     }
 
     override fun onClick(v: View?) {
@@ -116,25 +116,17 @@ class DocumentView : SuperView, View.OnClickListener {
         }
     }
 
-    companion object {
-
-        private const val kb = 1024
-        private const val mb = kb * kb
-        private val format = DecimalFormat("#.##")
-
-        fun getFileSize(file: File, view: View? = null): String {
-            val size = file.length()
-            view?.visibility = if (size < 1) {
-                View.GONE
-            } else {
-                View.VISIBLE
-            }
-            return when {
-                size > mb -> format.format(size / mb) + " MB"
-                size > kb -> format.format(size / kb) + " KB"
-                else -> format.format(size) + " Byte"
-            }
+    private fun getFileSize(size: Long): String {
+        return when {
+            size > mb -> format.format(size / mb) + " MB"
+            size > kb -> format.format(size / kb) + " KB"
+            else -> format.format(size) + " Byte"
         }
     }
 
+    companion object {
+        private const val kb = 1024
+        private const val mb = kb * kb
+        private val format = DecimalFormat("#.##")
+    }
 }
