@@ -20,11 +20,6 @@ import com.vincent.filepicker.activity.NormalFilePickActivity
 class MMInputSelectionView : FrameLayout {
 
     private var fragment: Fragment? = null
-    private var act: AppCompatActivity? = null
-        get() {
-            return context as? AppCompatActivity
-        }
-
 
     init {
         View.inflate(context, R.layout.view_options, this)
@@ -50,7 +45,8 @@ class MMInputSelectionView : FrameLayout {
             } else {
                 PermissionRequester.requestPermissions(fragment,
                         arrayOf(Manifest.permission.CAMERA,
-                                Manifest.permission.RECORD_AUDIO))
+                                Manifest.permission.RECORD_AUDIO),
+                        PermissionRequester.CAMERA_REQUEST_PERMISSION_CODE)
             }
         }
     }
@@ -65,7 +61,8 @@ class MMInputSelectionView : FrameLayout {
             } else {
                 PermissionRequester.requestPermissions(fragment,
                         arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE))
+                                Manifest.permission.READ_EXTERNAL_STORAGE),
+                        PermissionRequester.GALLERY_REQUEST_PERMISSION_CODE)
             }
         }
     }
@@ -82,7 +79,8 @@ class MMInputSelectionView : FrameLayout {
             } else {
                 PermissionRequester.requestPermissions(fragment,
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        PermissionRequester.DOCUMENT_REQUEST_PERMISSION_CODE)
             }
         }
 

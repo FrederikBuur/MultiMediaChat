@@ -8,7 +8,9 @@ import android.support.v4.content.ContextCompat
 
 object PermissionRequester {
 
-    const val REQUEST_PERMISSION_CODE = 1000
+    const val CAMERA_REQUEST_PERMISSION_CODE = 1000
+    const val GALLERY_REQUEST_PERMISSION_CODE = 2000
+    const val DOCUMENT_REQUEST_PERMISSION_CODE = 3000
 
     fun isWriteExternalStorageGranted(context: Context): Boolean {
         val writeExternal = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -30,9 +32,9 @@ object PermissionRequester {
         return useCamera == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestPermissions(fragment: Fragment?, permissions: Array<String>) {
+    fun requestPermissions(fragment: Fragment?, permissions: Array<String>, permissionRequestCode: Int) {
         fragment?.requestPermissions(permissions
-                    , REQUEST_PERMISSION_CODE)
+                    , permissionRequestCode)
     }
 
     fun isPermissionArraySame(arr1: List<String>, arr2: List<String>): Boolean {

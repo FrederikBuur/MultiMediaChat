@@ -75,24 +75,15 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
         grantResults.forEach { result ->
             if (result != 0) return
         }
-        when {
-            PermissionRequester.isPermissionArraySame(permissions.toList(),
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE).toList()) -> {
-                // gallery
+        when (requestCode) {
+            PermissionRequester.CAMERA_REQUEST_PERMISSION_CODE -> {
+                mediaSelectionView.openCamera(CAMERA_REQUEST_CODE)
+            }
+            PermissionRequester.GALLERY_REQUEST_PERMISSION_CODE -> {
                 mediaSelectionView.openGalleryPicker(GALLERY_REQUEST_CODE)
             }
-            PermissionRequester.isPermissionArraySame(permissions.toList(),
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE).toList()) -> {
-                // document
+            PermissionRequester.DOCUMENT_REQUEST_PERMISSION_CODE -> {
                 mediaSelectionView.openDocumentPicker(DOCUMENT_REQUEST_CODE)
-            }
-            PermissionRequester.isPermissionArraySame(permissions.toList(),
-                    arrayOf(Manifest.permission.CAMERA,
-                            Manifest.permission.RECORD_AUDIO).toList()) -> {
-                // camera
-                mediaSelectionView.openCamera(CAMERA_REQUEST_CODE)
             }
             else -> {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -104,7 +95,6 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK && data != null) {
-
             when (requestCode) {
                 // gif request code
                 MMInputFragment.GIF_REQUEST_CODE -> {
@@ -194,7 +184,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
         optionsViewFile.setOnClickListener(this)
         optionsViewGallery.setOnClickListener(this)
 
-        val disposeable = inputEditText.textChanges()
+        inputEditText.textChanges()
                 .compose(bindToLifecycle())
                 .doOnNext { editText ->
                     val newDrawable: Drawable? = if (editText.trim().isNotEmpty()) {
@@ -216,7 +206,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
                 }
                 .subscribe({}, {})
 
-        val disposable1 = sendButton.touches()
+        sendButton.touches()
                 .compose(bindToLifecycle())
                 .doOnNext { motionEvent ->
                     when (motionEvent.action) {
@@ -290,7 +280,7 @@ class MMInputFragment : RxFragment(), View.OnClickListener {
         context?.let { con ->
             if (!PermissionRequester.isMicrophonePermissionGranted(con)) {
                 PermissionRequester.requestPermissions(this,
-                        arrayOf(Manifest.permission.RECORD_AUDIO))
+                        arrayOf(Manifest.permission.RECORD_AUDIO), 0)
                 return
             }
         }
