@@ -81,7 +81,7 @@ class ChatFragment : MMFragment(), ISendMessage {
 
     private fun setupResizeListener() {
 
-        val disp1 = chatRecyclerView.layoutChangeEvents()
+        chatRecyclerView.layoutChangeEvents()
                 .compose(bindToLifecycle())
                 .doOnNext {
                     if (it.bottom() < it.oldBottom()) {
@@ -90,14 +90,14 @@ class ChatFragment : MMFragment(), ISendMessage {
                 }
                 .subscribe({}, {})
 
-        val disp2 = mmInputFrag?.getEditText()?.focusChanges()
+        mmInputFrag?.getEditText()?.focusChanges()
                 ?.compose(bindToLifecycle())
                 ?.doOnNext {
 //                    this@ChatFragment.saveSharedListPositionValues()
                 }
                 ?.subscribe({}, {})
 
-        val disp = chatRecyclerView.layoutChanges()
+        chatRecyclerView.layoutChanges()
                 .compose(bindToLifecycle())
                 .doOnNext {
 //                    this@ChatFragment.saveSharedListPositionValues()
@@ -199,7 +199,7 @@ class ChatFragment : MMFragment(), ISendMessage {
     }
 
     private fun sendMessageToServer(mmData: MMData) {
-        val disp = chatController?.sendMessageToServer(mmData)
+        chatController?.sendMessageToServer(mmData)
                 ?.compose(bindToLifecycle())
                 ?.subscribeOn(Schedulers.io())
                 ?.observeOn(AndroidSchedulers.mainThread())

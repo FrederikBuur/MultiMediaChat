@@ -22,10 +22,11 @@
 
         <activity
             android:name=".gifpicker.GifPickerActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/noActionTheme" />
         <activity
             android:name=".messageviews.EnlargedContentView"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/noAnimNoActionTheme"
             android:windowSoftInputMode="stateHidden" />
         <activity

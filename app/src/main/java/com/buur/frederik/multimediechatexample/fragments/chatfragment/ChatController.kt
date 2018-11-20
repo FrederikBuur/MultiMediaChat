@@ -203,7 +203,7 @@ class ChatController {
     }
 
     private fun setupTypingPublisher() {
-        val disp = this.typingPublishSubject
+        this.typingPublishSubject
                 //?.compose(currentFragment.bindToLifecycle())
                 ?.debounce(typingDebounceDuration, TimeUnit.MILLISECONDS)
                 ?.observeOn(AndroidSchedulers.mainThread())
