@@ -1,6 +1,7 @@
 package com.buur.frederik.multimediechat.messageviews
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -53,8 +54,12 @@ class AudioView : SuperView, View.OnClickListener {
     private fun setupColors(isSender: Boolean) {
         if (isSender) {
             audioCurrentTimeIndicator.alpha = 0.3f
+            audioActionImg.setColorFilter(ContextCompat.getColor(context, R.color.icon_color_grey_light),
+                    android.graphics.PorterDuff.Mode.SRC_IN)
         } else {
             audioCurrentTimeIndicator.alpha = 0.1f
+            audioActionImg.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary),
+                    android.graphics.PorterDuff.Mode.SRC_IN)
         }
         this.setTextColor(audioLengthTextView)
     }
