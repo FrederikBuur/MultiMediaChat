@@ -94,6 +94,7 @@ class MainActivity : MMActivity(), ConnectionHandler.ConnectionReceiverListener 
     override fun onPause() {
         super.onPause()
         unregisterReceiver(ConnectionHandler.connectivityReceiver)
+        ConnectionHandler.connectivityReceiver = null
     }
 
     override fun onNetworkChanged(isConnected: Boolean) {
