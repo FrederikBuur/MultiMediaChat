@@ -1,7 +1,7 @@
 package com.buur.frederik.multimediechatexample.fragments
 
 import com.buur.frederik.multimediechatexample.activities.MainActivity
-import com.trello.rxlifecycle2.components.support.RxFragment
+import com.trello.rxlifecycle3.components.support.RxFragment
 
 abstract class MMFragment: RxFragment() {
 

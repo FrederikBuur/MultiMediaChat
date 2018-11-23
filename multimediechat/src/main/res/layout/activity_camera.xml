@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".camera.CameraActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -52,7 +52,7 @@
             app:layout_constraintStart_toEndOf="@id/cameraCaptureButton"
             app:layout_constraintTop_toTopOf="@id/cameraCaptureButton" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/cameraVideoLengthIndicator"

@@ -1,7 +1,7 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.enums.MMDataType

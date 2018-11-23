@@ -9,8 +9,8 @@ import com.buur.frederik.multimediechat.models.MMData
 import kotlinx.android.synthetic.main.view_document.view.*
 import android.content.Intent
 import android.net.Uri
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import android.widget.Toast
 import com.buur.frederik.multimediechat.helpers.MMToast
 import java.io.File

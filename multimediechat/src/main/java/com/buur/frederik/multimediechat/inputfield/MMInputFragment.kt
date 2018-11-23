@@ -8,9 +8,7 @@ import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
-import android.support.v4.app.FragmentManager
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -18,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.FragmentManager
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.camera.CameraActivity
 import com.buur.frederik.multimediechat.enums.MMDataType
@@ -27,9 +26,9 @@ import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.buur.frederik.multimediechat.gifpicker.GifPickerActivity
 import com.buur.frederik.multimediechat.helpers.MMToast
-import com.jakewharton.rxbinding2.view.touches
-import com.jakewharton.rxbinding2.widget.textChanges
-import com.trello.rxlifecycle2.components.support.RxFragment
+import com.jakewharton.rxbinding3.view.touches
+import com.jakewharton.rxbinding3.widget.textChanges
+import com.trello.rxlifecycle3.components.support.RxFragment
 import com.vincent.filepicker.Constant
 import com.vincent.filepicker.filter.entity.NormalFile
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -2,9 +2,9 @@ package com.buur.frederik.multimediechatexample.activities
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.inputmethod.InputMethodManager
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import androidx.fragment.app.Fragment
+import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 abstract class MMActivity : RxAppCompatActivity() {

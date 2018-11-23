@@ -9,6 +9,11 @@ import io.socket.client.IO
 import io.socket.client.Socket
 import java.lang.RuntimeException
 import java.net.URISyntaxException
+import okhttp3.OkHttpClient
+import javax.net.ssl.*
+import javax.security.cert.CertificateException
+import javax.security.cert.X509Certificate
+
 
 class MultiMediaApplication: Application() {
 
@@ -38,6 +43,30 @@ class MultiMediaApplication: Application() {
 
     private fun setupSocketIOConnection() {
         try {
+            /*
+            val mySSLContext = SSLContext.getInstance("SSL")
+            val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+
+                override fun checkClientTrusted(p0: Array<out java.security.cert.X509Certificate>?, p1: String?) {
+                }
+
+                override fun checkServerTrusted(p0: Array<out java.security.cert.X509Certificate>?, p1: String?) {
+                }
+
+                override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
+                    return arrayOf()
+                }
+            })
+
+            mySSLContext.init(null, trustAllCerts, null)
+
+            val myHostnameVerifier = HostnameVerifier { hostname, session -> true }
+
+            val opts = IO.Options()
+            opts.sslContext = mySSLContext
+            opts.hostnameVerifier = myHostnameVerifier
+            */
+
             socket = IO.socket(ServiceGenerator.MM_BASE_URL)
         } catch (e: URISyntaxException) {
             throw RuntimeException(e)

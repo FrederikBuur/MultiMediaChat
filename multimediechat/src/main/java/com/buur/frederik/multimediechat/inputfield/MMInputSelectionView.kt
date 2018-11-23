@@ -3,14 +3,12 @@ package com.buur.frederik.multimediechat.inputfield
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.support.v4.app.Fragment
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import androidx.fragment.app.Fragment
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.gifpicker.GifPickerActivity
-import android.provider.MediaStore
-import android.support.v7.app.AppCompatActivity
 import com.buur.frederik.multimediechat.camera.CameraActivity
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.vincent.filepicker.Constant

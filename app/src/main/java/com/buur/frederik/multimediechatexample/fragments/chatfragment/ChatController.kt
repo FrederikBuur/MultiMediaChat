@@ -1,12 +1,10 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.UploadHelper
 import com.buur.frederik.multimediechat.models.MMData
-import com.buur.frederik.multimediechatexample.activities.MainActivity
 import com.buur.frederik.multimediechatexample.api.IUpload
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
@@ -20,7 +18,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.socket.client.Socket
-import io.socket.client.SocketIOException
 import io.socket.emitter.Emitter
 import org.json.JSONException
 import java.net.SocketException
@@ -177,7 +174,9 @@ class ChatController {
                                 .doOnError { error ->
                                     when (error) {
                                         is SocketException, is SocketTimeoutException -> {
-                                            MMData.deleteFile(mmData.source)
+                                            if (mmData.type == MMDataType.Audio.ordinal) {
+                                                MMData.deleteFile(mmData.source)
+                                            }
                                         }
                                         else -> {
                                             error
@@ -195,7 +194,9 @@ class ChatController {
                 }
 
             } else {
-                MMData.deleteFile(mmData.source)
+                if (mmData.type == MMDataType.Audio.ordinal) {
+                    MMData.deleteFile(mmData.source)
+                }
                 emitter.onError(SocketException())
                 emitter.onComplete()
             }

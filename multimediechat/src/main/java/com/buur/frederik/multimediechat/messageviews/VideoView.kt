@@ -30,11 +30,6 @@ class VideoView: SuperView, View.OnClickListener {
         this.mmData = mmData
         this.previousMMData = previousMMData
 
-        val uri = Uri.parse((mmData?.source))
-//        disp = Observable.just(vidMsgContent.setVideoURI(uri))
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe({}, {})
         this.mmData?.source?.let { ImageLoader.loadImage(context, it, vidMsgContent, progress = imgMsgProgress, asBitmap = true) }
 
         this.setParams(vidMsgContainer)

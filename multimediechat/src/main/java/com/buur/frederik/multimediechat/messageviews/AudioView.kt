@@ -1,7 +1,7 @@
 package com.buur.frederik.multimediechat.messageviews
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -11,8 +11,6 @@ import com.buur.frederik.multimediechat.helpers.AudioHelper
 import com.buur.frederik.multimediechat.models.MMData
 import com.github.satoshun.reactivex.exoplayer2.PlayerStateChangedEvent
 import com.google.android.exoplayer2.Player
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
-import com.trello.rxlifecycle2.components.support.RxFragment
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.view_audio.view.*

@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Environment
-import android.support.media.ExifInterface
+import androidx.exifinterface.media.ExifInterface
 import com.buur.frederik.multimediechat.models.MMData
 import io.reactivex.Observable
 import java.io.File
@@ -100,7 +100,7 @@ object UploadHelper {
                 }
             }
 
-            if (partName != null && fileName != null && reqBody != null) {
+            if (fileName != null && reqBody != null) {
                 val bodyPart = MultipartBody.Part.createFormData(partName, fileName, reqBody)
                 if (!emitter.isDisposed) {
                     emitter.onNext(bodyPart)

@@ -11,9 +11,8 @@ import android.widget.Toast
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.AudioHelper
-import com.buur.frederik.multimediechat.messageviews.DocumentView
-import com.jakewharton.rxbinding2.view.touches
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import com.jakewharton.rxbinding3.view.touches
+import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
 import com.wonderkiln.camerakit.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -72,7 +71,7 @@ class CameraActivity : RxAppCompatActivity(), View.OnClickListener {
     }
 
     private fun setupCaptureTouchListener() {
-        val disp = cameraCaptureButton.touches()
+        cameraCaptureButton.touches()
                 .compose(bindToLifecycle())
                 .doOnNext { motionEvent ->
                     when (motionEvent.action) {

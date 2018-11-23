@@ -5,20 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.models.gif.GifData
-import com.jakewharton.rxbinding2.widget.textChanges
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import com.jakewharton.rxbinding3.widget.textChanges
+import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_gif_picker.*
-import retrofit2.HttpException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -55,24 +54,7 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
         setContentView(R.layout.activity_gif_picker)
 
         setup()
-
-        savedInstanceState?.let { state ->
-            state.getParcelableArrayList<GifData>(GIF_LIST_KEY)?.let {
-                updateGifList(it)
-            }
-            this.gifTotalCount = state.getInt("gifTotalCount")
-            this.lastSearch = state.getString("lastSearch")
-        } ?: kotlin.run {
-            fetchTrending()
-        }
-
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putParcelableArrayList(GIF_LIST_KEY, this.gifList)
-        outState?.putInt("gifTotalCount", gifTotalCount)
-        outState?.putString("lastSearch", lastSearch)
-        super.onSaveInstanceState(outState)
+        fetchTrending()
     }
 
     private fun setup() {
@@ -169,9 +151,7 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
                     gifTotalCount = gifResponse.pagination.total_count
                     updateGifList(gifResponse.data)
                     showGifProgress(false)
-                }, {
-                    it
-                })
+                }, {})
     }
 
     override fun GifOnclick(gifUrl: String) {

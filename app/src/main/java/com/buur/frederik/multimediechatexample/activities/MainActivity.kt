@@ -4,19 +4,14 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.support.v4.view.animation.FastOutSlowInInterpolator
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import android.view.View
 import com.buur.frederik.multimediechatexample.R
 import com.buur.frederik.multimediechatexample.controllers.ConnectionHandler
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.chatfragment.ChatFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import android.support.v4.content.ContextCompat
-import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
-import com.buur.frederik.multimediechatexample.controllers.SessionController
-import com.buur.frederik.multimediechatexample.fragments.chatfragment.ChatController
-import io.realm.Realm
-import java.sql.Connection
+import androidx.core.content.ContextCompat
 
 
 class MainActivity : MMActivity(), ConnectionHandler.ConnectionReceiverListener {

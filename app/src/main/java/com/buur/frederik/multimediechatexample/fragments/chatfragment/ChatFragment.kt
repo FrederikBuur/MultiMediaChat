@@ -1,8 +1,8 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +13,6 @@ import com.buur.frederik.multimediechat.inputfield.ISendMessage
 import com.buur.frederik.multimediechat.inputfield.MMInputFragment
 import com.buur.frederik.multimediechatexample.R
 import com.buur.frederik.multimediechatexample.controllers.SessionController
-import com.buur.frederik.multimediechatexample.dummybackend.SampleData
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
 import com.buur.frederik.multimediechatexample.models.User
@@ -21,6 +20,7 @@ import com.jakewharton.rxbinding2.view.focusChanges
 import com.jakewharton.rxbinding2.view.layoutChangeEvents
 import com.jakewharton.rxbinding2.view.layoutChanges
 import com.jakewharton.rxbinding2.widget.textChanges
+import com.trello.rxlifecycle3.kotlin.bindToLifecycle
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -82,7 +82,7 @@ class ChatFragment : MMFragment(), ISendMessage {
     private fun setupResizeListener() {
 
         chatRecyclerView.layoutChangeEvents()
-                .compose(bindToLifecycle())
+                .bindToLifecycle(this)
                 .doOnNext {
                     if (it.bottom() < it.oldBottom()) {
                         scrollToBottomIfNearBottom()

@@ -3,8 +3,8 @@ package com.buur.frederik.multimediechat.helpers
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 
 object PermissionRequester {
 
@@ -35,16 +35,6 @@ object PermissionRequester {
     fun requestPermissions(fragment: Fragment?, permissions: Array<String>, permissionRequestCode: Int) {
         fragment?.requestPermissions(permissions
                     , permissionRequestCode)
-    }
-
-    fun isPermissionArraySame(arr1: List<String>, arr2: List<String>): Boolean {
-        if (arr1.size != arr2.size) return false
-
-        arr1.forEachIndexed { index, s ->
-            if (s != arr2[index]) return false
-        }
-
-        return true
     }
 
 }
