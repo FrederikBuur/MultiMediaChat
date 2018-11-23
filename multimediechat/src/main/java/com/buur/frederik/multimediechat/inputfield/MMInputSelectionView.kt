@@ -45,7 +45,8 @@ class MMInputSelectionView : FrameLayout {
             } else {
                 PermissionRequester.requestPermissions(fragment,
                         arrayOf(Manifest.permission.CAMERA,
-                                Manifest.permission.RECORD_AUDIO),
+                                Manifest.permission.RECORD_AUDIO,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE),
                         PermissionRequester.CAMERA_REQUEST_PERMISSION_CODE)
             }
         }
