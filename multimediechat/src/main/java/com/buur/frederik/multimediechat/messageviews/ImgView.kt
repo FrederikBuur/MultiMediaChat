@@ -23,14 +23,15 @@ class ImgView: SuperView, View.OnClickListener {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    override fun setup(isSender: Boolean, mmData: MMData?, time: Int?) {
+    override fun setup(isSender: Boolean, mmData: MMData?, previousMMData: MMData?) {
         this.isSender = isSender
         this.mmData = mmData
+        this.previousMMData = previousMMData
 
         this.mmData?.source?.let { ImageLoader.loadImage(context, it, imgMsgContent, imgMsgProgress) }
 
         this.setParams(imgMsgContainer)
-        this.setupDateAndSender(imgMsgTime, imgMsgSender)
+        this.setupDateAndSender(imgMsgTime, imgMsgSender, imgMsgLL)
         imgMsgContentContainer.setOnClickListener(this)
     }
 

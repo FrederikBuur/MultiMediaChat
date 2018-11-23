@@ -38,9 +38,10 @@ class AudioView : SuperView, View.OnClickListener {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    override fun setup(isSender: Boolean, mmData: MMData?, time: Int?) {
+    override fun setup(isSender: Boolean, mmData: MMData?, previousMMData: MMData?) {
         this.isSender = isSender
         this.mmData = mmData
+        this.previousMMData = previousMMData
 
         setupColors(isSender)
 
@@ -56,7 +57,7 @@ class AudioView : SuperView, View.OnClickListener {
         }
 
         this.setParams(audioMsgContainer, audioMsgContentContainer)
-        this.setupDateAndSender(audioMsgTime, audioMsgSender)
+        this.setupDateAndSender(audioMsgTime, audioMsgSender, audioMsgLL)
         audioMsgContentContainer.setOnClickListener(this)
     }
 

@@ -10,7 +10,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MMServiceGenerator {
 
     companion object {
-        const val API_KEY = "Z7vOeiwK7oOmm6gcD5vveB373l3cyhrG"
         const val GIPHY_BASE_URL = "https://api.giphy.com"
     }
 

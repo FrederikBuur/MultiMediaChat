@@ -1,7 +1,6 @@
 package com.buur.frederik.multimediechat.messageviews
 
 import android.content.Context
-import android.opengl.Visibility
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.Gravity
@@ -18,6 +17,7 @@ abstract class SuperView : FrameLayout {
 
     internal var isSender: Boolean? = null
     internal var mmData: MMData? = null
+    internal var previousMMData: MMData? = null
 
     constructor(context: Context) : super(context)
 
@@ -27,7 +27,7 @@ abstract class SuperView : FrameLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    abstract fun setup(isSender: Boolean, mmData: MMData?, time: Int? = null)
+    abstract fun setup(isSender: Boolean, mmData: MMData?, previousMMData: MMData?)
 
     fun setParams(viewContainer: FrameLayout, viewWithBackground: View? = null, viewExtra: View? = null) {
         val params1 = viewContainer.layoutParams as FrameLayout.LayoutParams
@@ -47,11 +47,22 @@ abstract class SuperView : FrameLayout {
         }
 
         val margin = resources.getDimension(R.dimen.view_message_margin).toInt()
-        params1.setMargins(margin, margin, margin, margin)
+        params1.setMargins(margin,
+                if (isSameSender()) {
+                    0
+                } else {
+                    margin
+                },
+                margin,
+                margin)
 
         viewContainer.layoutParams = params1
         viewWithBackground?.layoutParams = params2
         viewExtra?.layoutParams = params2
+    }
+
+    private fun isSameSender(): Boolean {
+        return previousMMData?.sender_id == this.mmData?.sender_id
     }
 
     fun setTextColor(tv: TextView) {
@@ -59,7 +70,7 @@ abstract class SuperView : FrameLayout {
         tv.setTextColor(ContextCompat.getColor(context, color))
     }
 
-    fun setupDateAndSender(dateView: TextView, senderView: TextView) {
+    fun setupDateAndSender(dateView: TextView, senderView: TextView, linearLayout: LinearLayout) {
 
         val name = mmData?.sender_name
         val date = mmData?.date
@@ -70,57 +81,61 @@ abstract class SuperView : FrameLayout {
             return
         }
 
-        val lpd = dateView.layoutParams as LinearLayout.LayoutParams
         val lps = senderView.layoutParams as LinearLayout.LayoutParams
 
-        dateView.visibility = mmData?.date?.let {
-            dateView.text = getDateFormat()
+        dateView.visibility = date?.let {
+            dateView.text = getDateFormat(it)
             View.VISIBLE
         } ?: kotlin.run {
             View.GONE
         }
 
-        if (isSender == true) {
-            lpd.gravity = Gravity.START
+        if (this.isSender == true) {
+            linearLayout.removeView(dateView)
+            linearLayout.addView(dateView, 0)
+
             senderView.visibility = View.GONE
         } else {
-            lpd.gravity = Gravity.END
+            linearLayout.removeView(dateView)
+            linearLayout.addView(dateView, 1)
+
             lps.gravity = Gravity.START
             name?.let {
                 senderView.text = it
                 senderView.visibility = View.VISIBLE
             }
         }
-        dateView.layoutParams = lpd
+
+        if (isSameSender()) {
+            senderView.visibility = View.GONE
+        }
         senderView.layoutParams = lps
     }
 
-    private fun getDateFormat(): String? {
-        return this.mmData?.date?.let { sendTime ->
-            val currentTime = System.currentTimeMillis()
+    private fun getDateFormat(date: Long): String? {
+        val currentTime = System.currentTimeMillis()
 
-            val sendDay = SimpleDateFormat("dd", Locale.getDefault()).format(Date(sendTime)).toIntOrNull()
-                    ?: 0
-            val sendYear = SimpleDateFormat("yy", Locale.getDefault()).format(Date(sendTime)).toIntOrNull()
-                    ?: 0
-            val currentDay = SimpleDateFormat("dd", Locale.getDefault()).format(Date(currentTime)).toIntOrNull()
-                    ?: 0
-            val currentYear = SimpleDateFormat("yy", Locale.getDefault()).format(Date(currentTime)).toIntOrNull()
-                    ?: 0
+        val sendDay = SimpleDateFormat("dd", Locale.getDefault()).format(Date(date)).toIntOrNull()
+                ?: 0
+        val sendYear = SimpleDateFormat("yy", Locale.getDefault()).format(Date(date)).toIntOrNull()
+                ?: 0
+        val currentDay = SimpleDateFormat("dd", Locale.getDefault()).format(Date(currentTime)).toIntOrNull()
+                ?: 0
+        val currentYear = SimpleDateFormat("yy", Locale.getDefault()).format(Date(currentTime)).toIntOrNull()
+                ?: 0
 
-            val format = if (sendDay == currentDay && sendYear == currentYear &&
-                    sendDay != 0 && currentDay != 0 && sendYear != 0 && currentYear != 0) {
-                // send today get clock time
-                "HH:mm"
-            } else if (sendDay != 0 && currentDay != 0 && sendYear != 0 && currentYear != 0) {
-                // send more than a day ago show date with year
-                "dd:MMM"
-            } else {
-                null
-            }
-            format?.let { f ->
-                SimpleDateFormat(f, Locale.getDefault()).format(Date(sendTime))
-            }
+        val format = if (sendDay == currentDay && sendYear == currentYear &&
+                sendDay != 0 && currentDay != 0 && sendYear != 0 && currentYear != 0) {
+            // send today get clock time
+            "HH:mm"
+        } else if (sendDay != 0 && currentDay != 0 && sendYear != 0 && currentYear != 0) {
+            // send more than a day ago show date with year
+            "dd:MMM"
+        } else {
+            null
+        }
+        return format?.let { f ->
+            SimpleDateFormat(f, Locale.getDefault()).format(Date(date))
         }
     }
 

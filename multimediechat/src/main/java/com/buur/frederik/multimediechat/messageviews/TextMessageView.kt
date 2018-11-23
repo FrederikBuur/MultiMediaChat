@@ -20,16 +20,17 @@ class TextMessageView: SuperView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
-    override fun setup(isSender: Boolean, mmData: MMData?, time: Int?) {
+    override fun setup(isSender: Boolean, mmData: MMData?, previousMMData: MMData?) {
         this.isSender = isSender
         this.mmData = mmData
+        this.previousMMData = previousMMData
         textMsgContent.text = (mmData?.source) ?: "Error"
 
         val color = if (isSender) R.color.textBright else R.color.textDark
         textMsgContent.setTextColor(ContextCompat.getColor(context, color))
 
         this.setParams(textMsgContainer, textMsgContent, textMsgContentContainer)
-        this.setupDateAndSender(textMsgTime, textMsgSender)
+        this.setupDateAndSender(textMsgTime, textMsgSender, textMsgLL)
     }
 
 }

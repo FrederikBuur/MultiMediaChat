@@ -14,49 +14,59 @@
             android:id="@+id/vidMsgSender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/view_message_info_text_size"
-            android:text="sender" />
+            android:text="sender"
+            android:textSize="@dimen/view_message_info_text_size" />
 
-        <com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
-            android:id="@+id/vidMsgContentContainer"
+        <LinearLayout
+            android:id="@+id/vidMsgLL"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            app:corner_radius="@dimen/view_message_corner_radius">
+            android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/vidMsgContent"
+
+            <com.jcminarro.roundkornerlayout.RoundKornerFrameLayout
+                android:id="@+id/vidMsgContentContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="@dimen/view_message_width_max"
-                android:maxHeight="@dimen/view_message_height_max"
-                android:src="@drawable/background_image_placeholder" />
+                android:clickable="true"
+                android:focusable="true"
+                app:corner_radius="@dimen/view_message_corner_radius">
 
-            <ProgressBar
-                android:id="@+id/imgMsgProgress"
+                <ImageView
+                    android:id="@+id/vidMsgContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/view_message_width_max"
+                    android:maxHeight="@dimen/view_message_height_max"
+                    android:src="@drawable/background_image_placeholder" />
+
+                <ProgressBar
+                    android:id="@+id/imgMsgProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:progressDrawable="@color/colorAccent" />
+
+                <ImageView
+                    android:id="@+id/vidMsgAction"
+                    android:layout_width="@dimen/margin_48"
+                    android:layout_height="@dimen/margin_48"
+                    android:layout_gravity="center"
+                    android:background="@drawable/shape_circle_play_vid"
+                    android:src="@drawable/ic_play_arrow" />
+
+            </com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
+
+            <TextView
+                android:id="@+id/vidMsgTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:progressDrawable="@color/colorAccent" />
+                android:layout_gravity="bottom"
+                android:layout_marginStart="@dimen/margin_4"
+                android:layout_marginEnd="@dimen/margin_4"
+                android:text="time"
+                android:textSize="@dimen/view_message_info_text_size" />
 
-            <ImageView
-                android:id="@+id/vidMsgAction"
-                android:layout_width="@dimen/margin_48"
-                android:layout_height="@dimen/margin_48"
-                android:layout_gravity="center"
-                android:background="@drawable/shape_circle_play_vid"
-                android:src="@drawable/ic_play_arrow" />
-
-        </com.jcminarro.roundkornerlayout.RoundKornerFrameLayout>
-
-        <TextView
-            android:id="@+id/vidMsgTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="@dimen/margin_12"
-            android:textSize="@dimen/view_message_info_text_size"
-            android:text="time" />
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

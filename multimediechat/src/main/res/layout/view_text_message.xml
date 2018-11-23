@@ -25,33 +25,36 @@
             android:minHeight="@dimen/margin_36">
 
             <LinearLayout
+                android:id="@+id/textMsgLL"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textMsgContent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="@dimen/view_message_width_max"
-                android:paddingStart="@dimen/margin_12"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingEnd="@dimen/margin_12"
-                android:paddingBottom="@dimen/margin_8"
-                android:background="@drawable/shape_msg_sender"
-                android:text="Sample text message..."
-                android:textSize="14sp"
-                android:textStyle="normal"
-                android:textColor="@color/textBright"
-                android:typeface="sans" />
+                android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/textMsgContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_msg_sender"
+                    android:maxWidth="@dimen/view_message_width_max"
+                    android:paddingStart="@dimen/margin_12"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingEnd="@dimen/margin_12"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="Sample text message..."
+                    android:textColor="@color/textBright"
+                    android:textSize="14sp"
+                    android:textStyle="normal"
+                    android:typeface="sans" />
+
+                <TextView
+                    android:text="time"
                     android:id="@+id/textMsgTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:textSize="@dimen/view_message_info_text_size"
-                    android:text="time" />
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="@dimen/margin_4"
+                    android:layout_marginEnd="@dimen/margin_4"
+                    android:textSize="@dimen/view_message_info_text_size" />
             </LinearLayout>
         </FrameLayout>
 

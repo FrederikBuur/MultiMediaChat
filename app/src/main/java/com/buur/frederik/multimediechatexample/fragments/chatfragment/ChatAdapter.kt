@@ -35,23 +35,24 @@ class ChatAdapter(var context: Context, var list: ArrayList<MMData>?) : Recycler
 
         val itemView = holder.itemView
         val mmData = getMMData(position)
+        val previousMMData = getMMData(position - 1)
         val isSender = isMMDataMsgSender(mmData)
 
         when (itemView) {
             is ImgView -> {
-                itemView.setup(isSender, mmData)
+                itemView.setup(isSender, mmData, previousMMData)
             }
             is VideoView -> {
-                itemView.setup(isSender, mmData)
+                itemView.setup(isSender, mmData, previousMMData)
             }
             is TextMessageView -> {
-                itemView.setup(isSender, mmData)
+                itemView.setup(isSender, mmData, previousMMData)
             }
             is AudioView -> {
-                itemView.setup(isSender, mmData)
+                itemView.setup(isSender, mmData, previousMMData)
             }
             is DocumentView -> {
-                itemView.setup(isSender, mmData)
+                itemView.setup(isSender, mmData, previousMMData)
             }
             is UserIsTypingView -> {
                 itemView.setup(this.usersTyping)
