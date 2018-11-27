@@ -13,6 +13,7 @@ import com.buur.frederik.multimediechat.camera.CameraActivity
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.vincent.filepicker.Constant
 import com.vincent.filepicker.activity.NormalFilePickActivity
+import java.lang.RuntimeException
 
 
 class MMInputSelectionView : FrameLayout {

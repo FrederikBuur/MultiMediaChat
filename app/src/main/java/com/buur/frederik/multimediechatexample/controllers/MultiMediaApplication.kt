@@ -2,7 +2,9 @@ package com.buur.frederik.multimediechatexample.controllers
 
 import android.app.Application
 import com.buur.frederik.multimediechatexample.BuildConfig
+import com.crashlytics.android.Crashlytics
 import com.squareup.leakcanary.LeakCanary
+import io.fabric.sdk.android.Fabric
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.socket.client.IO
@@ -24,10 +26,15 @@ class MultiMediaApplication: Application() {
 
         instance = this
 
+        setupFabric()
         setupLeakCanary()
         setupSocketIOConnection()
         setupRealm()
 
+    }
+
+    private fun setupFabric() {
+        Fabric.with(this, Crashlytics())
     }
 
     private fun setupLeakCanary() {
