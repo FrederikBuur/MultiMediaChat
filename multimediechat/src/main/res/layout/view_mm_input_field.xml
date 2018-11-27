@@ -42,7 +42,7 @@
                     android:layout_gravity="center"
                     android:background="@android:color/transparent"
                     android:hint="Type a message..."
-                    android:inputType="textCapSentences|textMultiLine"
+                    android:inputType="textMultiLine|textCapSentences"
                     android:maxLines="4"
                     android:padding="@dimen/margin_24" />
 

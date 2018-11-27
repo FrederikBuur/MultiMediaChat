@@ -20,6 +20,7 @@
             android:layout_margin="@dimen/margin_8">
 
             <EditText
+                android:hint="Search..."
                 android:id="@+id/gifSearchField"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -30,8 +31,7 @@
                 android:textColor="@color/textDark"
                 android:textColorHint="@color/greyDark"
                 android:textCursorDrawable="@color/colorAccent"
-                android:hint="Search..."
-                android:inputType="text" />
+                android:inputType="textCapSentences" />
 
         </FrameLayout>
 
