@@ -66,6 +66,7 @@ class ChatFragment : MMFragment(), ISendMessage {
         }
         if (messageList == null) {
             messageList = ArrayList()
+            fetchLatestMessages()
         }
         chatController?.startServerConnection(context)
 
@@ -80,27 +81,12 @@ class ChatFragment : MMFragment(), ISendMessage {
     }
 
     private fun setupResizeListener() {
-
         chatRecyclerView.layoutChangeEvents()
                 .bindToLifecycle(this)
                 .doOnNext {
                     if (it.bottom() < it.oldBottom()) {
                         scrollToBottomIfNearBottom()
                     }
-                }
-                .subscribe({}, {})
-
-        mmInputFrag?.getEditText()?.focusChanges()
-                ?.compose(bindToLifecycle())
-                ?.doOnNext {
-//                    this@ChatFragment.saveSharedListPositionValues()
-                }
-                ?.subscribe({}, {})
-
-        chatRecyclerView.layoutChanges()
-                .compose(bindToLifecycle())
-                .doOnNext {
-//                    this@ChatFragment.saveSharedListPositionValues()
                 }
                 .subscribe({}, {})
     }
@@ -198,6 +184,17 @@ class ChatFragment : MMFragment(), ISendMessage {
         scrollToBottomPost()
     }
 
+    private fun fetchLatestMessages() {
+        chatController?.getLatestMessages(this)
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe({ messagesResponse ->
+                    this.messageList?.clear()
+                    this.messageList?.addAll(messagesResponse)
+                    adapter?.notifyDataSetChanged()
+                }, {})
+    }
+
     private fun sendMessageToServer(mmData: MMData) {
         chatController?.sendMessageToServer(mmData)
                 ?.compose(bindToLifecycle())
@@ -206,10 +203,10 @@ class ChatFragment : MMFragment(), ISendMessage {
                 ?.subscribe({
                     it
                 }, {
-                    // remove mmData from list since it failed to upload
+                    // remove mmData from list since it failed to send
                     val didRemoveMMData = messageList?.remove(mmData)
                     if (didRemoveMMData == true) adapter?.notifyDataSetChanged()
-                    MMToast.showToast(context, "Sending failed", Toast.LENGTH_SHORT)
+                    MMToast.showToast(context, "Sending failed ${it.localizedMessage}", Toast.LENGTH_LONG)
                 })
     }
 

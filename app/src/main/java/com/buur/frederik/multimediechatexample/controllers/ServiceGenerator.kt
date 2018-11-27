@@ -1,6 +1,6 @@
 package com.buur.frederik.multimediechatexample.controllers
 
-import com.buur.frederik.multimediechatexample.api.IUpload
+import com.buur.frederik.multimediechatexample.api.IMultiMedia
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -25,13 +25,13 @@ class ServiceGenerator {
         return  retrofit!!
     }
 
-    fun createUploadAPI() : IUpload {
-        return getRetrofit().create(IUpload::class.java)
+    fun createMultiMediaAPI() : IMultiMedia {
+        return getRetrofit().create(IMultiMedia::class.java)
     }
 
     companion object {
-        const val MM_BASE_URL = "https://frozen-stream-46849.herokuapp.com/" // heroku
-//        const val MM_BASE_URL = "http://192.168.1.13:8000/" // home
+//        const val MM_BASE_URL = "https://frozen-stream-46849.herokuapp.com/" // heroku
+        const val MM_BASE_URL = "http://192.168.1.13:8000/" // home
         //    const val MM_BASE_URL = "http://192.168.1.239:3000/api/" // amsiq
     }
 

@@ -5,13 +5,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.UploadHelper
 import com.buur.frederik.multimediechat.models.MMData
-import com.buur.frederik.multimediechatexample.api.IUpload
+import com.buur.frederik.multimediechatexample.api.IMultiMedia
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
 import com.buur.frederik.multimediechatexample.controllers.SessionController
+import com.buur.frederik.multimediechatexample.models.LatestMessagesResponse
 import com.buur.frederik.multimediechatexample.models.NewEventResponse
 import com.buur.frederik.multimediechatexample.models.User
 import com.google.gson.Gson
+import com.trello.rxlifecycle3.components.support.RxFragment
+import com.trello.rxlifecycle3.kotlin.bindToLifecycle
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -36,14 +39,14 @@ class ChatController {
     private var typingDisposable: Disposable? = null
 
     private var context: Context? = null
-    private var uploadAPI: IUpload? = null
+    private var multiMediaAPI: IMultiMedia? = null
     private var userIsTyping: Boolean? = null
 
-    private fun getUploadClient(): IUpload {
-        if (uploadAPI == null) {
-            uploadAPI = ServiceGenerator().createUploadAPI()
+    private fun getMultiMediaClient(): IMultiMedia {
+        if (multiMediaAPI == null) {
+            multiMediaAPI = ServiceGenerator().createMultiMediaAPI()
         }
-        return uploadAPI!!
+        return multiMediaAPI!!
     }
 
     init {
@@ -114,11 +117,15 @@ class ChatController {
             this.socket?.on(TOPIC_USER_STOP_TYPING, onUserStopTyping)
             this.socket?.connect()
 
-            // emit that new user joined chat
-            SessionController.getInstance().getUser()?.name?.let { name ->
-                this.socket?.emit(TOPIC_USER_JOINED, name)
-                setupTypingPublisher()
-            }
+            setupTypingPublisher()
+            emitUserIsConnected()
+        }
+    }
+
+    fun emitUserIsConnected() {
+        // emit that new user joined chat
+        SessionController.getInstance().getUser()?.name?.let { name ->
+            this.socket?.emit(TOPIC_USER_JOINED, name)
         }
     }
 
@@ -151,10 +158,10 @@ class ChatController {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .concatMap { body ->
                                     val uploadObservable = when (mmData.type) {
-                                        MMDataType.Image.ordinal -> getUploadClient().postImage(body)
-                                        MMDataType.Audio.ordinal -> getUploadClient().postAudio(body)
-                                        MMDataType.Video.ordinal -> getUploadClient().postVideo(body)
-                                        MMDataType.Document.ordinal -> getUploadClient().postDocument(body)
+                                        MMDataType.Image.ordinal -> getMultiMediaClient().postImage(body)
+                                        MMDataType.Audio.ordinal -> getMultiMediaClient().postAudio(body)
+                                        MMDataType.Video.ordinal -> getMultiMediaClient().postVideo(body)
+                                        MMDataType.Document.ordinal -> getMultiMediaClient().postDocument(body)
                                         else -> null
                                     }
                                     uploadObservable
@@ -201,6 +208,15 @@ class ChatController {
                 emitter.onComplete()
             }
         }
+    }
+
+    fun getLatestMessages(fragment: RxFragment): Observable<ArrayList<MMData>> {
+        return getMultiMediaClient().getLatestMessages()
+                .bindToLifecycle(fragment)
+                .doOnError { error ->
+                    error.printStackTrace()
+                }
+
     }
 
     private fun setupTypingPublisher() {
