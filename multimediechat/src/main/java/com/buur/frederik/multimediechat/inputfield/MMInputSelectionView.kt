@@ -20,7 +20,7 @@ class MMInputSelectionView : FrameLayout {
     private var fragment: Fragment? = null
 
     init {
-        View.inflate(context, R.layout.view_options, this)
+        View.inflate(context, R.layout.view_input_selection, this)
     }
 
     constructor(context: Context) : super(context)

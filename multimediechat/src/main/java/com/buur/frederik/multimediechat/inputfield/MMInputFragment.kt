@@ -35,7 +35,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.view_mm_input_field.*
-import kotlinx.android.synthetic.main.view_options.*
+import kotlinx.android.synthetic.main.view_input_selection.*
 import java.io.File
 import java.io.IOException
 import java.lang.IllegalStateException
