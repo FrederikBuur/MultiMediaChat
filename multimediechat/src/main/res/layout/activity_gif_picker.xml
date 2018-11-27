@@ -27,6 +27,8 @@
                 android:layout_marginStart="@dimen/margin_12"
                 android:layout_marginEnd="@dimen/margin_12"
                 android:background="@android:color/transparent"
+                android:maxLines="1"
+                android:imeOptions="actionSearch"
                 android:layout_gravity="center"
                 android:textColor="@color/textDark"
                 android:textColorHint="@color/greyDark"

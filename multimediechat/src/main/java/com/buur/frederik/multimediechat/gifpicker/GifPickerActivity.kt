@@ -10,16 +10,21 @@ import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.models.gif.GifData
+import com.jakewharton.rxbinding3.widget.editorActions
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
+import com.trello.rxlifecycle3.kotlin.bindToLifecycle
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_gif_picker.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+
 
 class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
 
@@ -58,6 +63,21 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
     }
 
     private fun setup() {
+
+        gifSearchField.editorActions()
+                .bindToLifecycle(this)
+                .subscribe({ action ->
+                    if (action == EditorInfo.IME_ACTION_SEARCH) {
+                        // close keyboard
+                        val inputManager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                        inputManager?.hideSoftInputFromWindow(
+                                this.currentFocus.windowToken,
+                                InputMethodManager.HIDE_NOT_ALWAYS)
+                        true
+                    }
+                    false
+                }, {})
+
         setupRecyclerView()
         setupSearchListener()
     }
@@ -75,7 +95,7 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
 
     private fun setupSearchListener() {
         searchListenerDisposable = gifSearchField.textChanges()
-                .compose(bindToLifecycle())
+                .bindToLifecycle(this)
                 .debounce(searchInputDebounce, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
