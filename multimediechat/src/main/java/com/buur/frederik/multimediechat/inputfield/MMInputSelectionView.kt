@@ -8,12 +8,11 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import com.buur.frederik.multimediechat.R
-import com.buur.frederik.multimediechat.gifpicker.GifPickerActivity
 import com.buur.frederik.multimediechat.camera.CameraActivity
+import com.buur.frederik.multimediechat.gifpicker.GifPickerActivity
 import com.buur.frederik.multimediechat.helpers.PermissionRequester
 import com.vincent.filepicker.Constant
 import com.vincent.filepicker.activity.NormalFilePickActivity
-import java.lang.RuntimeException
 
 
 class MMInputSelectionView : FrameLayout {

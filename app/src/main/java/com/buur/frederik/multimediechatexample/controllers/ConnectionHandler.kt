@@ -23,12 +23,6 @@ class ConnectionHandler : BroadcastReceiver() {
         var connectivityReceiverListener: ConnectionReceiverListener? = null
         var connectivityReceiver: ConnectionHandler? = null
 
-        fun isConnected(context: Context?): Boolean {
-            val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-            val activeNetwork = cm?.activeNetworkInfo
-            return activeNetwork?.isConnected == true
-        }
-
         fun setListener(context: Context, delegate: ConnectionHandler.ConnectionReceiverListener) {
             val intentFilter = IntentFilter()
             intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)

@@ -14,8 +14,7 @@ abstract class MMActivity : RxAppCompatActivity() {
             if (supportFragmentManager.backStackEntryCount == 0) return null
 
             val name = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
-            val curr = supportFragmentManager.findFragmentByTag(name)
-            return curr
+            return supportFragmentManager.findFragmentByTag(name)
         }
 
     fun navigateToFragment(fragment: Fragment, argument: Bundle? = null, shouldAddToBackStack: Boolean? = true, shouldAddToContainer: Boolean? = false) {

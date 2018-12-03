@@ -1,7 +1,5 @@
 package com.buur.frederik.multimediechatexample.models
 
-import android.content.Context
-import android.widget.Toast
 import com.buur.frederik.multimediechatexample.controllers.SessionController
 import io.realm.Realm
 import io.realm.RealmObject
@@ -18,7 +16,7 @@ open class User : RealmObject() {
 
         fun isLoggedIn(realm: Realm): Boolean {
             val user = SessionController.getInstance().getUser()
-            return user?.name?.let { _ ->
+            return user?.name?.let {
                 true
             } ?: kotlin.run {
                 val userRealm = realm.where(User::class.java).findFirst()

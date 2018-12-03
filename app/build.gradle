@@ -86,7 +86,7 @@ dependencies {
     implementation 'jp.wasabeef:picasso-transformations:2.2.1' // https://github.com/wasabeef/picasso-transformations/releases
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.6@aar') {
-        transitive = true;
+        transitive = true
     }
 
 }

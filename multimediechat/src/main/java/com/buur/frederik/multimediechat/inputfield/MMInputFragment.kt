@@ -44,7 +44,6 @@ import java.lang.RuntimeException
 
 class MMInputFragment : RxFragment(), View.OnClickListener {
 
-    private val tagg = "MMInputFragment"
     private val fileSizeLimit = 15000000
     private val recordingMaxLength: Long = 60000 // millisecond
     private val recordingTimerInterval: Long = 50 // millisecond

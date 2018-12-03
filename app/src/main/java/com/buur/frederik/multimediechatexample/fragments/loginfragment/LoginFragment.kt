@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.buur.frederik.multimediechatexample.R
-import com.buur.frederik.multimediechatexample.controllers.SessionController
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.models.User
 import io.realm.Realm

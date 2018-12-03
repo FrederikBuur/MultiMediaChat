@@ -5,5 +5,4 @@ class Gif(
         val width: String,
         val height: String,
         val size: String
-) {
-}
+)

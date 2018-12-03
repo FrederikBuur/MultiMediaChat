@@ -22,7 +22,6 @@ import java.io.FileOutputStream
 object UploadHelper {
 
     private const val IMAGE_MAX_SIZE = 1500
-    private val tag = "UploadHelper"
 
     // for images
     private fun rotateBitmapIfNeeded(uriPath: String, bitmap: Bitmap?): Bitmap? {

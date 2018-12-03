@@ -1,11 +1,9 @@
 package com.buur.frederik.multimediechatexample.api
 
 import com.buur.frederik.multimediechat.models.MMData
-import com.buur.frederik.multimediechatexample.models.LatestMessagesResponse
 import com.buur.frederik.multimediechatexample.models.UploadResponse
 import io.reactivex.Observable
 import okhttp3.MultipartBody
-import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST

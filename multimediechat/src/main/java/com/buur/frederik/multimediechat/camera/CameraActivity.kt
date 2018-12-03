@@ -4,10 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Toast
 import com.buur.frederik.multimediechat.R
 import com.buur.frederik.multimediechat.enums.MMDataType
 import com.buur.frederik.multimediechat.helpers.AudioHelper
@@ -27,7 +25,6 @@ import java.util.concurrent.TimeUnit
 
 class CameraActivity : RxAppCompatActivity(), View.OnClickListener {
 
-    private val tag = "CameraActivity"
     private val captureDebounceDuration = 500L
     private val videoIndicatorTimerInterval = 50L // millisecond
     private val videoMaxDuration = 10000L // 10 sec

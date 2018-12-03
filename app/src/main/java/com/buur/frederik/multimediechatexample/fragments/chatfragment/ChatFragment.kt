@@ -1,24 +1,22 @@
 package com.buur.frederik.multimediechatexample.fragments.chatfragment
 
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.buur.frederik.multimediechat.helpers.MMToast
-import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechat.inputfield.ISendMessage
 import com.buur.frederik.multimediechat.inputfield.MMInputFragment
+import com.buur.frederik.multimediechat.models.MMData
 import com.buur.frederik.multimediechatexample.R
 import com.buur.frederik.multimediechatexample.controllers.SessionController
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
 import com.buur.frederik.multimediechatexample.fragments.loginfragment.LoginFragment
 import com.buur.frederik.multimediechatexample.models.User
-import com.jakewharton.rxbinding2.view.focusChanges
 import com.jakewharton.rxbinding2.view.layoutChangeEvents
-import com.jakewharton.rxbinding2.view.layoutChanges
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.trello.rxlifecycle3.kotlin.bindToLifecycle
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -32,7 +30,6 @@ class ChatFragment : MMFragment(), ISendMessage {
     private var adapter: ChatAdapter? = null
     private var messageList: ArrayList<MMData>? = null
 
-    private var sharedLatestVisibleItem = 0
     private var sharedVisibleItemCount = 0
 
     private var mmInputFrag: MMInputFragment? = null
@@ -48,13 +45,7 @@ class ChatFragment : MMFragment(), ISendMessage {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        savedInstanceState?.let { state ->
-//            val restoredList = state.getParcelableArrayList<MMData>(MESSAGE_LIST_KEY)
-//            messageList = restoredList
-//        } ?: kotlin.run {
-//            messageList = SampleData.populateDummyData()
             shouldShowLoginPage()
-//        }
 
         setupViews()
     }
@@ -72,7 +63,6 @@ class ChatFragment : MMFragment(), ISendMessage {
 
         setupRecyclerView()
         setupMMLib()
-        //saveSharedListPositionValues()
 
         scrollToBottomPost()
         setupNewEventListener()
@@ -150,7 +140,6 @@ class ChatFragment : MMFragment(), ISendMessage {
 
                 if (layoutManager?.findLastCompletelyVisibleItemPosition() == ((adapter?.itemCount ?: 0) - 1)) {
                     // is scrolled to bot
-//                    saveSharedListPositionValues()
                 }
             }
         })
@@ -192,6 +181,7 @@ class ChatFragment : MMFragment(), ISendMessage {
                     this.messageList?.clear()
                     this.messageList?.addAll(messagesResponse)
                     adapter?.notifyDataSetChanged()
+                    this.scrollToBottomPost()
                 }, {})
     }
 
@@ -229,17 +219,6 @@ class ChatFragment : MMFragment(), ISendMessage {
         }
     }
 
-//    private fun saveSharedListPositionValues() {
-//        val layoutManager = chatRecyclerView.layoutManager as? LinearLayoutManager
-//        sharedLatestVisibleItem  = layoutManager?.findLastVisibleItemPosition() ?: 0
-//        sharedVisibleItemCount = layoutManager?.childCount?.minus(1) ?: 0
-//    }
-
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        outState.putParcelableArrayList(MESSAGE_LIST_KEY, messageList)
-//        super.onSaveInstanceState(outState)
-//    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         chatController?.stopServerConnection()
@@ -260,9 +239,4 @@ class ChatFragment : MMFragment(), ISendMessage {
             setupTypingListener()
         }
     }
-
-    companion object {
-        private const val MESSAGE_LIST_KEY = "message_list"
-    }
-
 }

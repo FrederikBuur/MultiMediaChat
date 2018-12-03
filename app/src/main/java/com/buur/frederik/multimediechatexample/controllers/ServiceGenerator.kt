@@ -6,6 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class ServiceGenerator {
 
@@ -17,7 +18,12 @@ class ServiceGenerator {
         if (retrofit == null) {
             retrofit = Retrofit.Builder()
                     .baseUrl(MM_BASE_URL)
-                    .client(OkHttpClient.Builder().addInterceptor(log).build())
+                    .client(OkHttpClient.Builder()
+                            .addInterceptor(log)
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .writeTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .build())
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()
@@ -30,8 +36,8 @@ class ServiceGenerator {
     }
 
     companion object {
-//        const val MM_BASE_URL = "https://frozen-stream-46849.herokuapp.com/" // heroku
-        const val MM_BASE_URL = "http://192.168.1.13:8000/" // home
+        const val MM_BASE_URL = "https://frozen-stream-46849.herokuapp.com/" // heroku
+//        const val MM_BASE_URL = "http://192.168.1.13:8000/" // home
         //    const val MM_BASE_URL = "http://192.168.1.239:3000/api/" // amsiq
     }
 

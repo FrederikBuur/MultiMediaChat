@@ -1,9 +1,7 @@
 package com.buur.frederik.multimediechat.helpers
 
 import android.content.Context
-import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import com.buur.frederik.multimediechat.models.MMData
@@ -20,19 +18,10 @@ import com.google.android.exoplayer2.util.Util
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
 
 object AudioHelper {
 
-//    var mediaPlayer: MediaPlayer? = null
-//    var currentAudioFile: MMData? = null
-//    var currentAudioTime: Float? = null
-
     var exoPlayer: SimpleExoPlayer? = null
-    var currentTime: Long? = null
     var currentMMData: MMData? = null
     var currentExoPlayerListenerDisposable: Disposable? = null
     var durationDisposables: CompositeDisposable? = null

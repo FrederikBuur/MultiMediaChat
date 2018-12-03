@@ -4,6 +4,4 @@ class GifMultipleGifResponse(
         val data: ArrayList<GifData>,
         val pagination: GifPagination,
         val meta: GifMeta
-) {
-
-}
+)

@@ -8,7 +8,6 @@ import io.reactivex.Observable
 class GifPickerController {
 
     private val tag = "GifPickerController"
-    private val GIPHY_API_KEY = "Ms6Tzk690HOJO8FU52fPndoLlVBlR8W6"
     private var gifClient: IGiphy? = null
 
     private fun getGifClient(): IGiphy {
@@ -38,6 +37,7 @@ class GifPickerController {
 
     companion object {
         const val gifFetchAmount = 30
+        const val GIPHY_API_KEY = "Ms6Tzk690HOJO8FU52fPndoLlVBlR8W6"
     }
 
 }

@@ -9,12 +9,7 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.socket.client.IO
 import io.socket.client.Socket
-import java.lang.RuntimeException
 import java.net.URISyntaxException
-import okhttp3.OkHttpClient
-import javax.net.ssl.*
-import javax.security.cert.CertificateException
-import javax.security.cert.X509Certificate
 
 
 class MultiMediaApplication: Application() {

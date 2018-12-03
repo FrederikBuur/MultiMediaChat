@@ -7,5 +7,4 @@ class ImagesData(
         val fixed_height: Gif,
         val original: Gif,
         val preview_gif: Gif
-) {
-}
+)

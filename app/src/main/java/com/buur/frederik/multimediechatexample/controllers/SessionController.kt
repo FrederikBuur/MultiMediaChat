@@ -4,8 +4,6 @@ import com.buur.frederik.multimediechatexample.models.User
 
 class SessionController {
 
-    private val tag = "SessionController"
-
     private var user: User? = null
 
     fun getUser(): User? {

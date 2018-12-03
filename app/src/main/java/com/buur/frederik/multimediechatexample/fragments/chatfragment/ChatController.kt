@@ -9,7 +9,6 @@ import com.buur.frederik.multimediechatexample.api.IMultiMedia
 import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.controllers.ServiceGenerator
 import com.buur.frederik.multimediechatexample.controllers.SessionController
-import com.buur.frederik.multimediechatexample.models.LatestMessagesResponse
 import com.buur.frederik.multimediechatexample.models.NewEventResponse
 import com.buur.frederik.multimediechatexample.models.User
 import com.google.gson.Gson
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeUnit
 
 class ChatController {
 
-    private val tag = "ChatController"
     private val typingDebounceDuration = 2000L
 
     private var act: AppCompatActivity? = null

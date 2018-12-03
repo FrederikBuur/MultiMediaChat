@@ -82,7 +82,7 @@ class AudioView : SuperView, View.OnClickListener {
                     AudioHelper.durationDisposables?.add(it)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ _ ->
+                .subscribe({
                     val current = AudioHelper.exoPlayer?.currentPosition?.toFloat()
                     val percentDecimal = current?.div(max)
                     percentDecimal?.let {

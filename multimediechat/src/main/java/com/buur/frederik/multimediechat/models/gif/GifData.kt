@@ -6,5 +6,4 @@ class GifData(
         val url: String,
         val embed_url: String,
         val images: ImagesData
-) {
-}
+)

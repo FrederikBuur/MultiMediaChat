@@ -61,7 +61,7 @@ class GifView : FrameLayout, View.OnClickListener {
     override fun onClick(v: View?) {
         if (v == gifImageContainer) {
             gifData?.images?.original?.url?.let { gifUrl ->
-                gifClickDelegate?.GifOnclick(gifUrl)
+                gifClickDelegate?.gifOnclick(gifUrl)
             }
         }
     }

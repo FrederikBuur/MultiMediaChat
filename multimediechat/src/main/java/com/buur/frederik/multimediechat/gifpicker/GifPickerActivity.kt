@@ -174,7 +174,7 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
                 }, {})
     }
 
-    override fun GifOnclick(gifUrl: String) {
+    override fun gifOnclick(gifUrl: String) {
         val returnIntent = Intent()
         returnIntent.putExtra(GIF_KEY, gifUrl)
         setResult(Activity.RESULT_OK, returnIntent)
@@ -226,7 +226,6 @@ class GifPickerActivity : RxAppCompatActivity(), IGifOnClick {
 
     companion object {
         const val GIF_KEY = "gifMessage"
-        const val GIF_LIST_KEY = "gifList"
     }
 
 }

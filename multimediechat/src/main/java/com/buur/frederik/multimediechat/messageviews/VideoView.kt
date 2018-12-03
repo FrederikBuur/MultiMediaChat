@@ -2,7 +2,6 @@ package com.buur.frederik.multimediechat.messageviews
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
 import com.buur.frederik.multimediechat.R
