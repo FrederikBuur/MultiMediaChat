@@ -14,21 +14,7 @@ open class User : RealmObject() {
 
     companion object {
 
-        fun isLoggedIn(realm: Realm): Boolean {
-            val user = SessionController.getInstance().getUser()
-            return user?.name?.let {
-                true
-            } ?: kotlin.run {
-                val userRealm = realm.where(User::class.java).findFirst()
-                userRealm?.let { user ->
-                    val userCopy = realm.copyFromRealm(user)
-                    SessionController.getInstance().setUser(userCopy)
-                    true
-                } ?: kotlin.run {
-                    false
-                }
-            }
-        }
+
 
         fun createUser(realm: Realm, userName: String) {
             realm.executeTransaction { innerRealm ->

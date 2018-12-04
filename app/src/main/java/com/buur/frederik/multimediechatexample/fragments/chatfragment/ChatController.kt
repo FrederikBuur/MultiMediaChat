@@ -36,7 +36,6 @@ class ChatController {
     private var typingPublishSubject: PublishSubject<Int>? = null
     private var typingDisposable: Disposable? = null
 
-    private var context: Context? = null
     private var multiMediaAPI: IMultiMedia? = null
     private var userIsTyping: Boolean? = null
 
@@ -104,10 +103,8 @@ class ChatController {
         })
     }
 
-    fun startServerConnection(context: Context?) {
-        this.context = context
-        this.act = context as? AppCompatActivity
-        this.act?.let {
+    fun startServerListeners(context: Context?) {
+        (context as? AppCompatActivity)?.let {
             this.socket = (it.application as? MultiMediaApplication)?.socket
             this.socket?.on(TOPIC_NEW_MESSAGE, onNewMessage)
             this.socket?.on(TOPIC_USER_JOINED, onUserJoined)
@@ -116,14 +113,7 @@ class ChatController {
             this.socket?.connect()
 
             setupTypingPublisher()
-            emitUserIsConnected()
-        }
-    }
-
-    fun emitUserIsConnected() {
-        // emit that new user joined chat
-        SessionController.getInstance().getUser()?.name?.let { name ->
-            this.socket?.emit(TOPIC_USER_JOINED, name)
+            emitUserIsConnected(this.socket)
         }
     }
 
@@ -253,9 +243,18 @@ class ChatController {
     }
 
     companion object {
+
         const val TOPIC_NEW_MESSAGE = "new_message"
         const val TOPIC_USER_JOINED = "user_joined"
         const val TOPIC_USER_TYPING = "user_typing"
         const val TOPIC_USER_STOP_TYPING = "user_stop_typing"
+
+        fun emitUserIsConnected(socket: Socket?) {
+            // emit that new user joined chat
+            SessionController.getInstance().getUser()?.name?.let { name ->
+                socket?.emit(TOPIC_USER_JOINED, name)
+            }
+        }
+
     }
 }

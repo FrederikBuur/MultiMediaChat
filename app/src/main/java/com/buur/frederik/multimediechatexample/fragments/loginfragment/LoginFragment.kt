@@ -7,13 +7,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.buur.frederik.multimediechatexample.R
+import com.buur.frederik.multimediechatexample.controllers.MultiMediaApplication
 import com.buur.frederik.multimediechatexample.fragments.MMFragment
+import com.buur.frederik.multimediechatexample.fragments.chatfragment.ChatController
 import com.buur.frederik.multimediechatexample.models.User
 import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_login.*
 
-class LoginFragment: MMFragment(), View.OnClickListener {
+class LoginFragment : MMFragment(), View.OnClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_login, container, false)
@@ -40,6 +43,10 @@ class LoginFragment: MMFragment(), View.OnClickListener {
         if (userName.isNotEmpty()) {
             Realm.getDefaultInstance().use { realm ->
                 User.createUser(realm, userName)
+                (context as? AppCompatActivity)?.let {
+                    val socket = (it.application as? MultiMediaApplication)?.socket
+                    ChatController.emitUserIsConnected(socket)
+                }
                 animateLoginPage(false)
             }
         } else {
@@ -55,7 +62,7 @@ class LoginFragment: MMFragment(), View.OnClickListener {
 
         containerAlphaAnimation.duration = 500
 
-        containerAlphaAnimation.addListener(object  : AnimatorListenerAdapter() {
+        containerAlphaAnimation.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 super.onAnimationEnd(animation)
                 if (!openAnimation) {

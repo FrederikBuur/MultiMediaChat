@@ -81,8 +81,8 @@ class MultiMediaApplication: Application() {
         Realm.setDefaultConfiguration(config)
     }
 
-    fun setConnectionListener(listener: ConnectionHandler.ConnectionReceiverListener) {
-        ConnectionHandler.connectivityReceiverListener = listener
+    fun setConnectionListener(listener: ConnectionHandler.ConnectionListener) {
+        ConnectionHandler.connectionListener = listener
     }
 
     companion object {

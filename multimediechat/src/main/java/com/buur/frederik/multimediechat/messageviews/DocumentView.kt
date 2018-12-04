@@ -19,7 +19,7 @@ import java.text.DecimalFormat
 
 class DocumentView : SuperView, View.OnClickListener {
 
-    var file: File? = null
+    private var file: File? = null
 
     constructor(context: Context) : super(context) {
         View.inflate(context, R.layout.view_document, this)

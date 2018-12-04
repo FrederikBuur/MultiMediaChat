@@ -59,7 +59,7 @@ class ChatFragment : MMFragment(), ISendMessage {
             messageList = ArrayList()
             fetchLatestMessages()
         }
-        chatController?.startServerConnection(context)
+        chatController?.startServerListeners(context)
 
         setupRecyclerView()
         setupMMLib()
@@ -152,7 +152,7 @@ class ChatFragment : MMFragment(), ISendMessage {
 
     private fun shouldShowLoginPage() {
         Realm.getDefaultInstance().use { realm ->
-            if (!User.isLoggedIn(realm)) {
+            if (!SessionController.getInstance().isUserLoggedIn(realm)) {
                 mainActivity?.navigateToFragment(LoginFragment(), shouldAddToContainer = true)
             }
         }

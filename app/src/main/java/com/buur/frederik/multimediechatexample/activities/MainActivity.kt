@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import androidx.core.content.ContextCompat
 
 
-class MainActivity : MMActivity(), ConnectionHandler.ConnectionReceiverListener {
+class MainActivity : MMActivity(), ConnectionHandler.ConnectionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,7 +1,6 @@
 package com.buur.frederik.multimediechat.gifpicker
 
 import android.util.Log
-import com.buur.frederik.multimediechat.api.MMServiceGenerator
 import com.buur.frederik.multimediechat.models.gif.GifMultipleGifResponse
 import io.reactivex.Observable
 
@@ -17,7 +16,7 @@ class GifPickerController {
         return gifClient!!
     }
 
-    fun getTrendingGifs(offset: Int): Observable<GifMultipleGifResponse>? {
+    fun getTrendingGifs(offset: Int): Observable<GifMultipleGifResponse> {
         return getGifClient().getTrendingGifs(GIPHY_API_KEY, gifFetchAmount, offset, "G")
                 .doOnNext {
                 }

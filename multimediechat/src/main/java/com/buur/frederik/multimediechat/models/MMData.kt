@@ -6,7 +6,7 @@ import java.io.File
 open class MMData(
         var id: Long,
         var source: String,
-        val type: Int,
+        var type: Int,
         var sender_id: Long? = null,
         var sender_name: String? = null,
         var size: Long? = null,

@@ -59,9 +59,6 @@ object UploadHelper {
             var file = File(mmData.source)
             if (!file.exists()) {
                  file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), mmData.source)
-//                emitter.onError(Throwable("files doesn't exists"))
-//                emitter.onComplete()
-//                return@create
             }
 
             when (mmData.type) {
@@ -109,33 +106,6 @@ object UploadHelper {
         }
     }
 
-//    fun prepareVideoToUpload(mmData: MMData) : Observable<Any> {
-//        return Observable.create { emitter ->
-//            val file = File(mmData.source)
-//            if (!file.exists()) {
-//                emitter.onError(Throwable("files doesn't exists"))
-//                emitter.onComplete()
-//            }
-////            val reqBody = RequestBody.create(MediaType.parse(mmData.source), file)
-//            val reqBody = ProgressRequestBody(file)
-//            reqBody.getProgressSubject()
-//                    .doOnDispose {
-//                        Log.d("", "")
-//                    }
-//                    .subscribe({ progress ->
-//                        Log.d(tag, "Upload progress: $progress")
-//                    }, {
-//                        it
-//                    })
-//            val bodyPart = MultipartBody.Part.createFormData("video", file.name, reqBody)
-//            if (!emitter.isDisposed) {
-//                emitter.onNext(bodyPart)
-//                emitter.onComplete()
-//            }
-//        }
-//    }
-
-    // https://stackoverflow.com/questions/11732872/android-how-can-i-call-camera-or-gallery-intent-together
     fun getPathFromURI(uri: Uri, context: Context?): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)
 

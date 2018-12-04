@@ -10,20 +10,20 @@ class ConnectionHandler : BroadcastReceiver() {
         val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         val activeNetwork = cm?.activeNetworkInfo
         val isConnected = activeNetwork?.isConnected == true
-        connectivityReceiverListener?.onNetworkChanged(isConnected)
+        connectionListener?.onNetworkChanged(isConnected)
 
     }
 
-    interface ConnectionReceiverListener {
+    interface ConnectionListener {
         fun onNetworkChanged(isConnected: Boolean)
     }
 
     companion object {
 
-        var connectivityReceiverListener: ConnectionReceiverListener? = null
+        var connectionListener: ConnectionListener? = null
         var connectivityReceiver: ConnectionHandler? = null
 
-        fun setListener(context: Context, delegate: ConnectionHandler.ConnectionReceiverListener) {
+        fun setListener(context: Context, delegate: ConnectionHandler.ConnectionListener) {
             val intentFilter = IntentFilter()
             intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
 

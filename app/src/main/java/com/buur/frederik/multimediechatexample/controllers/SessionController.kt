@@ -1,6 +1,7 @@
 package com.buur.frederik.multimediechatexample.controllers
 
 import com.buur.frederik.multimediechatexample.models.User
+import io.realm.Realm
 
 class SessionController {
 
@@ -12,6 +13,21 @@ class SessionController {
 
     fun setUser(user: User) {
         this.user = user
+    }
+
+    fun isUserLoggedIn(realm: Realm): Boolean {
+        return user?.name?.let {
+            true
+        } ?: kotlin.run {
+            val userRealm = realm.where(User::class.java).findFirst()
+            userRealm?.let { user ->
+                val userCopy = realm.copyFromRealm(user)
+                setUser(userCopy)
+                true
+            } ?: kotlin.run {
+                false
+            }
+        }
     }
 
     companion object {

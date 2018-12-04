@@ -1,6 +1,5 @@
-package com.buur.frederik.multimediechat.api
+package com.buur.frederik.multimediechat.gifpicker
 
-import com.buur.frederik.multimediechat.gifpicker.IGiphy
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
