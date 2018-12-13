@@ -104,7 +104,8 @@ class ChatController {
     }
 
     fun startServerListeners(context: Context?) {
-        (context as? AppCompatActivity)?.let {
+        this.act = context as? AppCompatActivity
+        this.act?.let {
             this.socket = (it.application as? MultiMediaApplication)?.socket
             this.socket?.on(TOPIC_NEW_MESSAGE, onNewMessage)
             this.socket?.on(TOPIC_USER_JOINED, onUserJoined)
