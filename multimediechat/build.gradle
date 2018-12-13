@@ -62,20 +62,11 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:' + Glide
     annotationProcessor 'com.github.bumptech.glide:compiler:' + Glide
 
-    //Picasso
-    implementation 'com.squareup.picasso:picasso:2.71828'
-
     // Round corners view
     implementation 'com.jcminarro:RoundKornerLayouts:0.4.0'
 
     // ImageView zoom
     implementation 'com.jsibbold:zoomage:1.2.0'
-
-    // Image viewer
-    implementation 'com.jsibbold:zoomage:1.2.0'
-
-    // Audio visualizer
-    implementation 'com.gauravk.audiovisualizer:audiovisualizer:0.9.1'
 
     // DocumentPicker
     implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8' //https://github.com/fishwjy/MultiType-FilePicker

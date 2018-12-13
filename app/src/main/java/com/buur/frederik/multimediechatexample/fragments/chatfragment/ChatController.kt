@@ -192,7 +192,7 @@ class ChatController {
                 if (mmData.type == MMDataType.Audio.ordinal) {
                     MMData.deleteFile(mmData.source)
                 }
-                emitter.onError(SocketException())
+                emitter.onError(SocketException("No connection to server"))
                 emitter.onComplete()
             }
         }
