@@ -17,7 +17,7 @@ import java.io.File
 import java.text.DecimalFormat
 
 
-class DocumentView : SuperView, View.OnClickListener {
+open class DocumentView : SuperView, View.OnClickListener {
 
     private var file: File? = null
 
@@ -58,7 +58,7 @@ class DocumentView : SuperView, View.OnClickListener {
 
     private fun setupFileDetails() {
         documentTitle.text = getFileTitle()
-        documentType.text = getFileType()
+        documentType.text = getFileType(file?.path)
         this.mmData?.size?.let { documentSize.text = getFileSize(it) }
     }
 
@@ -76,8 +76,8 @@ class DocumentView : SuperView, View.OnClickListener {
         }
     }
 
-    private fun getFileType(): String {
-        return file?.path?.let {
+    fun getFileType(path: String?): String {
+        return path?.let {
             when {
                 it.endsWith(".pdf") -> {
                     "PDF"
@@ -117,7 +117,7 @@ class DocumentView : SuperView, View.OnClickListener {
         }
     }
 
-    private fun getFileSize(size: Long): String {
+    fun getFileSize(size: Long): String {
         return when {
             size > mb -> format.format(size / mb) + " MB"
             size > kb -> format.format(size / kb) + " KB"
@@ -126,7 +126,7 @@ class DocumentView : SuperView, View.OnClickListener {
     }
 
     companion object {
-        private const val kb = 1024
+        private const val kb = 1024f
         private const val mb = kb * kb
         private val format = DecimalFormat("#.##")
     }

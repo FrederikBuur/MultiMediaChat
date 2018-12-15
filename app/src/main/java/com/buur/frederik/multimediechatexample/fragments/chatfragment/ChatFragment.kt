@@ -45,7 +45,7 @@ class ChatFragment : MMFragment(), ISendMessage {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-            shouldShowLoginPage()
+        shouldShowLoginPage()
 
         setupViews()
     }
@@ -138,7 +138,8 @@ class ChatFragment : MMFragment(), ISendMessage {
 
                 val layoutManager = chatRecyclerView.layoutManager as? LinearLayoutManager
 
-                if (layoutManager?.findLastCompletelyVisibleItemPosition() == ((adapter?.itemCount ?: 0) - 1)) {
+                if (layoutManager?.findLastCompletelyVisibleItemPosition() == ((adapter?.itemCount
+                                ?: 0) - 1)) {
                     // is scrolled to bot
                 }
             }
@@ -173,7 +174,7 @@ class ChatFragment : MMFragment(), ISendMessage {
         scrollToBottomPost()
     }
 
-    private fun fetchLatestMessages() {
+    fun fetchLatestMessages() {
         chatController?.getLatestMessages(this)
                 ?.subscribeOn(Schedulers.io())
                 ?.observeOn(AndroidSchedulers.mainThread())
@@ -182,7 +183,9 @@ class ChatFragment : MMFragment(), ISendMessage {
                     this.messageList?.addAll(messagesResponse)
                     adapter?.notifyDataSetChanged()
                     this.scrollToBottomPost()
-                }, {})
+                }, {
+                    it
+                })
     }
 
     private fun sendMessageToServer(mmData: MMData) {

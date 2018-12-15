@@ -4,13 +4,15 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import com.buur.frederik.multimediechatexample.fragments.chatfragment.ChatFragment
 import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 abstract class MMActivity : RxAppCompatActivity() {
 
-    val currentFragment: Fragment?
+    var currentFragment: Fragment? = null
         get() {
+            if (field is ChatFragment) return field
             if (supportFragmentManager.backStackEntryCount == 0) return null
 
             val name = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
@@ -28,7 +30,7 @@ abstract class MMActivity : RxAppCompatActivity() {
                 null
             }
         }
-
+        this.currentFragment = fragment
         if (shouldAddToContainer == true) {
             fragmentContainer?.let { supFragMan.add(fragmentContainer, fragment, fragment.javaClass.toString()) }
         } else {

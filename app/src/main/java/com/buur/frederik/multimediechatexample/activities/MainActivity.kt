@@ -98,6 +98,9 @@ class MainActivity : MMActivity(), ConnectionHandler.ConnectionListener {
         } else {
             if (notificationContainer.visibility == View.VISIBLE) {
                 showTopNotification("No Connection", !isConnected, openOnlyAnimation = false)
+                (currentFragment as? ChatFragment)?.let {
+                    it.fetchLatestMessages()
+                }
             }
 //            Realm.getDefaultInstance().use { realm ->
 //                val socket = (this.application as? MultiMediaApplication)?.socket

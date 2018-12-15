@@ -26,7 +26,7 @@ import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 
-class ChatController {
+open class ChatController {
 
     private val typingDebounceDuration = 2000L
 
