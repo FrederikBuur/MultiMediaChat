@@ -217,7 +217,11 @@ class ChatFragment : MMFragment(), ISendMessage {
 
     private fun scrollToBottomPost() {
         chatRecyclerView.post {
-            chatRecyclerView.scrollToPosition(adapter?.itemCount?.minus(1) ?: 0)
+            adapter?.itemCount?.let { count ->
+                if (count > 0) {
+                    chatRecyclerView.scrollToPosition(count.minus(1))
+                }
+            }
 //            saveSharedListPositionValues()
         }
     }

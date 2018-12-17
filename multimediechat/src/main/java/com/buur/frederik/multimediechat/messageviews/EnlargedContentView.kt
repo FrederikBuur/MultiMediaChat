@@ -71,6 +71,11 @@ class EnlargedContentView : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        videoView.suspend()
+    }
+
     override fun onBackPressed() {
         super.onBackPressed()
         overridePendingTransition(0, 0)
